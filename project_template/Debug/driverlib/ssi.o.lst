@@ -1,0 +1,1823 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"ssi.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c"
+ 3469              		.align	2
+ 3472              	g_ppulSSIIntMap:
+ 3473 0000 00800040 		.word	1073774592
+ 3474 0004 17000000 		.word	23
+ 3475 0008 00900040 		.word	1073778688
+ 3476 000c 32000000 		.word	50
+ 3477 0010 00A00040 		.word	1073782784
+ 3478 0014 49000000 		.word	73
+ 3479 0018 00B00040 		.word	1073786880
+ 3480 001c 4A000000 		.word	74
+ 3481              		.section	.text.SSIIntNumberGet,"ax",%progbits
+ 3482              		.align	2
+ 3483              		.thumb
+ 3484              		.thumb_func
+ 3486              	SSIIntNumberGet:
+ 3487              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // ssi.c - Driver for Synchronous Serial Interface.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // Copyright (c) 2005-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \addtogroup ssi_api
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! @{
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** #include "inc/hw_ints.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** #include "inc/hw_memmap.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** #include "inc/hw_ssi.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** #include "inc/hw_types.h"
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** #include "driverlib/debug.h"
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** #include "driverlib/interrupt.h"
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** #include "driverlib/ssi.h"
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** // A mapping of timer base address to interupt number.
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** static const unsigned long g_ppulSSIIntMap[][2] =
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     { SSI0_BASE, INT_SSI0 },
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     { SSI1_BASE, INT_SSI1 },
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     { SSI2_BASE, INT_SSI2 },
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     { SSI3_BASE, INT_SSI3 },
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** };
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \internal
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Checks an SSI base address.
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function determines if a SSI module base address is valid.
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return Returns \b true if the base address is valid and \b false
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! otherwise.
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** #ifdef DEBUG
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** static tBoolean
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIBaseValid(unsigned long ulBase)
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     return((ulBase == SSI0_BASE) || (ulBase == SSI1_BASE) ||
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****            (ulBase == SSI2_BASE) || (ulBase == SSI3_BASE));
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** #endif
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \internal
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Gets the SSI interrupt number.
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Given a SSI base address, returns the corresponding interrupt number.
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return Returns an SSI interrupt number, or -1 if \e ulBase is invalid.
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** static long
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIIntNumberGet(unsigned long ulBase)
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 3488              		.loc 1 89 0
+ 3489              		.cfi_startproc
+ 3490              		@ args = 0, pretend = 0, frame = 16
+ 3491              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3492              		@ link register save eliminated.
+ 3493 0000 80B4     		push	{r7}
+ 3494              	.LCFI0:
+ 3495              		.cfi_def_cfa_offset 4
+ 3496 0002 85B0     		sub	sp, sp, #20
+ 3497              	.LCFI1:
+ 3498              		.cfi_def_cfa_offset 24
+ 3499 0004 00AF     		add	r7, sp, #0
+ 3500              		.cfi_offset 7, -4
+ 3501              	.LCFI2:
+ 3502              		.cfi_def_cfa_register 7
+ 3503 0006 7860     		str	r0, [r7, #4]
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     unsigned long ulIdx;
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Loop through the table that maps SSI base addresses to interrupt
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // numbers.
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     for(ulIdx = 0; ulIdx < (sizeof(g_ppulSSIIntMap) /
+ 3504              		.loc 1 96 0
+ 3505 0008 4FF00003 		mov	r3, #0
+ 3506 000c FB60     		str	r3, [r7, #12]
+ 3507 000e 11E0     		b	.L2
+ 3508              	.L5:
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****                             sizeof(g_ppulSSIIntMap[0])); ulIdx++)
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     {
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         //
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         // See if this base address matches.
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         //
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         if(g_ppulSSIIntMap[ulIdx][0] == ulBase)
+ 3509              		.loc 1 102 0
+ 3510 0010 0E4B     		ldr	r3, .L6
+ 3511 0012 FA68     		ldr	r2, [r7, #12]
+ 3512 0014 53F83220 		ldr	r2, [r3, r2, lsl #3]
+ 3513 0018 7B68     		ldr	r3, [r7, #4]
+ 3514 001a 9A42     		cmp	r2, r3
+ 3515 001c 06D1     		bne	.L3
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         {
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****             //
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****             // Return the corresponding interrupt number.
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****             //
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****             return(g_ppulSSIIntMap[ulIdx][1]);
+ 3516              		.loc 1 107 0
+ 3517 001e 0B4A     		ldr	r2, .L6
+ 3518 0020 FB68     		ldr	r3, [r7, #12]
+ 3519 0022 4FEAC303 		lsl	r3, r3, #3
+ 3520 0026 D318     		adds	r3, r2, r3
+ 3521 0028 5B68     		ldr	r3, [r3, #4]
+ 3522 002a 08E0     		b	.L4
+ 3523              	.L3:
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****                             sizeof(g_ppulSSIIntMap[0])); ulIdx++)
+ 3524              		.loc 1 97 0
+ 3525 002c FB68     		ldr	r3, [r7, #12]
+ 3526 002e 03F10103 		add	r3, r3, #1
+ 3527 0032 FB60     		str	r3, [r7, #12]
+ 3528              	.L2:
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     for(ulIdx = 0; ulIdx < (sizeof(g_ppulSSIIntMap) /
+ 3529              		.loc 1 96 0 discriminator 1
+ 3530 0034 FB68     		ldr	r3, [r7, #12]
+ 3531 0036 032B     		cmp	r3, #3
+ 3532 0038 EAD9     		bls	.L5
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         }
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     }
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // The base address could not be found, so return an error.
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     return(-1);
+ 3533              		.loc 1 114 0
+ 3534 003a 4FF0FF33 		mov	r3, #-1
+ 3535              	.L4:
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 3536              		.loc 1 115 0
+ 3537 003e 1846     		mov	r0, r3
+ 3538 0040 07F11407 		add	r7, r7, #20
+ 3539 0044 BD46     		mov	sp, r7
+ 3540 0046 80BC     		pop	{r7}
+ 3541 0048 7047     		bx	lr
+ 3542              	.L7:
+ 3543 004a 00BF     		.align	2
+ 3544              	.L6:
+ 3545 004c 00000000 		.word	g_ppulSSIIntMap
+ 3546              		.cfi_endproc
+ 3547              	.LFE0:
+ 3549              		.section	.text.SSIConfigSetExpClk,"ax",%progbits
+ 3550              		.align	2
+ 3551              		.global	SSIConfigSetExpClk
+ 3552              		.thumb
+ 3553              		.thumb_func
+ 3555              	SSIConfigSetExpClk:
+ 3556              	.LFB1:
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Configures the synchronous serial interface.
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulSSIClk is the rate of the clock supplied to the SSI module.
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulProtocol specifies the data transfer protocol.
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulMode specifies the mode of operation.
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBitRate specifies the clock rate.
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulDataWidth specifies number of bits transferred per frame.
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function configures the synchronous serial interface.  It sets
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! the SSI protocol, mode of operation, bit rate, and data width.
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! The \e ulProtocol parameter defines the data frame format.  The
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \e ulProtocol parameter can be one of the following values:
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \b SSI_FRF_MOTO_MODE_0, \b SSI_FRF_MOTO_MODE_1, \b SSI_FRF_MOTO_MODE_2,
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \b SSI_FRF_MOTO_MODE_3, \b SSI_FRF_TI, or \b SSI_FRF_NMW.  The Motorola
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! frame formats encode the following polarity and phase configurations:
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! <pre>
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Polarity Phase       Mode
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!   0       0   SSI_FRF_MOTO_MODE_0
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!   0       1   SSI_FRF_MOTO_MODE_1
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!   1       0   SSI_FRF_MOTO_MODE_2
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!   1       1   SSI_FRF_MOTO_MODE_3
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! </pre>
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! The \e ulMode parameter defines the operating mode of the SSI module.  The
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! SSI module can operate as a master or slave; if it is a slave, the SSI can 
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! be configured to disable output on its serial output line.  The \e ulMode
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! parameter can be one of the following values: \b SSI_MODE_MASTER,
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \b SSI_MODE_SLAVE, or \b SSI_MODE_SLAVE_OD.
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! The \e ulBitRate parameter defines the bit rate for the SSI.  This bit rate
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! must satisfy the following clock ratio criteria:
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! - FSSI >= 2 * bit rate (master mode); this speed cannot exceed 25 MHz.
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! - FSSI >= 12 * bit rate or 6 * bit rate (slave modes), depending on the
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! capability of the specific microcontroller
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! where FSSI is the frequency of the clock supplied to the SSI module.
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! The \e ulDataWidth parameter defines the width of the data transfers and
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! can be a value between 4 and 16, inclusive.
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! The peripheral clock is the same as the processor clock.  This value is
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! returned by SysCtlClockGet(), or it can be explicitly hard coded if it is
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! constant and known (to save the code/execution overhead of a call to
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! SysCtlClockGet()).
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function replaces the original SSIConfig() API and performs the same
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! actions.  A macro is provided in <tt>ssi.h</tt> to map the original API to
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! this API.
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** void
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIConfigSetExpClk(unsigned long ulBase, unsigned long ulSSIClk,
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****                    unsigned long ulProtocol, unsigned long ulMode,
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****                    unsigned long ulBitRate, unsigned long ulDataWidth)
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 3557              		.loc 1 179 0
+ 3558              		.cfi_startproc
+ 3559              		@ args = 8, pretend = 0, frame = 40
+ 3560              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3561              		@ link register save eliminated.
+ 3562 0000 80B4     		push	{r7}
+ 3563              	.LCFI3:
+ 3564              		.cfi_def_cfa_offset 4
+ 3565 0002 8BB0     		sub	sp, sp, #44
+ 3566              	.LCFI4:
+ 3567              		.cfi_def_cfa_offset 48
+ 3568 0004 00AF     		add	r7, sp, #0
+ 3569              		.cfi_offset 7, -4
+ 3570              	.LCFI5:
+ 3571              		.cfi_def_cfa_register 7
+ 3572 0006 F860     		str	r0, [r7, #12]
+ 3573 0008 B960     		str	r1, [r7, #8]
+ 3574 000a 7A60     		str	r2, [r7, #4]
+ 3575 000c 3B60     		str	r3, [r7, #0]
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     unsigned long ulMaxBitRate;
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     unsigned long ulRegVal;
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     unsigned long ulPreDiv;
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     unsigned long ulSCR;
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     unsigned long ulSPH_SPO;
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT((ulProtocol == SSI_FRF_MOTO_MODE_0) ||
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****            (ulProtocol == SSI_FRF_MOTO_MODE_1) ||
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****            (ulProtocol == SSI_FRF_MOTO_MODE_2) ||
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****            (ulProtocol == SSI_FRF_MOTO_MODE_3) ||
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****            (ulProtocol == SSI_FRF_TI) ||
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****            (ulProtocol == SSI_FRF_NMW));
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT((ulMode == SSI_MODE_MASTER) ||
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****            (ulMode == SSI_MODE_SLAVE) ||
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****            (ulMode == SSI_MODE_SLAVE_OD));
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(((ulMode == SSI_MODE_MASTER) && (ulBitRate <= (ulSSIClk / 2))) ||
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****            ((ulMode != SSI_MODE_MASTER) && (ulBitRate <= (ulSSIClk / 12))));
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT((ulSSIClk / ulBitRate) <= (254 * 256));
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT((ulDataWidth >= 4) && (ulDataWidth <= 16));
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Set the mode.
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ulRegVal = (ulMode == SSI_MODE_SLAVE_OD) ? SSI_CR1_SOD : 0;
+ 3576              		.loc 1 207 0
+ 3577 000e 3B68     		ldr	r3, [r7, #0]
+ 3578 0010 022B     		cmp	r3, #2
+ 3579 0012 02D1     		bne	.L9
+ 3580              		.loc 1 207 0 is_stmt 0 discriminator 1
+ 3581 0014 4FF00803 		mov	r3, #8
+ 3582 0018 01E0     		b	.L10
+ 3583              	.L9:
+ 3584              		.loc 1 207 0 discriminator 2
+ 3585 001a 4FF00003 		mov	r3, #0
+ 3586              	.L10:
+ 3587              		.loc 1 207 0 discriminator 3
+ 3588 001e 3B62     		str	r3, [r7, #32]
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ulRegVal |= (ulMode == SSI_MODE_MASTER) ? 0 : SSI_CR1_MS;
+ 3589              		.loc 1 208 0 is_stmt 1 discriminator 3
+ 3590 0020 3B68     		ldr	r3, [r7, #0]
+ 3591 0022 002B     		cmp	r3, #0
+ 3592 0024 02D1     		bne	.L11
+ 3593              		.loc 1 208 0 is_stmt 0 discriminator 1
+ 3594 0026 4FF00003 		mov	r3, #0
+ 3595 002a 01E0     		b	.L12
+ 3596              	.L11:
+ 3597              		.loc 1 208 0 discriminator 2
+ 3598 002c 4FF00403 		mov	r3, #4
+ 3599              	.L12:
+ 3600              		.loc 1 208 0 discriminator 3
+ 3601 0030 3A6A     		ldr	r2, [r7, #32]
+ 3602 0032 42EA0303 		orr	r3, r2, r3
+ 3603 0036 3B62     		str	r3, [r7, #32]
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     HWREG(ulBase + SSI_O_CR1) = ulRegVal;
+ 3604              		.loc 1 209 0 is_stmt 1 discriminator 3
+ 3605 0038 FB68     		ldr	r3, [r7, #12]
+ 3606 003a 03F10403 		add	r3, r3, #4
+ 3607 003e 3A6A     		ldr	r2, [r7, #32]
+ 3608 0040 1A60     		str	r2, [r3, #0]
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Set the clock predivider.
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ulMaxBitRate = ulSSIClk / ulBitRate;
+ 3609              		.loc 1 214 0 discriminator 3
+ 3610 0042 BA68     		ldr	r2, [r7, #8]
+ 3611 0044 3B6B     		ldr	r3, [r7, #48]
+ 3612 0046 B2FBF3F3 		udiv	r3, r2, r3
+ 3613 004a FB61     		str	r3, [r7, #28]
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ulPreDiv = 0;
+ 3614              		.loc 1 215 0 discriminator 3
+ 3615 004c 4FF00003 		mov	r3, #0
+ 3616 0050 7B62     		str	r3, [r7, #36]
+ 3617              	.L13:
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     do
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     {
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         ulPreDiv += 2;
+ 3618              		.loc 1 218 0 discriminator 1
+ 3619 0052 7B6A     		ldr	r3, [r7, #36]
+ 3620 0054 03F10203 		add	r3, r3, #2
+ 3621 0058 7B62     		str	r3, [r7, #36]
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         ulSCR = (ulMaxBitRate / ulPreDiv) - 1;
+ 3622              		.loc 1 219 0 discriminator 1
+ 3623 005a FA69     		ldr	r2, [r7, #28]
+ 3624 005c 7B6A     		ldr	r3, [r7, #36]
+ 3625 005e B2FBF3F3 		udiv	r3, r2, r3
+ 3626 0062 03F1FF33 		add	r3, r3, #-1
+ 3627 0066 BB61     		str	r3, [r7, #24]
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     }
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     while(ulSCR > 255);
+ 3628              		.loc 1 221 0 discriminator 1
+ 3629 0068 BB69     		ldr	r3, [r7, #24]
+ 3630 006a FF2B     		cmp	r3, #255
+ 3631 006c F1D8     		bhi	.L13
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     HWREG(ulBase + SSI_O_CPSR) = ulPreDiv;
+ 3632              		.loc 1 222 0
+ 3633 006e FB68     		ldr	r3, [r7, #12]
+ 3634 0070 03F11003 		add	r3, r3, #16
+ 3635 0074 7A6A     		ldr	r2, [r7, #36]
+ 3636 0076 1A60     		str	r2, [r3, #0]
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Set protocol and clock rate.
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ulSPH_SPO = (ulProtocol & 3) << 6;
+ 3637              		.loc 1 227 0
+ 3638 0078 7B68     		ldr	r3, [r7, #4]
+ 3639 007a 4FEA8313 		lsl	r3, r3, #6
+ 3640 007e 03F0FF03 		and	r3, r3, #255
+ 3641 0082 7B61     		str	r3, [r7, #20]
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ulProtocol &= SSI_CR0_FRF_M;
+ 3642              		.loc 1 228 0
+ 3643 0084 7B68     		ldr	r3, [r7, #4]
+ 3644 0086 03F03003 		and	r3, r3, #48
+ 3645 008a 7B60     		str	r3, [r7, #4]
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ulRegVal = (ulSCR << 8) | ulSPH_SPO | ulProtocol | (ulDataWidth - 1);
+ 3646              		.loc 1 229 0
+ 3647 008c BB69     		ldr	r3, [r7, #24]
+ 3648 008e 4FEA0322 		lsl	r2, r3, #8
+ 3649 0092 7B69     		ldr	r3, [r7, #20]
+ 3650 0094 1A43     		orrs	r2, r2, r3
+ 3651 0096 7B68     		ldr	r3, [r7, #4]
+ 3652 0098 1A43     		orrs	r2, r2, r3
+ 3653 009a 7B6B     		ldr	r3, [r7, #52]
+ 3654 009c 03F1FF33 		add	r3, r3, #-1
+ 3655 00a0 42EA0303 		orr	r3, r2, r3
+ 3656 00a4 3B62     		str	r3, [r7, #32]
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     HWREG(ulBase + SSI_O_CR0) = ulRegVal;
+ 3657              		.loc 1 230 0
+ 3658 00a6 FB68     		ldr	r3, [r7, #12]
+ 3659 00a8 3A6A     		ldr	r2, [r7, #32]
+ 3660 00aa 1A60     		str	r2, [r3, #0]
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 3661              		.loc 1 231 0
+ 3662 00ac 07F12C07 		add	r7, r7, #44
+ 3663 00b0 BD46     		mov	sp, r7
+ 3664 00b2 80BC     		pop	{r7}
+ 3665 00b4 7047     		bx	lr
+ 3666              		.cfi_endproc
+ 3667              	.LFE1:
+ 3669 00b6 00BF     		.section	.text.SSIEnable,"ax",%progbits
+ 3670              		.align	2
+ 3671              		.global	SSIEnable
+ 3672              		.thumb
+ 3673              		.thumb_func
+ 3675              	SSIEnable:
+ 3676              	.LFB2:
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Enables the synchronous serial interface.
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function enables operation of the synchronous serial interface.  The
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! synchronous serial interface must be configured before it is enabled.
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** void
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIEnable(unsigned long ulBase)
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 3677              		.loc 1 247 0
+ 3678              		.cfi_startproc
+ 3679              		@ args = 0, pretend = 0, frame = 8
+ 3680              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3681              		@ link register save eliminated.
+ 3682 0000 80B4     		push	{r7}
+ 3683              	.LCFI6:
+ 3684              		.cfi_def_cfa_offset 4
+ 3685 0002 83B0     		sub	sp, sp, #12
+ 3686              	.LCFI7:
+ 3687              		.cfi_def_cfa_offset 16
+ 3688 0004 00AF     		add	r7, sp, #0
+ 3689              		.cfi_offset 7, -4
+ 3690              	.LCFI8:
+ 3691              		.cfi_def_cfa_register 7
+ 3692 0006 7860     		str	r0, [r7, #4]
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Read-modify-write the enable bit.
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     HWREG(ulBase + SSI_O_CR1) |= SSI_CR1_SSE;
+ 3693              		.loc 1 256 0
+ 3694 0008 7B68     		ldr	r3, [r7, #4]
+ 3695 000a 03F10403 		add	r3, r3, #4
+ 3696 000e 7A68     		ldr	r2, [r7, #4]
+ 3697 0010 02F10402 		add	r2, r2, #4
+ 3698 0014 1268     		ldr	r2, [r2, #0]
+ 3699 0016 42F00202 		orr	r2, r2, #2
+ 3700 001a 1A60     		str	r2, [r3, #0]
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 3701              		.loc 1 257 0
+ 3702 001c 07F10C07 		add	r7, r7, #12
+ 3703 0020 BD46     		mov	sp, r7
+ 3704 0022 80BC     		pop	{r7}
+ 3705 0024 7047     		bx	lr
+ 3706              		.cfi_endproc
+ 3707              	.LFE2:
+ 3709 0026 00BF     		.section	.text.SSIDisable,"ax",%progbits
+ 3710              		.align	2
+ 3711              		.global	SSIDisable
+ 3712              		.thumb
+ 3713              		.thumb_func
+ 3715              	SSIDisable:
+ 3716              	.LFB3:
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Disables the synchronous serial interface.
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function disables operation of the synchronous serial interface.
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** void
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIDisable(unsigned long ulBase)
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 3717              		.loc 1 272 0
+ 3718              		.cfi_startproc
+ 3719              		@ args = 0, pretend = 0, frame = 8
+ 3720              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3721              		@ link register save eliminated.
+ 3722 0000 80B4     		push	{r7}
+ 3723              	.LCFI9:
+ 3724              		.cfi_def_cfa_offset 4
+ 3725 0002 83B0     		sub	sp, sp, #12
+ 3726              	.LCFI10:
+ 3727              		.cfi_def_cfa_offset 16
+ 3728 0004 00AF     		add	r7, sp, #0
+ 3729              		.cfi_offset 7, -4
+ 3730              	.LCFI11:
+ 3731              		.cfi_def_cfa_register 7
+ 3732 0006 7860     		str	r0, [r7, #4]
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Read-modify-write the enable bit.
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     HWREG(ulBase + SSI_O_CR1) &= ~(SSI_CR1_SSE);
+ 3733              		.loc 1 281 0
+ 3734 0008 7B68     		ldr	r3, [r7, #4]
+ 3735 000a 03F10403 		add	r3, r3, #4
+ 3736 000e 7A68     		ldr	r2, [r7, #4]
+ 3737 0010 02F10402 		add	r2, r2, #4
+ 3738 0014 1268     		ldr	r2, [r2, #0]
+ 3739 0016 22F00202 		bic	r2, r2, #2
+ 3740 001a 1A60     		str	r2, [r3, #0]
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 3741              		.loc 1 282 0
+ 3742 001c 07F10C07 		add	r7, r7, #12
+ 3743 0020 BD46     		mov	sp, r7
+ 3744 0022 80BC     		pop	{r7}
+ 3745 0024 7047     		bx	lr
+ 3746              		.cfi_endproc
+ 3747              	.LFE3:
+ 3749 0026 00BF     		.section	.text.SSIIntRegister,"ax",%progbits
+ 3750              		.align	2
+ 3751              		.global	SSIIntRegister
+ 3752              		.thumb
+ 3753              		.thumb_func
+ 3755              	SSIIntRegister:
+ 3756              	.LFB4:
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Registers an interrupt handler for the synchronous serial interface.
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param pfnHandler is a pointer to the function to be called when the
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! synchronous serial interface interrupt occurs.
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function registers the handler to be called when an SSI interrupt
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! occurs.  This function enables the global interrupt in the interrupt 
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! controller; specific SSI interrupts must be enabled via SSIIntEnable().  If 
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! necessary, it is the interrupt handler's responsibility to clear the 
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! interrupt source via SSIIntClear().
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \sa IntRegister() for important information about registering interrupt
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! handlers.
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** void
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIIntRegister(unsigned long ulBase, void (*pfnHandler)(void))
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 3757              		.loc 1 306 0
+ 3758              		.cfi_startproc
+ 3759              		@ args = 0, pretend = 0, frame = 16
+ 3760              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3761 0000 80B5     		push	{r7, lr}
+ 3762              	.LCFI12:
+ 3763              		.cfi_def_cfa_offset 8
+ 3764 0002 84B0     		sub	sp, sp, #16
+ 3765              	.LCFI13:
+ 3766              		.cfi_def_cfa_offset 24
+ 3767 0004 00AF     		add	r7, sp, #0
+ 3768              		.cfi_offset 14, -4
+ 3769              		.cfi_offset 7, -8
+ 3770              	.LCFI14:
+ 3771              		.cfi_def_cfa_register 7
+ 3772 0006 7860     		str	r0, [r7, #4]
+ 3773 0008 3960     		str	r1, [r7, #0]
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     unsigned long ulInt;
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Determine the interrupt number based on the SSI port.
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ulInt = SSIIntNumberGet(ulBase);
+ 3774              		.loc 1 317 0
+ 3775 000a 7868     		ldr	r0, [r7, #4]
+ 3776 000c FFF7FEFF 		bl	SSIIntNumberGet
+ 3777 0010 0346     		mov	r3, r0
+ 3778 0012 FB60     		str	r3, [r7, #12]
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Register the interrupt handler, returning an error if an error occurs.
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     IntRegister(ulInt, pfnHandler);
+ 3779              		.loc 1 322 0
+ 3780 0014 F868     		ldr	r0, [r7, #12]
+ 3781 0016 3968     		ldr	r1, [r7, #0]
+ 3782 0018 FFF7FEFF 		bl	IntRegister
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Enable the synchronous serial interface interrupt.
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     IntEnable(ulInt);
+ 3783              		.loc 1 327 0
+ 3784 001c F868     		ldr	r0, [r7, #12]
+ 3785 001e FFF7FEFF 		bl	IntEnable
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 3786              		.loc 1 328 0
+ 3787 0022 07F11007 		add	r7, r7, #16
+ 3788 0026 BD46     		mov	sp, r7
+ 3789 0028 80BD     		pop	{r7, pc}
+ 3790              		.cfi_endproc
+ 3791              	.LFE4:
+ 3793 002a 00BF     		.section	.text.SSIIntUnregister,"ax",%progbits
+ 3794              		.align	2
+ 3795              		.global	SSIIntUnregister
+ 3796              		.thumb
+ 3797              		.thumb_func
+ 3799              	SSIIntUnregister:
+ 3800              	.LFB5:
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Unregisters an interrupt handler for the synchronous serial interface.
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function clears the handler to be called when an SSI interrupt 
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! occurs.  This function also masks off the interrupt in the interrupt
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! controller so that the interrupt handler no longer is called.
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \sa IntRegister() for important information about registering interrupt
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! handlers.
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** void
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIIntUnregister(unsigned long ulBase)
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 3801              		.loc 1 348 0
+ 3802              		.cfi_startproc
+ 3803              		@ args = 0, pretend = 0, frame = 16
+ 3804              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3805 0000 80B5     		push	{r7, lr}
+ 3806              	.LCFI15:
+ 3807              		.cfi_def_cfa_offset 8
+ 3808 0002 84B0     		sub	sp, sp, #16
+ 3809              	.LCFI16:
+ 3810              		.cfi_def_cfa_offset 24
+ 3811 0004 00AF     		add	r7, sp, #0
+ 3812              		.cfi_offset 14, -4
+ 3813              		.cfi_offset 7, -8
+ 3814              	.LCFI17:
+ 3815              		.cfi_def_cfa_register 7
+ 3816 0006 7860     		str	r0, [r7, #4]
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     unsigned long ulInt;
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Determine the interrupt number based on the SSI port.
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ulInt = SSIIntNumberGet(ulBase);
+ 3817              		.loc 1 359 0
+ 3818 0008 7868     		ldr	r0, [r7, #4]
+ 3819 000a FFF7FEFF 		bl	SSIIntNumberGet
+ 3820 000e 0346     		mov	r3, r0
+ 3821 0010 FB60     		str	r3, [r7, #12]
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Disable the interrupt.
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     IntDisable(ulInt);
+ 3822              		.loc 1 364 0
+ 3823 0012 F868     		ldr	r0, [r7, #12]
+ 3824 0014 FFF7FEFF 		bl	IntDisable
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Unregister the interrupt handler.
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     IntUnregister(ulInt);
+ 3825              		.loc 1 369 0
+ 3826 0018 F868     		ldr	r0, [r7, #12]
+ 3827 001a FFF7FEFF 		bl	IntUnregister
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 3828              		.loc 1 370 0
+ 3829 001e 07F11007 		add	r7, r7, #16
+ 3830 0022 BD46     		mov	sp, r7
+ 3831 0024 80BD     		pop	{r7, pc}
+ 3832              		.cfi_endproc
+ 3833              	.LFE5:
+ 3835 0026 00BF     		.section	.text.SSIIntEnable,"ax",%progbits
+ 3836              		.align	2
+ 3837              		.global	SSIIntEnable
+ 3838              		.thumb
+ 3839              		.thumb_func
+ 3841              	SSIIntEnable:
+ 3842              	.LFB6:
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Enables individual SSI interrupt sources.
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be enabled.
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function enables the indicated SSI interrupt sources.  Only the 
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! sources that are enabled can be reflected to the processor interrupt; 
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! disabled sources have no effect on the processor.  The \e ulIntFlags 
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! parameter can be any of the \b SSI_TXFF, \b SSI_RXFF, \b SSI_RXTO, or 
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \b SSI_RXOR values.
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** void
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIIntEnable(unsigned long ulBase, unsigned long ulIntFlags)
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 3843              		.loc 1 390 0
+ 3844              		.cfi_startproc
+ 3845              		@ args = 0, pretend = 0, frame = 8
+ 3846              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3847              		@ link register save eliminated.
+ 3848 0000 80B4     		push	{r7}
+ 3849              	.LCFI18:
+ 3850              		.cfi_def_cfa_offset 4
+ 3851 0002 83B0     		sub	sp, sp, #12
+ 3852              	.LCFI19:
+ 3853              		.cfi_def_cfa_offset 16
+ 3854 0004 00AF     		add	r7, sp, #0
+ 3855              		.cfi_offset 7, -4
+ 3856              	.LCFI20:
+ 3857              		.cfi_def_cfa_register 7
+ 3858 0006 7860     		str	r0, [r7, #4]
+ 3859 0008 3960     		str	r1, [r7, #0]
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Enable the specified interrupts.
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     HWREG(ulBase + SSI_O_IM) |= ulIntFlags;
+ 3860              		.loc 1 399 0
+ 3861 000a 7B68     		ldr	r3, [r7, #4]
+ 3862 000c 03F11403 		add	r3, r3, #20
+ 3863 0010 7A68     		ldr	r2, [r7, #4]
+ 3864 0012 02F11402 		add	r2, r2, #20
+ 3865 0016 1168     		ldr	r1, [r2, #0]
+ 3866 0018 3A68     		ldr	r2, [r7, #0]
+ 3867 001a 41EA0202 		orr	r2, r1, r2
+ 3868 001e 1A60     		str	r2, [r3, #0]
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 3869              		.loc 1 400 0
+ 3870 0020 07F10C07 		add	r7, r7, #12
+ 3871 0024 BD46     		mov	sp, r7
+ 3872 0026 80BC     		pop	{r7}
+ 3873 0028 7047     		bx	lr
+ 3874              		.cfi_endproc
+ 3875              	.LFE6:
+ 3877 002a 00BF     		.section	.text.SSIIntDisable,"ax",%progbits
+ 3878              		.align	2
+ 3879              		.global	SSIIntDisable
+ 3880              		.thumb
+ 3881              		.thumb_func
+ 3883              	SSIIntDisable:
+ 3884              	.LFB7:
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Disables individual SSI interrupt sources.
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be disabled.
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function disables the indicated SSI interrupt sources.  The
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \e ulIntFlags parameter can be any of the \b SSI_TXFF, \b SSI_RXFF,
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!  \b SSI_RXTO, or \b SSI_RXOR values.
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** void
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIIntDisable(unsigned long ulBase, unsigned long ulIntFlags)
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 3885              		.loc 1 418 0
+ 3886              		.cfi_startproc
+ 3887              		@ args = 0, pretend = 0, frame = 8
+ 3888              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3889              		@ link register save eliminated.
+ 3890 0000 80B4     		push	{r7}
+ 3891              	.LCFI21:
+ 3892              		.cfi_def_cfa_offset 4
+ 3893 0002 83B0     		sub	sp, sp, #12
+ 3894              	.LCFI22:
+ 3895              		.cfi_def_cfa_offset 16
+ 3896 0004 00AF     		add	r7, sp, #0
+ 3897              		.cfi_offset 7, -4
+ 3898              	.LCFI23:
+ 3899              		.cfi_def_cfa_register 7
+ 3900 0006 7860     		str	r0, [r7, #4]
+ 3901 0008 3960     		str	r1, [r7, #0]
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Disable the specified interrupts.
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     HWREG(ulBase + SSI_O_IM) &= ~(ulIntFlags);
+ 3902              		.loc 1 427 0
+ 3903 000a 7B68     		ldr	r3, [r7, #4]
+ 3904 000c 03F11403 		add	r3, r3, #20
+ 3905 0010 7A68     		ldr	r2, [r7, #4]
+ 3906 0012 02F11402 		add	r2, r2, #20
+ 3907 0016 1168     		ldr	r1, [r2, #0]
+ 3908 0018 3A68     		ldr	r2, [r7, #0]
+ 3909 001a 6FEA0202 		mvn	r2, r2
+ 3910 001e 01EA0202 		and	r2, r1, r2
+ 3911 0022 1A60     		str	r2, [r3, #0]
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 3912              		.loc 1 428 0
+ 3913 0024 07F10C07 		add	r7, r7, #12
+ 3914 0028 BD46     		mov	sp, r7
+ 3915 002a 80BC     		pop	{r7}
+ 3916 002c 7047     		bx	lr
+ 3917              		.cfi_endproc
+ 3918              	.LFE7:
+ 3920 002e 00BF     		.section	.text.SSIIntStatus,"ax",%progbits
+ 3921              		.align	2
+ 3922              		.global	SSIIntStatus
+ 3923              		.thumb
+ 3924              		.thumb_func
+ 3926              	SSIIntStatus:
+ 3927              	.LFB8:
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Gets the current interrupt status.
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param bMasked is \b false if the raw interrupt status is required or
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \b true if the masked interrupt status is required.
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function returns the interrupt status for the SSI module.  Either the
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! raw interrupt status or the status of interrupts that are allowed to
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! reflect to the processor can be returned.
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return The current interrupt status, enumerated as a bit field of
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \b SSI_TXFF, \b SSI_RXFF, \b SSI_RXTO, and \b SSI_RXOR.
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** unsigned long
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIIntStatus(unsigned long ulBase, tBoolean bMasked)
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 3928              		.loc 1 448 0
+ 3929              		.cfi_startproc
+ 3930              		@ args = 0, pretend = 0, frame = 8
+ 3931              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3932              		@ link register save eliminated.
+ 3933 0000 80B4     		push	{r7}
+ 3934              	.LCFI24:
+ 3935              		.cfi_def_cfa_offset 4
+ 3936 0002 83B0     		sub	sp, sp, #12
+ 3937              	.LCFI25:
+ 3938              		.cfi_def_cfa_offset 16
+ 3939 0004 00AF     		add	r7, sp, #0
+ 3940              		.cfi_offset 7, -4
+ 3941              	.LCFI26:
+ 3942              		.cfi_def_cfa_register 7
+ 3943 0006 7860     		str	r0, [r7, #4]
+ 3944 0008 0B46     		mov	r3, r1
+ 3945 000a FB70     		strb	r3, [r7, #3]
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Return either the interrupt status or the raw interrupt status as
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // requested.
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     if(bMasked)
+ 3946              		.loc 1 458 0
+ 3947 000c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 3948 000e 002B     		cmp	r3, #0
+ 3949 0010 04D0     		beq	.L21
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     {
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         return(HWREG(ulBase + SSI_O_MIS));
+ 3950              		.loc 1 460 0
+ 3951 0012 7B68     		ldr	r3, [r7, #4]
+ 3952 0014 03F11C03 		add	r3, r3, #28
+ 3953 0018 1B68     		ldr	r3, [r3, #0]
+ 3954 001a 03E0     		b	.L22
+ 3955              	.L21:
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     }
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     else
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     {
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         return(HWREG(ulBase + SSI_O_RIS));
+ 3956              		.loc 1 464 0
+ 3957 001c 7B68     		ldr	r3, [r7, #4]
+ 3958 001e 03F11803 		add	r3, r3, #24
+ 3959 0022 1B68     		ldr	r3, [r3, #0]
+ 3960              	.L22:
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     }
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 3961              		.loc 1 466 0
+ 3962 0024 1846     		mov	r0, r3
+ 3963 0026 07F10C07 		add	r7, r7, #12
+ 3964 002a BD46     		mov	sp, r7
+ 3965 002c 80BC     		pop	{r7}
+ 3966 002e 7047     		bx	lr
+ 3967              		.cfi_endproc
+ 3968              	.LFE8:
+ 3970              		.section	.text.SSIIntClear,"ax",%progbits
+ 3971              		.align	2
+ 3972              		.global	SSIIntClear
+ 3973              		.thumb
+ 3974              		.thumb_func
+ 3976              	SSIIntClear:
+ 3977              	.LFB9:
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Clears SSI interrupt sources.
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be cleared.
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function clears the specified SSI interrupt sources so that they no 
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! longer assert.  This function must be called in the interrupt handler to
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! keep the interrupts from being triggered again immediately upon exit.  The
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \e ulIntFlags parameter can consist of either or both the \b SSI_RXTO and
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \b SSI_RXOR values.
+ 480:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 481:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \note Because there is a write buffer in the Cortex-M processor, it may
+ 482:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! take several clock cycles before the interrupt source is actually cleared.
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Therefore, it is recommended that the interrupt source be cleared early in
+ 484:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! the interrupt handler (as opposed to the very last action) to avoid
+ 485:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! returning from the interrupt handler before the interrupt source is
+ 486:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! actually cleared.  Failure to do so may result in the interrupt handler
+ 487:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! being immediately reentered (because the interrupt controller still sees
+ 488:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! the interrupt source asserted).
+ 489:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 490:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 491:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 492:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 493:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** void
+ 494:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIIntClear(unsigned long ulBase, unsigned long ulIntFlags)
+ 495:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 3978              		.loc 1 495 0
+ 3979              		.cfi_startproc
+ 3980              		@ args = 0, pretend = 0, frame = 8
+ 3981              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3982              		@ link register save eliminated.
+ 3983 0000 80B4     		push	{r7}
+ 3984              	.LCFI27:
+ 3985              		.cfi_def_cfa_offset 4
+ 3986 0002 83B0     		sub	sp, sp, #12
+ 3987              	.LCFI28:
+ 3988              		.cfi_def_cfa_offset 16
+ 3989 0004 00AF     		add	r7, sp, #0
+ 3990              		.cfi_offset 7, -4
+ 3991              	.LCFI29:
+ 3992              		.cfi_def_cfa_register 7
+ 3993 0006 7860     		str	r0, [r7, #4]
+ 3994 0008 3960     		str	r1, [r7, #0]
+ 496:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 497:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 498:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 499:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 500:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 501:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 502:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Clear the requested interrupt sources.
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 504:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     HWREG(ulBase + SSI_O_ICR) = ulIntFlags;
+ 3995              		.loc 1 504 0
+ 3996 000a 7B68     		ldr	r3, [r7, #4]
+ 3997 000c 03F12003 		add	r3, r3, #32
+ 3998 0010 3A68     		ldr	r2, [r7, #0]
+ 3999 0012 1A60     		str	r2, [r3, #0]
+ 505:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 4000              		.loc 1 505 0
+ 4001 0014 07F10C07 		add	r7, r7, #12
+ 4002 0018 BD46     		mov	sp, r7
+ 4003 001a 80BC     		pop	{r7}
+ 4004 001c 7047     		bx	lr
+ 4005              		.cfi_endproc
+ 4006              	.LFE9:
+ 4008 001e 00BF     		.section	.text.SSIDataPut,"ax",%progbits
+ 4009              		.align	2
+ 4010              		.global	SSIDataPut
+ 4011              		.thumb
+ 4012              		.thumb_func
+ 4014              	SSIDataPut:
+ 4015              	.LFB10:
+ 506:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 507:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 508:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 509:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Puts a data element into the SSI transmit FIFO.
+ 510:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 511:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+ 512:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulData is the data to be transmitted over the SSI interface.
+ 513:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 514:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function places the supplied data into the transmit FIFO of the
+ 515:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! specified SSI module.
+ 516:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \note The upper 32 - N bits of the \e ulData are discarded by the hardware,
+ 518:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! where N is the data width as configured by SSIConfigSetExpClk().  For
+ 519:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! example, if the interface is configured for 8-bit data width, the upper 24
+ 520:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! bits of \e ulData are discarded.
+ 521:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 522:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 523:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 524:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 525:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** void
+ 526:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIDataPut(unsigned long ulBase, unsigned long ulData)
+ 527:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 4016              		.loc 1 527 0
+ 4017              		.cfi_startproc
+ 4018              		@ args = 0, pretend = 0, frame = 8
+ 4019              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4020              		@ link register save eliminated.
+ 4021 0000 80B4     		push	{r7}
+ 4022              	.LCFI30:
+ 4023              		.cfi_def_cfa_offset 4
+ 4024 0002 83B0     		sub	sp, sp, #12
+ 4025              	.LCFI31:
+ 4026              		.cfi_def_cfa_offset 16
+ 4027 0004 00AF     		add	r7, sp, #0
+ 4028              		.cfi_offset 7, -4
+ 4029              	.LCFI32:
+ 4030              		.cfi_def_cfa_register 7
+ 4031 0006 7860     		str	r0, [r7, #4]
+ 4032 0008 3960     		str	r1, [r7, #0]
+ 528:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 529:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 530:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 531:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 532:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT((ulData & (0xfffffffe << (HWREG(ulBase + SSI_O_CR0) &
+ 533:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****                                      SSI_CR0_DSS_M))) == 0);
+ 534:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 535:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 536:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Wait until there is space.
+ 537:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 538:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     while(!(HWREG(ulBase + SSI_O_SR) & SSI_SR_TNF))
+ 4033              		.loc 1 538 0
+ 4034 000a 00BF     		nop
+ 4035              	.L25:
+ 4036              		.loc 1 538 0 is_stmt 0 discriminator 1
+ 4037 000c 7B68     		ldr	r3, [r7, #4]
+ 4038 000e 03F10C03 		add	r3, r3, #12
+ 4039 0012 1B68     		ldr	r3, [r3, #0]
+ 4040 0014 03F00203 		and	r3, r3, #2
+ 4041 0018 002B     		cmp	r3, #0
+ 4042 001a F7D0     		beq	.L25
+ 539:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     {
+ 540:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     }
+ 541:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 542:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 543:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Write the data to the SSI.
+ 544:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 545:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     HWREG(ulBase + SSI_O_DR) = ulData;
+ 4043              		.loc 1 545 0 is_stmt 1
+ 4044 001c 7B68     		ldr	r3, [r7, #4]
+ 4045 001e 03F10803 		add	r3, r3, #8
+ 4046 0022 3A68     		ldr	r2, [r7, #0]
+ 4047 0024 1A60     		str	r2, [r3, #0]
+ 546:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 4048              		.loc 1 546 0
+ 4049 0026 07F10C07 		add	r7, r7, #12
+ 4050 002a BD46     		mov	sp, r7
+ 4051 002c 80BC     		pop	{r7}
+ 4052 002e 7047     		bx	lr
+ 4053              		.cfi_endproc
+ 4054              	.LFE10:
+ 4056              		.section	.text.SSIDataPutNonBlocking,"ax",%progbits
+ 4057              		.align	2
+ 4058              		.global	SSIDataPutNonBlocking
+ 4059              		.thumb
+ 4060              		.thumb_func
+ 4062              	SSIDataPutNonBlocking:
+ 4063              	.LFB11:
+ 547:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 549:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 550:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Puts a data element into the SSI transmit FIFO.
+ 551:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 552:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+ 553:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulData is the data to be transmitted over the SSI interface.
+ 554:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 555:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function places the supplied data into the transmit FIFO of the
+ 556:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! specified SSI module.  If there is no space in the FIFO, then this function
+ 557:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! returns a zero.
+ 558:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 559:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function replaces the original SSIDataNonBlockingPut() API and
+ 560:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! performs the same actions.  A macro is provided in <tt>ssi.h</tt> to map
+ 561:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! the original API to this API.
+ 562:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 563:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \note The upper 32 - N bits of the \e ulData are discarded by the hardware,
+ 564:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! where N is the data width as configured by SSIConfigSetExpClk().  For
+ 565:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! example, if the interface is configured for 8-bit data width, the upper 24
+ 566:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! bits of \e ulData are discarded.
+ 567:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 568:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return Returns the number of elements written to the SSI transmit FIFO.
+ 569:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 570:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 571:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** long
+ 572:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIDataPutNonBlocking(unsigned long ulBase, unsigned long ulData)
+ 573:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 4064              		.loc 1 573 0
+ 4065              		.cfi_startproc
+ 4066              		@ args = 0, pretend = 0, frame = 8
+ 4067              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4068              		@ link register save eliminated.
+ 4069 0000 80B4     		push	{r7}
+ 4070              	.LCFI33:
+ 4071              		.cfi_def_cfa_offset 4
+ 4072 0002 83B0     		sub	sp, sp, #12
+ 4073              	.LCFI34:
+ 4074              		.cfi_def_cfa_offset 16
+ 4075 0004 00AF     		add	r7, sp, #0
+ 4076              		.cfi_offset 7, -4
+ 4077              	.LCFI35:
+ 4078              		.cfi_def_cfa_register 7
+ 4079 0006 7860     		str	r0, [r7, #4]
+ 4080 0008 3960     		str	r1, [r7, #0]
+ 574:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 575:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 576:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 577:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 578:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT((ulData & (0xfffffffe << (HWREG(ulBase + SSI_O_CR0) &
+ 579:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****                                      SSI_CR0_DSS_M))) == 0);
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 581:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 582:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check for space to write.
+ 583:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 584:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     if(HWREG(ulBase + SSI_O_SR) & SSI_SR_TNF)
+ 4081              		.loc 1 584 0
+ 4082 000a 7B68     		ldr	r3, [r7, #4]
+ 4083 000c 03F10C03 		add	r3, r3, #12
+ 4084 0010 1B68     		ldr	r3, [r3, #0]
+ 4085 0012 03F00203 		and	r3, r3, #2
+ 4086 0016 002B     		cmp	r3, #0
+ 4087 0018 07D0     		beq	.L27
+ 585:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     {
+ 586:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         HWREG(ulBase + SSI_O_DR) = ulData;
+ 4088              		.loc 1 586 0
+ 4089 001a 7B68     		ldr	r3, [r7, #4]
+ 4090 001c 03F10803 		add	r3, r3, #8
+ 4091 0020 3A68     		ldr	r2, [r7, #0]
+ 4092 0022 1A60     		str	r2, [r3, #0]
+ 587:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         return(1);
+ 4093              		.loc 1 587 0
+ 4094 0024 4FF00103 		mov	r3, #1
+ 4095 0028 01E0     		b	.L28
+ 4096              	.L27:
+ 588:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     }
+ 589:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     else
+ 590:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     {
+ 591:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         return(0);
+ 4097              		.loc 1 591 0
+ 4098 002a 4FF00003 		mov	r3, #0
+ 4099              	.L28:
+ 592:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     }
+ 593:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 4100              		.loc 1 593 0
+ 4101 002e 1846     		mov	r0, r3
+ 4102 0030 07F10C07 		add	r7, r7, #12
+ 4103 0034 BD46     		mov	sp, r7
+ 4104 0036 80BC     		pop	{r7}
+ 4105 0038 7047     		bx	lr
+ 4106              		.cfi_endproc
+ 4107              	.LFE11:
+ 4109 003a 00BF     		.section	.text.SSIDataGet,"ax",%progbits
+ 4110              		.align	2
+ 4111              		.global	SSIDataGet
+ 4112              		.thumb
+ 4113              		.thumb_func
+ 4115              	SSIDataGet:
+ 4116              	.LFB12:
+ 594:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 595:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 596:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 597:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Gets a data element from the SSI receive FIFO.
+ 598:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 599:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+ 600:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param pulData is a pointer to a storage location for data that was
+ 601:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! received over the SSI interface.
+ 602:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 603:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function gets received data from the receive FIFO of the specified
+ 604:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! SSI module and places that data into the location specified by the
+ 605:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \e pulData parameter.
+ 606:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 607:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \note Only the lower N bits of the value written to \e pulData contain
+ 608:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! valid data, where N is the data width as configured by
+ 609:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! SSIConfigSetExpClk().  For example, if the interface is configured for
+ 610:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! 8-bit data width, only the lower 8 bits of the value written to \e pulData
+ 611:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! contain valid data.
+ 612:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 613:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 614:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 615:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 616:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** void
+ 617:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIDataGet(unsigned long ulBase, unsigned long *pulData)
+ 618:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 4117              		.loc 1 618 0
+ 4118              		.cfi_startproc
+ 4119              		@ args = 0, pretend = 0, frame = 8
+ 4120              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4121              		@ link register save eliminated.
+ 4122 0000 80B4     		push	{r7}
+ 4123              	.LCFI36:
+ 4124              		.cfi_def_cfa_offset 4
+ 4125 0002 83B0     		sub	sp, sp, #12
+ 4126              	.LCFI37:
+ 4127              		.cfi_def_cfa_offset 16
+ 4128 0004 00AF     		add	r7, sp, #0
+ 4129              		.cfi_offset 7, -4
+ 4130              	.LCFI38:
+ 4131              		.cfi_def_cfa_register 7
+ 4132 0006 7860     		str	r0, [r7, #4]
+ 4133 0008 3960     		str	r1, [r7, #0]
+ 619:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 620:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 621:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 622:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 623:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 624:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 625:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Wait until there is data to be read.
+ 626:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 627:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     while(!(HWREG(ulBase + SSI_O_SR) & SSI_SR_RNE))
+ 4134              		.loc 1 627 0
+ 4135 000a 00BF     		nop
+ 4136              	.L30:
+ 4137              		.loc 1 627 0 is_stmt 0 discriminator 1
+ 4138 000c 7B68     		ldr	r3, [r7, #4]
+ 4139 000e 03F10C03 		add	r3, r3, #12
+ 4140 0012 1B68     		ldr	r3, [r3, #0]
+ 4141 0014 03F00403 		and	r3, r3, #4
+ 4142 0018 002B     		cmp	r3, #0
+ 4143 001a F7D0     		beq	.L30
+ 628:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     {
+ 629:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     }
+ 630:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 631:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 632:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Read data from SSI.
+ 633:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 634:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     *pulData = HWREG(ulBase + SSI_O_DR);
+ 4144              		.loc 1 634 0 is_stmt 1
+ 4145 001c 7B68     		ldr	r3, [r7, #4]
+ 4146 001e 03F10803 		add	r3, r3, #8
+ 4147 0022 1A68     		ldr	r2, [r3, #0]
+ 4148 0024 3B68     		ldr	r3, [r7, #0]
+ 4149 0026 1A60     		str	r2, [r3, #0]
+ 635:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 4150              		.loc 1 635 0
+ 4151 0028 07F10C07 		add	r7, r7, #12
+ 4152 002c BD46     		mov	sp, r7
+ 4153 002e 80BC     		pop	{r7}
+ 4154 0030 7047     		bx	lr
+ 4155              		.cfi_endproc
+ 4156              	.LFE12:
+ 4158 0032 00BF     		.section	.text.SSIDataGetNonBlocking,"ax",%progbits
+ 4159              		.align	2
+ 4160              		.global	SSIDataGetNonBlocking
+ 4161              		.thumb
+ 4162              		.thumb_func
+ 4164              	SSIDataGetNonBlocking:
+ 4165              	.LFB13:
+ 636:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 637:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 638:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 639:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Gets a data element from the SSI receive FIFO.
+ 640:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 641:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase specifies the SSI module base address.
+ 642:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param pulData is a pointer to a storage location for data that was
+ 643:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! received over the SSI interface.
+ 644:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 645:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function gets received data from the receive FIFO of the specified SSI
+ 646:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! module and places that data into the location specified by the \e ulData
+ 647:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! parameter.  If there is no data in the FIFO, then this function returns a
+ 648:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! zero.
+ 649:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 650:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function replaces the original SSIDataNonBlockingGet() API and
+ 651:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! performs the same actions.  A macro is provided in <tt>ssi.h</tt> to map
+ 652:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! the original API to this API.
+ 653:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 654:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \note Only the lower N bits of the value written to \e pulData contain
+ 655:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! valid data, where N is the data width as configured by
+ 656:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! SSIConfigSetExpClk().  For example, if the interface is configured for
+ 657:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! 8-bit data width, only the lower 8 bits of the value written to \e pulData
+ 658:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! contain valid data.
+ 659:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 660:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return Returns the number of elements read from the SSI receive FIFO.
+ 661:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 662:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 663:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** long
+ 664:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIDataGetNonBlocking(unsigned long ulBase, unsigned long *pulData)
+ 665:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 4166              		.loc 1 665 0
+ 4167              		.cfi_startproc
+ 4168              		@ args = 0, pretend = 0, frame = 8
+ 4169              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4170              		@ link register save eliminated.
+ 4171 0000 80B4     		push	{r7}
+ 4172              	.LCFI39:
+ 4173              		.cfi_def_cfa_offset 4
+ 4174 0002 83B0     		sub	sp, sp, #12
+ 4175              	.LCFI40:
+ 4176              		.cfi_def_cfa_offset 16
+ 4177 0004 00AF     		add	r7, sp, #0
+ 4178              		.cfi_offset 7, -4
+ 4179              	.LCFI41:
+ 4180              		.cfi_def_cfa_register 7
+ 4181 0006 7860     		str	r0, [r7, #4]
+ 4182 0008 3960     		str	r1, [r7, #0]
+ 666:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 667:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 668:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 669:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 670:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 671:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 672:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check for data to read.
+ 673:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 674:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     if(HWREG(ulBase + SSI_O_SR) & SSI_SR_RNE)
+ 4183              		.loc 1 674 0
+ 4184 000a 7B68     		ldr	r3, [r7, #4]
+ 4185 000c 03F10C03 		add	r3, r3, #12
+ 4186 0010 1B68     		ldr	r3, [r3, #0]
+ 4187 0012 03F00403 		and	r3, r3, #4
+ 4188 0016 002B     		cmp	r3, #0
+ 4189 0018 08D0     		beq	.L32
+ 675:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     {
+ 676:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         *pulData = HWREG(ulBase + SSI_O_DR);
+ 4190              		.loc 1 676 0
+ 4191 001a 7B68     		ldr	r3, [r7, #4]
+ 4192 001c 03F10803 		add	r3, r3, #8
+ 4193 0020 1A68     		ldr	r2, [r3, #0]
+ 4194 0022 3B68     		ldr	r3, [r7, #0]
+ 4195 0024 1A60     		str	r2, [r3, #0]
+ 677:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         return(1);
+ 4196              		.loc 1 677 0
+ 4197 0026 4FF00103 		mov	r3, #1
+ 4198 002a 01E0     		b	.L33
+ 4199              	.L32:
+ 678:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     }
+ 679:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     else
+ 680:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     {
+ 681:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****         return(0);
+ 4200              		.loc 1 681 0
+ 4201 002c 4FF00003 		mov	r3, #0
+ 4202              	.L33:
+ 682:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     }
+ 683:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 4203              		.loc 1 683 0
+ 4204 0030 1846     		mov	r0, r3
+ 4205 0032 07F10C07 		add	r7, r7, #12
+ 4206 0036 BD46     		mov	sp, r7
+ 4207 0038 80BC     		pop	{r7}
+ 4208 003a 7047     		bx	lr
+ 4209              		.cfi_endproc
+ 4210              	.LFE13:
+ 4212              		.section	.text.SSIDMAEnable,"ax",%progbits
+ 4213              		.align	2
+ 4214              		.global	SSIDMAEnable
+ 4215              		.thumb
+ 4216              		.thumb_func
+ 4218              	SSIDMAEnable:
+ 4219              	.LFB14:
+ 684:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 685:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 686:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 687:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Enable SSI DMA operation.
+ 688:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 689:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase is the base address of the SSI port.
+ 690:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulDMAFlags is a bit mask of the DMA features to enable.
+ 691:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 692:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function enables the specified SSI DMA features.  The SSI can be
+ 693:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! configured to use DMA for transmit and/or receive data transfers.
+ 694:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! The \e ulDMAFlags parameter is the logical OR of any of the following
+ 695:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! values:
+ 696:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 697:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! - SSI_DMA_RX - enable DMA for receive
+ 698:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! - SSI_DMA_TX - enable DMA for transmit
+ 699:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 700:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \note The uDMA controller must also be set up before DMA can be used
+ 701:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! with the SSI.
+ 702:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 703:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 704:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 705:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 706:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** void
+ 707:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIDMAEnable(unsigned long ulBase, unsigned long ulDMAFlags)
+ 708:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 4220              		.loc 1 708 0
+ 4221              		.cfi_startproc
+ 4222              		@ args = 0, pretend = 0, frame = 8
+ 4223              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4224              		@ link register save eliminated.
+ 4225 0000 80B4     		push	{r7}
+ 4226              	.LCFI42:
+ 4227              		.cfi_def_cfa_offset 4
+ 4228 0002 83B0     		sub	sp, sp, #12
+ 4229              	.LCFI43:
+ 4230              		.cfi_def_cfa_offset 16
+ 4231 0004 00AF     		add	r7, sp, #0
+ 4232              		.cfi_offset 7, -4
+ 4233              	.LCFI44:
+ 4234              		.cfi_def_cfa_register 7
+ 4235 0006 7860     		str	r0, [r7, #4]
+ 4236 0008 3960     		str	r1, [r7, #0]
+ 709:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 710:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 711:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 712:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 713:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 714:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 715:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Set the requested bits in the SSI DMA control register.
+ 716:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 717:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     HWREG(ulBase + SSI_O_DMACTL) |= ulDMAFlags;
+ 4237              		.loc 1 717 0
+ 4238 000a 7B68     		ldr	r3, [r7, #4]
+ 4239 000c 03F12403 		add	r3, r3, #36
+ 4240 0010 7A68     		ldr	r2, [r7, #4]
+ 4241 0012 02F12402 		add	r2, r2, #36
+ 4242 0016 1168     		ldr	r1, [r2, #0]
+ 4243 0018 3A68     		ldr	r2, [r7, #0]
+ 4244 001a 41EA0202 		orr	r2, r1, r2
+ 4245 001e 1A60     		str	r2, [r3, #0]
+ 718:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 4246              		.loc 1 718 0
+ 4247 0020 07F10C07 		add	r7, r7, #12
+ 4248 0024 BD46     		mov	sp, r7
+ 4249 0026 80BC     		pop	{r7}
+ 4250 0028 7047     		bx	lr
+ 4251              		.cfi_endproc
+ 4252              	.LFE14:
+ 4254 002a 00BF     		.section	.text.SSIDMADisable,"ax",%progbits
+ 4255              		.align	2
+ 4256              		.global	SSIDMADisable
+ 4257              		.thumb
+ 4258              		.thumb_func
+ 4260              	SSIDMADisable:
+ 4261              	.LFB15:
+ 719:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 720:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 721:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 722:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Disable SSI DMA operation.
+ 723:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 724:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase is the base address of the SSI port.
+ 725:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulDMAFlags is a bit mask of the DMA features to disable.
+ 726:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 727:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function is used to disable SSI DMA features that were enabled
+ 728:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! by SSIDMAEnable().  The specified SSI DMA features are disabled.  The
+ 729:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \e ulDMAFlags parameter is the logical OR of any of the following values:
+ 730:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 731:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! - SSI_DMA_RX - disable DMA for receive
+ 732:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! - SSI_DMA_TX - disable DMA for transmit
+ 733:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 734:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 735:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 736:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 737:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** void
+ 738:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIDMADisable(unsigned long ulBase, unsigned long ulDMAFlags)
+ 739:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 4262              		.loc 1 739 0
+ 4263              		.cfi_startproc
+ 4264              		@ args = 0, pretend = 0, frame = 8
+ 4265              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4266              		@ link register save eliminated.
+ 4267 0000 80B4     		push	{r7}
+ 4268              	.LCFI45:
+ 4269              		.cfi_def_cfa_offset 4
+ 4270 0002 83B0     		sub	sp, sp, #12
+ 4271              	.LCFI46:
+ 4272              		.cfi_def_cfa_offset 16
+ 4273 0004 00AF     		add	r7, sp, #0
+ 4274              		.cfi_offset 7, -4
+ 4275              	.LCFI47:
+ 4276              		.cfi_def_cfa_register 7
+ 4277 0006 7860     		str	r0, [r7, #4]
+ 4278 0008 3960     		str	r1, [r7, #0]
+ 740:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 741:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 742:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 743:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 744:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 745:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 746:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Clear the requested bits in the SSI DMA control register.
+ 747:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 748:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     HWREG(ulBase + SSI_O_DMACTL) &= ~ulDMAFlags;
+ 4279              		.loc 1 748 0
+ 4280 000a 7B68     		ldr	r3, [r7, #4]
+ 4281 000c 03F12403 		add	r3, r3, #36
+ 4282 0010 7A68     		ldr	r2, [r7, #4]
+ 4283 0012 02F12402 		add	r2, r2, #36
+ 4284 0016 1168     		ldr	r1, [r2, #0]
+ 4285 0018 3A68     		ldr	r2, [r7, #0]
+ 4286 001a 6FEA0202 		mvn	r2, r2
+ 4287 001e 01EA0202 		and	r2, r1, r2
+ 4288 0022 1A60     		str	r2, [r3, #0]
+ 749:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 4289              		.loc 1 749 0
+ 4290 0024 07F10C07 		add	r7, r7, #12
+ 4291 0028 BD46     		mov	sp, r7
+ 4292 002a 80BC     		pop	{r7}
+ 4293 002c 7047     		bx	lr
+ 4294              		.cfi_endproc
+ 4295              	.LFE15:
+ 4297 002e 00BF     		.section	.text.SSIBusy,"ax",%progbits
+ 4298              		.align	2
+ 4299              		.global	SSIBusy
+ 4300              		.thumb
+ 4301              		.thumb_func
+ 4303              	SSIBusy:
+ 4304              	.LFB16:
+ 750:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 751:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 752:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 753:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Determines whether the SSI transmitter is busy or not.
+ 754:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 755:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase is the base address of the SSI port.
+ 756:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 757:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function allows the caller to determine whether all transmitted bytes 
+ 758:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! have cleared the transmitter hardware.  If \b false is returned, then the 
+ 759:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! transmit FIFO is empty and all bits of the last transmitted word have left 
+ 760:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! the hardware shift register.
+ 761:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 762:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return Returns \b true if the SSI is transmitting or \b false if all
+ 763:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! transmissions are complete.
+ 764:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 765:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 766:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** tBoolean
+ 767:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIBusy(unsigned long ulBase)
+ 768:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 4305              		.loc 1 768 0
+ 4306              		.cfi_startproc
+ 4307              		@ args = 0, pretend = 0, frame = 8
+ 4308              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4309              		@ link register save eliminated.
+ 4310 0000 80B4     		push	{r7}
+ 4311              	.LCFI48:
+ 4312              		.cfi_def_cfa_offset 4
+ 4313 0002 83B0     		sub	sp, sp, #12
+ 4314              	.LCFI49:
+ 4315              		.cfi_def_cfa_offset 16
+ 4316 0004 00AF     		add	r7, sp, #0
+ 4317              		.cfi_offset 7, -4
+ 4318              	.LCFI50:
+ 4319              		.cfi_def_cfa_register 7
+ 4320 0006 7860     		str	r0, [r7, #4]
+ 769:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 770:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 771:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 772:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 773:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 774:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 775:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Determine if the SSI is busy.
+ 776:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 777:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     return((HWREG(ulBase + SSI_O_SR) & SSI_SR_BSY) ? true : false);
+ 4321              		.loc 1 777 0
+ 4322 0008 7B68     		ldr	r3, [r7, #4]
+ 4323 000a 03F10C03 		add	r3, r3, #12
+ 4324 000e 1B68     		ldr	r3, [r3, #0]
+ 4325 0010 03F01003 		and	r3, r3, #16
+ 4326 0014 002B     		cmp	r3, #0
+ 4327 0016 0CBF     		ite	eq
+ 4328 0018 0023     		moveq	r3, #0
+ 4329 001a 0123     		movne	r3, #1
+ 4330 001c DBB2     		uxtb	r3, r3
+ 778:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 4331              		.loc 1 778 0
+ 4332 001e 1846     		mov	r0, r3
+ 4333 0020 07F10C07 		add	r7, r7, #12
+ 4334 0024 BD46     		mov	sp, r7
+ 4335 0026 80BC     		pop	{r7}
+ 4336 0028 7047     		bx	lr
+ 4337              		.cfi_endproc
+ 4338              	.LFE16:
+ 4340 002a 00BF     		.section	.text.SSIClockSourceSet,"ax",%progbits
+ 4341              		.align	2
+ 4342              		.global	SSIClockSourceSet
+ 4343              		.thumb
+ 4344              		.thumb_func
+ 4346              	SSIClockSourceSet:
+ 4347              	.LFB17:
+ 779:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 780:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 781:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 782:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Sets the data clock source for the specified SSI peripheral.
+ 783:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 784:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase is the base address of the SSI port.
+ 785:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulSource is the baud clock source for the SSI.
+ 786:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 787:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function allows the baud clock source for the SSI to be selected.
+ 788:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! The possible clock source are the system clock (\b SSI_CLOCK_SYSTEM) or
+ 789:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! the precision internal oscillator (\b SSI_CLOCK_PIOSC).
+ 790:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 791:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Changing the baud clock source changes the data rate generated by the
+ 792:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! SSI.  Therefore, the data rate should be reconfigured after any change to
+ 793:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! the SSI clock source.
+ 794:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 795:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \note The ability to specify the SSI baud clock source varies with the
+ 796:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Stellaris part and SSI in use.  Please consult the data sheet for the part
+ 797:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! you are using to determine whether this support is available.
+ 798:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 799:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 800:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 801:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 802:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** void
+ 803:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIClockSourceSet(unsigned long ulBase, unsigned long ulSource)
+ 804:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 4348              		.loc 1 804 0
+ 4349              		.cfi_startproc
+ 4350              		@ args = 0, pretend = 0, frame = 8
+ 4351              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4352              		@ link register save eliminated.
+ 4353 0000 80B4     		push	{r7}
+ 4354              	.LCFI51:
+ 4355              		.cfi_def_cfa_offset 4
+ 4356 0002 83B0     		sub	sp, sp, #12
+ 4357              	.LCFI52:
+ 4358              		.cfi_def_cfa_offset 16
+ 4359 0004 00AF     		add	r7, sp, #0
+ 4360              		.cfi_offset 7, -4
+ 4361              	.LCFI53:
+ 4362              		.cfi_def_cfa_register 7
+ 4363 0006 7860     		str	r0, [r7, #4]
+ 4364 0008 3960     		str	r1, [r7, #0]
+ 805:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 806:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 807:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 808:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 809:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT((ulSource == SSI_CLOCK_SYSTEM) || (ulSource == SSI_CLOCK_PIOSC));
+ 810:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 811:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 812:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Set the SSI clock source.
+ 813:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 814:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     HWREG(ulBase + SSI_O_CC) = ulSource;
+ 4365              		.loc 1 814 0
+ 4366 000a 7B68     		ldr	r3, [r7, #4]
+ 4367 000c 03F57C63 		add	r3, r3, #4032
+ 4368 0010 03F10803 		add	r3, r3, #8
+ 4369 0014 3A68     		ldr	r2, [r7, #0]
+ 4370 0016 1A60     		str	r2, [r3, #0]
+ 815:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 4371              		.loc 1 815 0
+ 4372 0018 07F10C07 		add	r7, r7, #12
+ 4373 001c BD46     		mov	sp, r7
+ 4374 001e 80BC     		pop	{r7}
+ 4375 0020 7047     		bx	lr
+ 4376              		.cfi_endproc
+ 4377              	.LFE17:
+ 4379 0022 00BF     		.section	.text.SSIClockSourceGet,"ax",%progbits
+ 4380              		.align	2
+ 4381              		.global	SSIClockSourceGet
+ 4382              		.thumb
+ 4383              		.thumb_func
+ 4385              	SSIClockSourceGet:
+ 4386              	.LFB18:
+ 816:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 817:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 818:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 819:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Gets the data clock source for the specified SSI peripheral.
+ 820:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 821:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \param ulBase is the base address of the SSI port.
+ 822:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 823:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! This function returns the data clock source for the specified SSI.  The
+ 824:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! possible data clock source are the system clock (\b SSI_CLOCK_SYSTEM) or
+ 825:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! the precision internal oscillator (\b SSI_CLOCK_PIOSC).
+ 826:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 827:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \note The ability to specify the SSI data clock source varies with the
+ 828:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! Stellaris part and SSI in use.  Please consult the data sheet for the part
+ 829:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! you are using to determine whether this support is available.
+ 830:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //!
+ 831:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //! \return None.
+ 832:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //
+ 833:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** //*****************************************************************************
+ 834:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** unsigned long
+ 835:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** SSIClockSourceGet(unsigned long ulBase)
+ 836:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** {
+ 4387              		.loc 1 836 0
+ 4388              		.cfi_startproc
+ 4389              		@ args = 0, pretend = 0, frame = 8
+ 4390              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4391              		@ link register save eliminated.
+ 4392 0000 80B4     		push	{r7}
+ 4393              	.LCFI54:
+ 4394              		.cfi_def_cfa_offset 4
+ 4395 0002 83B0     		sub	sp, sp, #12
+ 4396              	.LCFI55:
+ 4397              		.cfi_def_cfa_offset 16
+ 4398 0004 00AF     		add	r7, sp, #0
+ 4399              		.cfi_offset 7, -4
+ 4400              	.LCFI56:
+ 4401              		.cfi_def_cfa_register 7
+ 4402 0006 7860     		str	r0, [r7, #4]
+ 837:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 838:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Check the arguments.
+ 839:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 840:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     ASSERT(SSIBaseValid(ulBase));
+ 841:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** 
+ 842:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 843:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     // Return the SSI clock source.
+ 844:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     //
+ 845:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c ****     return(HWREG(ulBase + SSI_O_CC));
+ 4403              		.loc 1 845 0
+ 4404 0008 7B68     		ldr	r3, [r7, #4]
+ 4405 000a 03F57C63 		add	r3, r3, #4032
+ 4406 000e 03F10803 		add	r3, r3, #8
+ 4407 0012 1B68     		ldr	r3, [r3, #0]
+ 846:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/ssi.c **** }
+ 4408              		.loc 1 846 0
+ 4409 0014 1846     		mov	r0, r3
+ 4410 0016 07F10C07 		add	r7, r7, #12
+ 4411 001a BD46     		mov	sp, r7
+ 4412 001c 80BC     		pop	{r7}
+ 4413 001e 7047     		bx	lr
+ 4414              		.cfi_endproc
+ 4415              	.LFE18:
+ 4417              		.text
+ 4418              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 ssi.c
+     /tmp/ccbVDLSS.s:3469   .rodata:00000000 $d
+     /tmp/ccbVDLSS.s:3472   .rodata:00000000 g_ppulSSIIntMap
+     /tmp/ccbVDLSS.s:3482   .text.SSIIntNumberGet:00000000 $t
+     /tmp/ccbVDLSS.s:3486   .text.SSIIntNumberGet:00000000 SSIIntNumberGet
+     /tmp/ccbVDLSS.s:3545   .text.SSIIntNumberGet:0000004c $d
+     /tmp/ccbVDLSS.s:3550   .text.SSIConfigSetExpClk:00000000 $t
+     /tmp/ccbVDLSS.s:3555   .text.SSIConfigSetExpClk:00000000 SSIConfigSetExpClk
+     /tmp/ccbVDLSS.s:3670   .text.SSIEnable:00000000 $t
+     /tmp/ccbVDLSS.s:3675   .text.SSIEnable:00000000 SSIEnable
+     /tmp/ccbVDLSS.s:3710   .text.SSIDisable:00000000 $t
+     /tmp/ccbVDLSS.s:3715   .text.SSIDisable:00000000 SSIDisable
+     /tmp/ccbVDLSS.s:3750   .text.SSIIntRegister:00000000 $t
+     /tmp/ccbVDLSS.s:3755   .text.SSIIntRegister:00000000 SSIIntRegister
+     /tmp/ccbVDLSS.s:3794   .text.SSIIntUnregister:00000000 $t
+     /tmp/ccbVDLSS.s:3799   .text.SSIIntUnregister:00000000 SSIIntUnregister
+     /tmp/ccbVDLSS.s:3836   .text.SSIIntEnable:00000000 $t
+     /tmp/ccbVDLSS.s:3841   .text.SSIIntEnable:00000000 SSIIntEnable
+     /tmp/ccbVDLSS.s:3878   .text.SSIIntDisable:00000000 $t
+     /tmp/ccbVDLSS.s:3883   .text.SSIIntDisable:00000000 SSIIntDisable
+     /tmp/ccbVDLSS.s:3921   .text.SSIIntStatus:00000000 $t
+     /tmp/ccbVDLSS.s:3926   .text.SSIIntStatus:00000000 SSIIntStatus
+     /tmp/ccbVDLSS.s:3971   .text.SSIIntClear:00000000 $t
+     /tmp/ccbVDLSS.s:3976   .text.SSIIntClear:00000000 SSIIntClear
+     /tmp/ccbVDLSS.s:4009   .text.SSIDataPut:00000000 $t
+     /tmp/ccbVDLSS.s:4014   .text.SSIDataPut:00000000 SSIDataPut
+     /tmp/ccbVDLSS.s:4057   .text.SSIDataPutNonBlocking:00000000 $t
+     /tmp/ccbVDLSS.s:4062   .text.SSIDataPutNonBlocking:00000000 SSIDataPutNonBlocking
+     /tmp/ccbVDLSS.s:4110   .text.SSIDataGet:00000000 $t
+     /tmp/ccbVDLSS.s:4115   .text.SSIDataGet:00000000 SSIDataGet
+     /tmp/ccbVDLSS.s:4159   .text.SSIDataGetNonBlocking:00000000 $t
+     /tmp/ccbVDLSS.s:4164   .text.SSIDataGetNonBlocking:00000000 SSIDataGetNonBlocking
+     /tmp/ccbVDLSS.s:4213   .text.SSIDMAEnable:00000000 $t
+     /tmp/ccbVDLSS.s:4218   .text.SSIDMAEnable:00000000 SSIDMAEnable
+     /tmp/ccbVDLSS.s:4255   .text.SSIDMADisable:00000000 $t
+     /tmp/ccbVDLSS.s:4260   .text.SSIDMADisable:00000000 SSIDMADisable
+     /tmp/ccbVDLSS.s:4298   .text.SSIBusy:00000000 $t
+     /tmp/ccbVDLSS.s:4303   .text.SSIBusy:00000000 SSIBusy
+     /tmp/ccbVDLSS.s:4341   .text.SSIClockSourceSet:00000000 $t
+     /tmp/ccbVDLSS.s:4346   .text.SSIClockSourceSet:00000000 SSIClockSourceSet
+     /tmp/ccbVDLSS.s:4380   .text.SSIClockSourceGet:00000000 $t
+     /tmp/ccbVDLSS.s:4385   .text.SSIClockSourceGet:00000000 SSIClockSourceGet
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister

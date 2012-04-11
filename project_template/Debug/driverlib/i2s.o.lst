@@ -1,0 +1,2384 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"i2s.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c"
+ 2234              		.align	2
+ 2235              		.global	I2STxEnable
+ 2236              		.thumb
+ 2237              		.thumb_func
+ 2239              	I2STxEnable:
+ 2240              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // i2s.c - Driver for the I2S controller.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // Copyright (c) 2008-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \addtogroup i2s_api
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! @{
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** #include "inc/hw_i2s.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** #include "inc/hw_ints.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** #include "inc/hw_memmap.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** #include "inc/hw_types.h"
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** #include "driverlib/debug.h"
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** #include "driverlib/i2s.h"
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** #include "driverlib/interrupt.h"
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Enables the I2S transmit module for operation.
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function enables the transmit module for operation.  The module
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! should be enabled after configuration.  When the module is disabled,
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! no data or clocks are generated on the I2S signals.
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2STxEnable(unsigned long ulBase)
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2241              		.loc 1 55 0
+ 2242              		.cfi_startproc
+ 2243              		@ args = 0, pretend = 0, frame = 8
+ 2244              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2245              		@ link register save eliminated.
+ 2246 0000 80B4     		push	{r7}
+ 2247              	.LCFI0:
+ 2248              		.cfi_def_cfa_offset 4
+ 2249 0002 83B0     		sub	sp, sp, #12
+ 2250              	.LCFI1:
+ 2251              		.cfi_def_cfa_offset 16
+ 2252 0004 00AF     		add	r7, sp, #0
+ 2253              		.cfi_offset 7, -4
+ 2254              	.LCFI2:
+ 2255              		.cfi_def_cfa_register 7
+ 2256 0006 7860     		str	r0, [r7, #4]
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Enable the tx FIFO service request.
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_TXISM) = I2S_TXISM_FFM;
+ 2257              		.loc 1 64 0
+ 2258 0008 7B68     		ldr	r3, [r7, #4]
+ 2259 000a 03F11003 		add	r3, r3, #16
+ 2260 000e 4FF00102 		mov	r2, #1
+ 2261 0012 1A60     		str	r2, [r3, #0]
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Read-modify-write the enable bit.
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_CFG) |= I2S_CFG_TXEN;
+ 2262              		.loc 1 69 0
+ 2263 0014 7B68     		ldr	r3, [r7, #4]
+ 2264 0016 03F54063 		add	r3, r3, #3072
+ 2265 001a 7A68     		ldr	r2, [r7, #4]
+ 2266 001c 02F54062 		add	r2, r2, #3072
+ 2267 0020 1268     		ldr	r2, [r2, #0]
+ 2268 0022 42F00102 		orr	r2, r2, #1
+ 2269 0026 1A60     		str	r2, [r3, #0]
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2270              		.loc 1 70 0
+ 2271 0028 07F10C07 		add	r7, r7, #12
+ 2272 002c BD46     		mov	sp, r7
+ 2273 002e 80BC     		pop	{r7}
+ 2274 0030 7047     		bx	lr
+ 2275              		.cfi_endproc
+ 2276              	.LFE0:
+ 2278 0032 00BF     		.section	.text.I2STxDisable,"ax",%progbits
+ 2279              		.align	2
+ 2280              		.global	I2STxDisable
+ 2281              		.thumb
+ 2282              		.thumb_func
+ 2284              	I2STxDisable:
+ 2285              	.LFB1:
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Disables the I2S transmit module for operation.
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function disables the transmit module for operation.  The module
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! should be disabled before configuration.  When the module is disabled,
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! no data or clocks are generated on the I2S signals.
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2STxDisable(unsigned long ulBase)
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2286              		.loc 1 87 0
+ 2287              		.cfi_startproc
+ 2288              		@ args = 0, pretend = 0, frame = 8
+ 2289              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2290              		@ link register save eliminated.
+ 2291 0000 80B4     		push	{r7}
+ 2292              	.LCFI3:
+ 2293              		.cfi_def_cfa_offset 4
+ 2294 0002 83B0     		sub	sp, sp, #12
+ 2295              	.LCFI4:
+ 2296              		.cfi_def_cfa_offset 16
+ 2297 0004 00AF     		add	r7, sp, #0
+ 2298              		.cfi_offset 7, -4
+ 2299              	.LCFI5:
+ 2300              		.cfi_def_cfa_register 7
+ 2301 0006 7860     		str	r0, [r7, #4]
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Read-modify-write the enable bit.
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_CFG) &= ~I2S_CFG_TXEN;
+ 2302              		.loc 1 96 0
+ 2303 0008 7B68     		ldr	r3, [r7, #4]
+ 2304 000a 03F54063 		add	r3, r3, #3072
+ 2305 000e 7A68     		ldr	r2, [r7, #4]
+ 2306 0010 02F54062 		add	r2, r2, #3072
+ 2307 0014 1268     		ldr	r2, [r2, #0]
+ 2308 0016 22F00102 		bic	r2, r2, #1
+ 2309 001a 1A60     		str	r2, [r3, #0]
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2310              		.loc 1 97 0
+ 2311 001c 07F10C07 		add	r7, r7, #12
+ 2312 0020 BD46     		mov	sp, r7
+ 2313 0022 80BC     		pop	{r7}
+ 2314 0024 7047     		bx	lr
+ 2315              		.cfi_endproc
+ 2316              	.LFE1:
+ 2318 0026 00BF     		.section	.text.I2STxDataPut,"ax",%progbits
+ 2319              		.align	2
+ 2320              		.global	I2STxDataPut
+ 2321              		.thumb
+ 2322              		.thumb_func
+ 2324              	I2STxDataPut:
+ 2325              	.LFB2:
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Writes data samples to the I2S transmit FIFO with blocking.
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulData is the single- or dual-channel I2S data.
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function writes a single-channel sample or combined left-right
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! samples to the I2S transmit FIFO.  The format of the sample is determined
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! by the configuration that was used with the function I2STxConfigSet().
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! If the transmit mode is \b I2S_MODE_DUAL_STEREO then the \e ulData
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! parameter contains either the left or right sample.  The left and right
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! sample alternate with each write to the FIFO, left sample first.  If the
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! transmit mode is \b I2S_MODE_COMPACT_STEREO_16 or
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \b I2S_MODE_COMPACT_STEREO_8, then the \e ulData parameter contains both
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the left and right samples.  If the transmit mode is
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \b I2S_MODE_SINGLE_MONO then the \e ulData parameter contains the single
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! channel sample.
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! For the compact modes, both the left and right samples are written at
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the same time.  If 16-bit compact mode is used, then the least significant
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! 16 bits contain the left sample, and the most significant 16 bits contain
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the right sample.  If 8-bit compact mode is used, then the lower 8 bits
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! contain the left sample, and the next 8 bits contain the right sample,
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! with the upper 16 bits unused.
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! If there is no room in the transmit FIFO, then this function waits
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! in a polling loop until the data can be written.
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2STxDataPut(unsigned long ulBase, unsigned long ulData)
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2326              		.loc 1 133 0
+ 2327              		.cfi_startproc
+ 2328              		@ args = 0, pretend = 0, frame = 8
+ 2329              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2330              		@ link register save eliminated.
+ 2331 0000 80B4     		push	{r7}
+ 2332              	.LCFI6:
+ 2333              		.cfi_def_cfa_offset 4
+ 2334 0002 83B0     		sub	sp, sp, #12
+ 2335              	.LCFI7:
+ 2336              		.cfi_def_cfa_offset 16
+ 2337 0004 00AF     		add	r7, sp, #0
+ 2338              		.cfi_offset 7, -4
+ 2339              	.LCFI8:
+ 2340              		.cfi_def_cfa_register 7
+ 2341 0006 7860     		str	r0, [r7, #4]
+ 2342 0008 3960     		str	r1, [r7, #0]
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Wait until there is space.
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     while(HWREG(ulBase + I2S_O_TXLEV) >= 16)
+ 2343              		.loc 1 142 0
+ 2344 000a 00BF     		nop
+ 2345              	.L4:
+ 2346              		.loc 1 142 0 is_stmt 0 discriminator 1
+ 2347 000c 7B68     		ldr	r3, [r7, #4]
+ 2348 000e 03F11803 		add	r3, r3, #24
+ 2349 0012 1B68     		ldr	r3, [r3, #0]
+ 2350 0014 0F2B     		cmp	r3, #15
+ 2351 0016 F9D8     		bhi	.L4
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Write the data to the I2S.
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_TXFIFO) = ulData;
+ 2352              		.loc 1 149 0 is_stmt 1
+ 2353 0018 7B68     		ldr	r3, [r7, #4]
+ 2354 001a 3A68     		ldr	r2, [r7, #0]
+ 2355 001c 1A60     		str	r2, [r3, #0]
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2356              		.loc 1 150 0
+ 2357 001e 07F10C07 		add	r7, r7, #12
+ 2358 0022 BD46     		mov	sp, r7
+ 2359 0024 80BC     		pop	{r7}
+ 2360 0026 7047     		bx	lr
+ 2361              		.cfi_endproc
+ 2362              	.LFE2:
+ 2364              		.section	.text.I2STxDataPutNonBlocking,"ax",%progbits
+ 2365              		.align	2
+ 2366              		.global	I2STxDataPutNonBlocking
+ 2367              		.thumb
+ 2368              		.thumb_func
+ 2370              	I2STxDataPutNonBlocking:
+ 2371              	.LFB3:
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Writes data samples to the I2S transmit FIFO without blocking.
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulData is the single- or dual-channel I2S data.
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function writes a single-channel sample or combined left-right
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! samples to the I2S transmit FIFO.  The format of the sample is determined
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! by the configuration that was used with the function I2STxConfigSet().
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! If the transmit mode is \b I2S_MODE_DUAL_STEREO then the \e ulData
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! parameter contains either the left or right sample.  The left and right
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! sample alternate with each write to the FIFO, left sample first.  If the
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! transmit mode is \b I2S_MODE_COMPACT_STEREO_16 or
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \b I2S_MODE_COMPACT_STEREO_8, then the \e ulData parameter contains both
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the left and right samples.  If the transmit mode is
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \b I2S_MODE_SINGLE_MONO then the \e ulData parameter contains the single-
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! channel sample.
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! For the compact modes, both the left and right samples are written at
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the same time.  If 16-bit compact mode is used, then the least significant
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! 16 bits contain the left sample, and the most significant 16 bits contain
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the right sample.  If 8-bit compact mode is used, then the lower 8 bits
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! contain the left sample, and the next 8 bits contain the right sample,
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! with the upper 16 bits unused.
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! If there is no room in the transmit FIFO, then this function returns
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! immediately without writing any data to the FIFO.
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return The number of elements written to the I2S transmit FIFO (1 or 0).
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** long
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2STxDataPutNonBlocking(unsigned long ulBase, unsigned long ulData)
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2372              		.loc 1 186 0
+ 2373              		.cfi_startproc
+ 2374              		@ args = 0, pretend = 0, frame = 8
+ 2375              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2376              		@ link register save eliminated.
+ 2377 0000 80B4     		push	{r7}
+ 2378              	.LCFI9:
+ 2379              		.cfi_def_cfa_offset 4
+ 2380 0002 83B0     		sub	sp, sp, #12
+ 2381              	.LCFI10:
+ 2382              		.cfi_def_cfa_offset 16
+ 2383 0004 00AF     		add	r7, sp, #0
+ 2384              		.cfi_offset 7, -4
+ 2385              	.LCFI11:
+ 2386              		.cfi_def_cfa_register 7
+ 2387 0006 7860     		str	r0, [r7, #4]
+ 2388 0008 3960     		str	r1, [r7, #0]
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check for space to write.
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     if(HWREG(ulBase + I2S_O_TXLEV) < 16)
+ 2389              		.loc 1 195 0
+ 2390 000a 7B68     		ldr	r3, [r7, #4]
+ 2391 000c 03F11803 		add	r3, r3, #24
+ 2392 0010 1B68     		ldr	r3, [r3, #0]
+ 2393 0012 0F2B     		cmp	r3, #15
+ 2394 0014 05D8     		bhi	.L6
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         HWREG(ulBase + I2S_O_TXFIFO) = ulData;
+ 2395              		.loc 1 197 0
+ 2396 0016 7B68     		ldr	r3, [r7, #4]
+ 2397 0018 3A68     		ldr	r2, [r7, #0]
+ 2398 001a 1A60     		str	r2, [r3, #0]
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         return(1);
+ 2399              		.loc 1 198 0
+ 2400 001c 4FF00103 		mov	r3, #1
+ 2401 0020 01E0     		b	.L7
+ 2402              	.L6:
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     else
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         return(0);
+ 2403              		.loc 1 202 0
+ 2404 0022 4FF00003 		mov	r3, #0
+ 2405              	.L7:
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2406              		.loc 1 204 0
+ 2407 0026 1846     		mov	r0, r3
+ 2408 0028 07F10C07 		add	r7, r7, #12
+ 2409 002c BD46     		mov	sp, r7
+ 2410 002e 80BC     		pop	{r7}
+ 2411 0030 7047     		bx	lr
+ 2412              		.cfi_endproc
+ 2413              	.LFE3:
+ 2415 0032 00BF     		.section	.text.I2STxConfigSet,"ax",%progbits
+ 2416              		.align	2
+ 2417              		.global	I2STxConfigSet
+ 2418              		.thumb
+ 2419              		.thumb_func
+ 2421              	I2STxConfigSet:
+ 2422              	.LFB4:
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Configures the I2S transmit module.
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulConfig is the logical OR of the configuration options.
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function is used to configure the options for the I2S transmit
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! channel.  The parameter \e ulConfig is the logical OR of the following
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! options:
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_FORMAT_I2S for standard I2S format,
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_FORMAT_LEFT_JUST for left justified format, or
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_FORMAT_RIGHT_JUST for right justified format.
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_SCLK_INVERT to invert the polarity of the serial bit clock.
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_MODE_DUAL for dual channel stereo,
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_MODE_COMPACT_16 for 16-bit compact stereo mode,
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_MODE_COMPACT_8 for 8-bit compact stereo mode, or
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_MODE_MONO for single channel mono format.
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_CLK_MASTER or \b I2S_CONFIG_CLK_SLAVE to select whether
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   the I2S transmitter is the clock master or slave.
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_SAMPLE_SIZE_32, \b _24, \b _20, \b _16, or \b _8
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   to select the number of bits per sample.
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_WIRE_SIZE_32, \b _24, \b _20, \b _16, or \b _8
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   to select the number of bits per word that are transferred on the data
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   line.
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_EMPTY_ZERO or \b I2S_CONFIG_EMPTY_REPEAT to select whether
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   the module transmits zeroes or repeats the last sample when the FIFO is
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   empty.
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2STxConfigSet(unsigned long ulBase, unsigned long ulConfig)
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2423              		.loc 1 241 0
+ 2424              		.cfi_startproc
+ 2425              		@ args = 0, pretend = 0, frame = 8
+ 2426              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2427              		@ link register save eliminated.
+ 2428 0000 80B4     		push	{r7}
+ 2429              	.LCFI12:
+ 2430              		.cfi_def_cfa_offset 4
+ 2431 0002 83B0     		sub	sp, sp, #12
+ 2432              	.LCFI13:
+ 2433              		.cfi_def_cfa_offset 16
+ 2434 0004 00AF     		add	r7, sp, #0
+ 2435              		.cfi_offset 7, -4
+ 2436              	.LCFI14:
+ 2437              		.cfi_def_cfa_register 7
+ 2438 0006 7860     		str	r0, [r7, #4]
+ 2439 0008 3960     		str	r1, [r7, #0]
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT((ulConfig & (I2S_CONFIG_FORMAT_MASK | I2S_CONFIG_MODE_MASK |
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****                         I2S_CONFIG_EMPTY_MASK | I2S_CONFIG_CLK_MASK |
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****                         I2S_CONFIG_SAMPLE_SIZE_MASK |
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****                         I2S_CONFIG_WIRE_SIZE_MASK)) == ulConfig);
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check to see if a compact mode is used.
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     if((ulConfig & I2S_CONFIG_MODE_MASK) == I2S_CONFIG_MODE_COMPACT_8)
+ 2440              		.loc 1 254 0
+ 2441 000a 3B68     		ldr	r3, [r7, #0]
+ 2442 000c 03F04073 		and	r3, r3, #50331648
+ 2443 0010 B3F1407F 		cmp	r3, #50331648
+ 2444 0014 0AD1     		bne	.L9
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         //
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         // If compact 8 mode is used, then need to adjust some bits
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         // before writing the config register.  Also set the FIFO
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         // config register for 8-bit compact samples.
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         //
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         ulConfig &= ~I2S_CONFIG_MODE_MONO;
+ 2445              		.loc 1 261 0
+ 2446 0016 3B68     		ldr	r3, [r7, #0]
+ 2447 0018 23F00073 		bic	r3, r3, #33554432
+ 2448 001c 3B60     		str	r3, [r7, #0]
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         HWREG(ulBase + I2S_O_TXFIFOCFG) = I2S_TXFIFOCFG_CSS;
+ 2449              		.loc 1 262 0
+ 2450 001e 7B68     		ldr	r3, [r7, #4]
+ 2451 0020 03F10403 		add	r3, r3, #4
+ 2452 0024 4FF00202 		mov	r2, #2
+ 2453 0028 1A60     		str	r2, [r3, #0]
+ 2454 002a 05E0     		b	.L10
+ 2455              	.L9:
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     else
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         //
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         // If compact 8 mode is not used, then set the FIFO config
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         // register for 16 bit.  This setting is okay if a compact 
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         // mode is not used.
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         //
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         HWREG(ulBase + I2S_O_TXFIFOCFG) = 0;
+ 2456              		.loc 1 271 0
+ 2457 002c 7B68     		ldr	r3, [r7, #4]
+ 2458 002e 03F10403 		add	r3, r3, #4
+ 2459 0032 4FF00002 		mov	r2, #0
+ 2460 0036 1A60     		str	r2, [r3, #0]
+ 2461              	.L10:
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Write the configuration register.  Because all the fields are
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // specified by the configuration parameter, it is not necessary
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // to do a read-modify-write.
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_TXCFG) = ulConfig;
+ 2462              		.loc 1 279 0
+ 2463 0038 7B68     		ldr	r3, [r7, #4]
+ 2464 003a 03F10803 		add	r3, r3, #8
+ 2465 003e 3A68     		ldr	r2, [r7, #0]
+ 2466 0040 1A60     		str	r2, [r3, #0]
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2467              		.loc 1 280 0
+ 2468 0042 07F10C07 		add	r7, r7, #12
+ 2469 0046 BD46     		mov	sp, r7
+ 2470 0048 80BC     		pop	{r7}
+ 2471 004a 7047     		bx	lr
+ 2472              		.cfi_endproc
+ 2473              	.LFE4:
+ 2475              		.section	.text.I2STxFIFOLimitSet,"ax",%progbits
+ 2476              		.align	2
+ 2477              		.global	I2STxFIFOLimitSet
+ 2478              		.thumb
+ 2479              		.thumb_func
+ 2481              	I2STxFIFOLimitSet:
+ 2482              	.LFB5:
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Sets the FIFO level at which a service request is generated.
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulLevel is the FIFO service request limit.
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function is used to set the transmit FIFO fullness level at which a
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! service request occurs.  The service request is used to generate an
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! interrupt or a DMA transfer request.  The transmit FIFO generates a
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! service request when the number of items in the FIFO is less than the level
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! specified in the \e ulLevel parameter.  For example, if \e ulLevel is 8,
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! then a service request is generated when there are less than 8 samples
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! remaining in the transmit FIFO.
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! For the purposes of counting the FIFO level, a left-right sample pair
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! counts as 2, whether the mode is dual or compact stereo.  When mono mode is
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! used, internally the mono sample is still treated as a sample pair, so a
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! single mono sample counts as 2.  Because the FIFO always deals with sample
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! pairs, the level must be an even number from 0 to 16.  The maximum value is
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! 16, which causes a service request when there is any room in the FIFO.
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! The minimum value is 0, which disables the service request.
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2STxFIFOLimitSet(unsigned long ulBase, unsigned long ulLevel)
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2483              		.loc 1 310 0
+ 2484              		.cfi_startproc
+ 2485              		@ args = 0, pretend = 0, frame = 8
+ 2486              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2487              		@ link register save eliminated.
+ 2488 0000 80B4     		push	{r7}
+ 2489              	.LCFI15:
+ 2490              		.cfi_def_cfa_offset 4
+ 2491 0002 83B0     		sub	sp, sp, #12
+ 2492              	.LCFI16:
+ 2493              		.cfi_def_cfa_offset 16
+ 2494 0004 00AF     		add	r7, sp, #0
+ 2495              		.cfi_offset 7, -4
+ 2496              	.LCFI17:
+ 2497              		.cfi_def_cfa_register 7
+ 2498 0006 7860     		str	r0, [r7, #4]
+ 2499 0008 3960     		str	r1, [r7, #0]
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulLevel <= 16);
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Write the FIFO limit
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_TXLIMIT) = ulLevel;
+ 2500              		.loc 1 320 0
+ 2501 000a 7B68     		ldr	r3, [r7, #4]
+ 2502 000c 03F10C03 		add	r3, r3, #12
+ 2503 0010 3A68     		ldr	r2, [r7, #0]
+ 2504 0012 1A60     		str	r2, [r3, #0]
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2505              		.loc 1 321 0
+ 2506 0014 07F10C07 		add	r7, r7, #12
+ 2507 0018 BD46     		mov	sp, r7
+ 2508 001a 80BC     		pop	{r7}
+ 2509 001c 7047     		bx	lr
+ 2510              		.cfi_endproc
+ 2511              	.LFE5:
+ 2513 001e 00BF     		.section	.text.I2STxFIFOLimitGet,"ax",%progbits
+ 2514              		.align	2
+ 2515              		.global	I2STxFIFOLimitGet
+ 2516              		.thumb
+ 2517              		.thumb_func
+ 2519              	I2STxFIFOLimitGet:
+ 2520              	.LFB6:
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Gets the current setting of the FIFO service request level.
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function is used to get the value of the transmit FIFO service
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! request level.  This value is set using the I2STxFIFOLimitSet()
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! function.
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return Returns the current value of the FIFO service request limit.
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** unsigned long
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2STxFIFOLimitGet(unsigned long ulBase)
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2521              		.loc 1 338 0
+ 2522              		.cfi_startproc
+ 2523              		@ args = 0, pretend = 0, frame = 8
+ 2524              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2525              		@ link register save eliminated.
+ 2526 0000 80B4     		push	{r7}
+ 2527              	.LCFI18:
+ 2528              		.cfi_def_cfa_offset 4
+ 2529 0002 83B0     		sub	sp, sp, #12
+ 2530              	.LCFI19:
+ 2531              		.cfi_def_cfa_offset 16
+ 2532 0004 00AF     		add	r7, sp, #0
+ 2533              		.cfi_offset 7, -4
+ 2534              	.LCFI20:
+ 2535              		.cfi_def_cfa_register 7
+ 2536 0006 7860     		str	r0, [r7, #4]
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Read and return the FIFO limit
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     return(HWREG(ulBase + I2S_O_TXLIMIT));
+ 2537              		.loc 1 347 0
+ 2538 0008 7B68     		ldr	r3, [r7, #4]
+ 2539 000a 03F10C03 		add	r3, r3, #12
+ 2540 000e 1B68     		ldr	r3, [r3, #0]
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2541              		.loc 1 348 0
+ 2542 0010 1846     		mov	r0, r3
+ 2543 0012 07F10C07 		add	r7, r7, #12
+ 2544 0016 BD46     		mov	sp, r7
+ 2545 0018 80BC     		pop	{r7}
+ 2546 001a 7047     		bx	lr
+ 2547              		.cfi_endproc
+ 2548              	.LFE6:
+ 2550              		.section	.text.I2STxFIFOLevelGet,"ax",%progbits
+ 2551              		.align	2
+ 2552              		.global	I2STxFIFOLevelGet
+ 2553              		.thumb
+ 2554              		.thumb_func
+ 2556              	I2STxFIFOLevelGet:
+ 2557              	.LFB7:
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Gets the number of samples in the transmit FIFO.
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function is used to get the number of samples in the transmit FIFO.
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! For the purposes of measuring the FIFO level, a left-right sample pair
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! counts as 2, whether the mode is dual or compact stereo.  When mono mode is
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! used, internally the mono sample is still treated as a sample pair, so a
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! single mono sample counts as 2.  Because the FIFO always deals with sample
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! pairs, normally the level is an even number from 0 to 16.  If dual stereo
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! mode is used and only the left sample has been written without the matching
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! right sample, then the FIFO level is an odd value.  If the FIFO level is
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! odd, it indicates a left-right sample mismatch.
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return Returns the number of samples in the transmit FIFO, which is
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! normally an even number.
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** unsigned long
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2STxFIFOLevelGet(unsigned long ulBase)
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2558              		.loc 1 372 0
+ 2559              		.cfi_startproc
+ 2560              		@ args = 0, pretend = 0, frame = 8
+ 2561              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2562              		@ link register save eliminated.
+ 2563 0000 80B4     		push	{r7}
+ 2564              	.LCFI21:
+ 2565              		.cfi_def_cfa_offset 4
+ 2566 0002 83B0     		sub	sp, sp, #12
+ 2567              	.LCFI22:
+ 2568              		.cfi_def_cfa_offset 16
+ 2569 0004 00AF     		add	r7, sp, #0
+ 2570              		.cfi_offset 7, -4
+ 2571              	.LCFI23:
+ 2572              		.cfi_def_cfa_register 7
+ 2573 0006 7860     		str	r0, [r7, #4]
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Read and return the transmit FIFO level.
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     return(HWREG(ulBase + I2S_O_TXLEV));
+ 2574              		.loc 1 381 0
+ 2575 0008 7B68     		ldr	r3, [r7, #4]
+ 2576 000a 03F11803 		add	r3, r3, #24
+ 2577 000e 1B68     		ldr	r3, [r3, #0]
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2578              		.loc 1 382 0
+ 2579 0010 1846     		mov	r0, r3
+ 2580 0012 07F10C07 		add	r7, r7, #12
+ 2581 0016 BD46     		mov	sp, r7
+ 2582 0018 80BC     		pop	{r7}
+ 2583 001a 7047     		bx	lr
+ 2584              		.cfi_endproc
+ 2585              	.LFE7:
+ 2587              		.section	.text.I2SRxEnable,"ax",%progbits
+ 2588              		.align	2
+ 2589              		.global	I2SRxEnable
+ 2590              		.thumb
+ 2591              		.thumb_func
+ 2593              	I2SRxEnable:
+ 2594              	.LFB8:
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Enables the I2S receive module for operation.
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function enables the receive module for operation.  The module should
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! be enabled after configuration.  When the module is disabled, no data is
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! clocked in regardless of the signals on the I2S interface.
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SRxEnable(unsigned long ulBase)
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2595              		.loc 1 399 0
+ 2596              		.cfi_startproc
+ 2597              		@ args = 0, pretend = 0, frame = 8
+ 2598              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2599              		@ link register save eliminated.
+ 2600 0000 80B4     		push	{r7}
+ 2601              	.LCFI24:
+ 2602              		.cfi_def_cfa_offset 4
+ 2603 0002 83B0     		sub	sp, sp, #12
+ 2604              	.LCFI25:
+ 2605              		.cfi_def_cfa_offset 16
+ 2606 0004 00AF     		add	r7, sp, #0
+ 2607              		.cfi_offset 7, -4
+ 2608              	.LCFI26:
+ 2609              		.cfi_def_cfa_register 7
+ 2610 0006 7860     		str	r0, [r7, #4]
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Enable the tx FIFO service request.
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_RXISM) = I2S_RXISM_FFM;
+ 2611              		.loc 1 408 0
+ 2612 0008 7B68     		ldr	r3, [r7, #4]
+ 2613 000a 03F50163 		add	r3, r3, #2064
+ 2614 000e 4FF00102 		mov	r2, #1
+ 2615 0012 1A60     		str	r2, [r3, #0]
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Read-modify-write the enable bit.
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_CFG) |= I2S_CFG_RXEN;
+ 2616              		.loc 1 413 0
+ 2617 0014 7B68     		ldr	r3, [r7, #4]
+ 2618 0016 03F54063 		add	r3, r3, #3072
+ 2619 001a 7A68     		ldr	r2, [r7, #4]
+ 2620 001c 02F54062 		add	r2, r2, #3072
+ 2621 0020 1268     		ldr	r2, [r2, #0]
+ 2622 0022 42F00202 		orr	r2, r2, #2
+ 2623 0026 1A60     		str	r2, [r3, #0]
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2624              		.loc 1 414 0
+ 2625 0028 07F10C07 		add	r7, r7, #12
+ 2626 002c BD46     		mov	sp, r7
+ 2627 002e 80BC     		pop	{r7}
+ 2628 0030 7047     		bx	lr
+ 2629              		.cfi_endproc
+ 2630              	.LFE8:
+ 2632 0032 00BF     		.section	.text.I2SRxDisable,"ax",%progbits
+ 2633              		.align	2
+ 2634              		.global	I2SRxDisable
+ 2635              		.thumb
+ 2636              		.thumb_func
+ 2638              	I2SRxDisable:
+ 2639              	.LFB9:
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Disables the I2S receive module for operation.
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function disables the receive module for operation.  The module should
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! be disabled before configuration.  When the module is disabled, no data is
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! clocked in regardless of the signals on the I2S interface.
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SRxDisable(unsigned long ulBase)
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2640              		.loc 1 431 0
+ 2641              		.cfi_startproc
+ 2642              		@ args = 0, pretend = 0, frame = 8
+ 2643              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2644              		@ link register save eliminated.
+ 2645 0000 80B4     		push	{r7}
+ 2646              	.LCFI27:
+ 2647              		.cfi_def_cfa_offset 4
+ 2648 0002 83B0     		sub	sp, sp, #12
+ 2649              	.LCFI28:
+ 2650              		.cfi_def_cfa_offset 16
+ 2651 0004 00AF     		add	r7, sp, #0
+ 2652              		.cfi_offset 7, -4
+ 2653              	.LCFI29:
+ 2654              		.cfi_def_cfa_register 7
+ 2655 0006 7860     		str	r0, [r7, #4]
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Read-modify-write the enable bit.
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_CFG) &= ~I2S_CFG_RXEN;
+ 2656              		.loc 1 440 0
+ 2657 0008 7B68     		ldr	r3, [r7, #4]
+ 2658 000a 03F54063 		add	r3, r3, #3072
+ 2659 000e 7A68     		ldr	r2, [r7, #4]
+ 2660 0010 02F54062 		add	r2, r2, #3072
+ 2661 0014 1268     		ldr	r2, [r2, #0]
+ 2662 0016 22F00202 		bic	r2, r2, #2
+ 2663 001a 1A60     		str	r2, [r3, #0]
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2664              		.loc 1 441 0
+ 2665 001c 07F10C07 		add	r7, r7, #12
+ 2666 0020 BD46     		mov	sp, r7
+ 2667 0022 80BC     		pop	{r7}
+ 2668 0024 7047     		bx	lr
+ 2669              		.cfi_endproc
+ 2670              	.LFE9:
+ 2672 0026 00BF     		.section	.text.I2SRxDataGet,"ax",%progbits
+ 2673              		.align	2
+ 2674              		.global	I2SRxDataGet
+ 2675              		.thumb
+ 2676              		.thumb_func
+ 2678              	I2SRxDataGet:
+ 2679              	.LFB10:
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Reads data samples from the I2S receive FIFO with blocking.
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param pulData points to storage for the returned I2S sample data.
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function reads a single channel sample or combined left-right
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! samples from the I2S receive FIFO.  The format of the sample is determined
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! by the configuration that was used with the function I2SRxConfigSet().
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! If the receive mode is \b I2S_MODE_DUAL_STEREO then the returned value
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! contains either the left or right sample.  The left and right sample
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! alternate with each read from the FIFO, left sample first.  If the receive
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! mode is \b I2S_MODE_COMPACT_STEREO_16 or \b I2S_MODE_COMPACT_STEREO_8, then
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the returned data contains both the left and right samples.  If the
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! receive mode is \b I2S_MODE_SINGLE_MONO then the returned data
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! contains the single channel sample.
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! For the compact modes, both the left and right samples are read at
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the same time.  If 16-bit compact mode is used, then the least significant
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! 16 bits contain the left sample, and the most significant 16 bits contain
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the right sample.  If 8-bit compact mode is used, then the lower 8 bits
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! contain the left sample, and the next 8 bits contain the right sample,
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! with the upper 16 bits unused.
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! If there is no data in the receive FIFO, then this function waits
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! in a polling loop until data is available.
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SRxDataGet(unsigned long ulBase, unsigned long *pulData)
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2680              		.loc 1 476 0
+ 2681              		.cfi_startproc
+ 2682              		@ args = 0, pretend = 0, frame = 8
+ 2683              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2684              		@ link register save eliminated.
+ 2685 0000 80B4     		push	{r7}
+ 2686              	.LCFI30:
+ 2687              		.cfi_def_cfa_offset 4
+ 2688 0002 83B0     		sub	sp, sp, #12
+ 2689              	.LCFI31:
+ 2690              		.cfi_def_cfa_offset 16
+ 2691 0004 00AF     		add	r7, sp, #0
+ 2692              		.cfi_offset 7, -4
+ 2693              	.LCFI32:
+ 2694              		.cfi_def_cfa_register 7
+ 2695 0006 7860     		str	r0, [r7, #4]
+ 2696 0008 3960     		str	r1, [r7, #0]
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 480:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 481:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 482:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Wait until there is data available.
+ 484:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 485:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     while(HWREG(ulBase + I2S_O_RXLEV) == 0)
+ 2697              		.loc 1 485 0
+ 2698 000a 00BF     		nop
+ 2699              	.L17:
+ 2700              		.loc 1 485 0 is_stmt 0 discriminator 1
+ 2701 000c 7B68     		ldr	r3, [r7, #4]
+ 2702 000e 03F50063 		add	r3, r3, #2048
+ 2703 0012 03F11803 		add	r3, r3, #24
+ 2704 0016 1B68     		ldr	r3, [r3, #0]
+ 2705 0018 002B     		cmp	r3, #0
+ 2706 001a F7D0     		beq	.L17
+ 486:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+ 487:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+ 488:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 489:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 490:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Read data from the I2S receive FIFO.
+ 491:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 492:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     *pulData = HWREG(ulBase + I2S_O_RXFIFO);
+ 2707              		.loc 1 492 0 is_stmt 1
+ 2708 001c 7B68     		ldr	r3, [r7, #4]
+ 2709 001e 03F50063 		add	r3, r3, #2048
+ 2710 0022 1A68     		ldr	r2, [r3, #0]
+ 2711 0024 3B68     		ldr	r3, [r7, #0]
+ 2712 0026 1A60     		str	r2, [r3, #0]
+ 493:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2713              		.loc 1 493 0
+ 2714 0028 07F10C07 		add	r7, r7, #12
+ 2715 002c BD46     		mov	sp, r7
+ 2716 002e 80BC     		pop	{r7}
+ 2717 0030 7047     		bx	lr
+ 2718              		.cfi_endproc
+ 2719              	.LFE10:
+ 2721 0032 00BF     		.section	.text.I2SRxDataGetNonBlocking,"ax",%progbits
+ 2722              		.align	2
+ 2723              		.global	I2SRxDataGetNonBlocking
+ 2724              		.thumb
+ 2725              		.thumb_func
+ 2727              	I2SRxDataGetNonBlocking:
+ 2728              	.LFB11:
+ 494:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 495:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 496:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 497:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Reads data samples from the I2S receive FIFO without blocking.
+ 498:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 499:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 500:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param pulData points to storage for the returned I2S sample data.
+ 501:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 502:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function reads a single channel sample or combined left-right
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! samples from the I2S receive FIFO.  The format of the sample is determined
+ 504:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! by the configuration that was used with the function I2SRxConfigSet().
+ 505:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! If the receive mode is \b I2S_MODE_DUAL_STEREO then the received data
+ 506:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! contains either the left or right sample.  The left and right sample
+ 507:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! alternate with each read from the FIFO, left sample first.  If the receive
+ 508:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! mode is \b I2S_MODE_COMPACT_STEREO_16 or \b I2S_MODE_COMPACT_STEREO_8, then
+ 509:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the received data contains both the left and right samples.  If the
+ 510:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! receive mode is \b I2S_MODE_SINGLE_MONO then the received data
+ 511:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! contains the single channel sample.
+ 512:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 513:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! For the compact modes, both the left and right samples are read at
+ 514:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the same time.  If 16-bit compact mode is used, then the least significant
+ 515:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! 16 bits contain the left sample, and the most significant 16 bits contain
+ 516:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the right sample.  If 8-bit compact mode is used, then the lower 8 bits
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! contain the left sample, and the next 8 bits contain the right sample,
+ 518:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! with the upper 16 bits unused.
+ 519:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 520:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! If there is no data in the receive FIFO, then this function returns
+ 521:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! immediately without reading any data from the FIFO.
+ 522:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 523:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return The number of elements read from the I2S receive FIFO (1 or 0).
+ 524:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 525:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 526:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** long
+ 527:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SRxDataGetNonBlocking(unsigned long ulBase, unsigned long *pulData)
+ 528:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2729              		.loc 1 528 0
+ 2730              		.cfi_startproc
+ 2731              		@ args = 0, pretend = 0, frame = 8
+ 2732              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2733              		@ link register save eliminated.
+ 2734 0000 80B4     		push	{r7}
+ 2735              	.LCFI33:
+ 2736              		.cfi_def_cfa_offset 4
+ 2737 0002 83B0     		sub	sp, sp, #12
+ 2738              	.LCFI34:
+ 2739              		.cfi_def_cfa_offset 16
+ 2740 0004 00AF     		add	r7, sp, #0
+ 2741              		.cfi_offset 7, -4
+ 2742              	.LCFI35:
+ 2743              		.cfi_def_cfa_register 7
+ 2744 0006 7860     		str	r0, [r7, #4]
+ 2745 0008 3960     		str	r1, [r7, #0]
+ 529:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 530:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 531:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 532:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 533:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 534:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 535:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check for available samples.
+ 536:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 537:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     if(HWREG(ulBase + I2S_O_RXLEV) != 0)
+ 2746              		.loc 1 537 0
+ 2747 000a 7B68     		ldr	r3, [r7, #4]
+ 2748 000c 03F50063 		add	r3, r3, #2048
+ 2749 0010 03F11803 		add	r3, r3, #24
+ 2750 0014 1B68     		ldr	r3, [r3, #0]
+ 2751 0016 002B     		cmp	r3, #0
+ 2752 0018 08D0     		beq	.L19
+ 538:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+ 539:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         *pulData = HWREG(ulBase + I2S_O_RXFIFO);
+ 2753              		.loc 1 539 0
+ 2754 001a 7B68     		ldr	r3, [r7, #4]
+ 2755 001c 03F50063 		add	r3, r3, #2048
+ 2756 0020 1A68     		ldr	r2, [r3, #0]
+ 2757 0022 3B68     		ldr	r3, [r7, #0]
+ 2758 0024 1A60     		str	r2, [r3, #0]
+ 540:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         return(1);
+ 2759              		.loc 1 540 0
+ 2760 0026 4FF00103 		mov	r3, #1
+ 2761 002a 01E0     		b	.L20
+ 2762              	.L19:
+ 541:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+ 542:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     else
+ 543:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+ 544:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         return(0);
+ 2763              		.loc 1 544 0
+ 2764 002c 4FF00003 		mov	r3, #0
+ 2765              	.L20:
+ 545:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+ 546:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2766              		.loc 1 546 0
+ 2767 0030 1846     		mov	r0, r3
+ 2768 0032 07F10C07 		add	r7, r7, #12
+ 2769 0036 BD46     		mov	sp, r7
+ 2770 0038 80BC     		pop	{r7}
+ 2771 003a 7047     		bx	lr
+ 2772              		.cfi_endproc
+ 2773              	.LFE11:
+ 2775              		.section	.text.I2SRxConfigSet,"ax",%progbits
+ 2776              		.align	2
+ 2777              		.global	I2SRxConfigSet
+ 2778              		.thumb
+ 2779              		.thumb_func
+ 2781              	I2SRxConfigSet:
+ 2782              	.LFB12:
+ 547:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 549:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 550:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Configures the I2S receive module.
+ 551:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 552:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 553:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulConfig is the logical OR of the configuration options.
+ 554:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 555:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function is used to configure the options for the I2S receive
+ 556:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! channel.  The parameter \e ulConfig is the logical OR of the following
+ 557:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! options:
+ 558:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 559:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_FORMAT_I2S for standard I2S format,
+ 560:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_FORMAT_LEFT_JUST for left justified format, or
+ 561:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_FORMAT_RIGHT_JUST for right justified format.
+ 562:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_SCLK_INVERT to invert the polarity of the serial bit clock.
+ 563:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_MODE_DUAL for dual channel stereo,
+ 564:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_MODE_COMPACT_16 for 16-bit compact stereo mode,
+ 565:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_MODE_COMPACT_8 for 8-bit compact stereo mode, or
+ 566:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_MODE_MONO for single channel mono format.
+ 567:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_CLK_MASTER or \b I2S_CONFIG_CLK_SLAVE to select whether
+ 568:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   the I2S receiver is the clock master or slave.
+ 569:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_SAMPLE_SIZE_32, \b _24, \b _20, \b _16, or \b _8
+ 570:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   to select the number of bits per sample.
+ 571:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_WIRE_SIZE_32, \b _24, \b _20, \b _16, or \b _8
+ 572:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   to select the number of bits per word that are transferred on the data
+ 573:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   line.
+ 574:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 575:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 576:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 577:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 578:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 579:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SRxConfigSet(unsigned long ulBase, unsigned long ulConfig)
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2783              		.loc 1 580 0
+ 2784              		.cfi_startproc
+ 2785              		@ args = 0, pretend = 0, frame = 8
+ 2786              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2787              		@ link register save eliminated.
+ 2788 0000 80B4     		push	{r7}
+ 2789              	.LCFI36:
+ 2790              		.cfi_def_cfa_offset 4
+ 2791 0002 83B0     		sub	sp, sp, #12
+ 2792              	.LCFI37:
+ 2793              		.cfi_def_cfa_offset 16
+ 2794 0004 00AF     		add	r7, sp, #0
+ 2795              		.cfi_offset 7, -4
+ 2796              	.LCFI38:
+ 2797              		.cfi_def_cfa_register 7
+ 2798 0006 7860     		str	r0, [r7, #4]
+ 2799 0008 3960     		str	r1, [r7, #0]
+ 581:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 582:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 583:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 584:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 585:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT((ulConfig & (I2S_CONFIG_FORMAT_MASK | I2S_CONFIG_MODE_MASK |
+ 586:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****                         I2S_CONFIG_CLK_MASK | I2S_CONFIG_SAMPLE_SIZE_MASK |
+ 587:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****                         I2S_CONFIG_WIRE_SIZE_MASK)) == ulConfig);
+ 588:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 589:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 590:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Clear out any prior config of the RX FIFO config register.
+ 591:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 592:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_RXFIFOCFG) = 0;
+ 2800              		.loc 1 592 0
+ 2801 000a 7B68     		ldr	r3, [r7, #4]
+ 2802 000c 03F50063 		add	r3, r3, #2048
+ 2803 0010 03F10403 		add	r3, r3, #4
+ 2804 0014 4FF00002 		mov	r2, #0
+ 2805 0018 1A60     		str	r2, [r3, #0]
+ 593:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 594:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 595:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // If mono mode is used, then the FMM bit needs to be set.
+ 596:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 597:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     if((ulConfig & I2S_CONFIG_MODE_MASK) == I2S_CONFIG_MODE_MONO)
+ 2806              		.loc 1 597 0
+ 2807 001a 3B68     		ldr	r3, [r7, #0]
+ 2808 001c 03F04073 		and	r3, r3, #50331648
+ 2809 0020 B3F1007F 		cmp	r3, #33554432
+ 2810 0024 0FD1     		bne	.L22
+ 598:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+ 599:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         HWREG(ulBase + I2S_O_RXFIFOCFG) |= I2S_RXFIFOCFG_FMM;
+ 2811              		.loc 1 599 0
+ 2812 0026 7B68     		ldr	r3, [r7, #4]
+ 2813 0028 03F50063 		add	r3, r3, #2048
+ 2814 002c 03F10403 		add	r3, r3, #4
+ 2815 0030 1A46     		mov	r2, r3
+ 2816 0032 7B68     		ldr	r3, [r7, #4]
+ 2817 0034 03F50063 		add	r3, r3, #2048
+ 2818 0038 03F10403 		add	r3, r3, #4
+ 2819 003c 1B68     		ldr	r3, [r3, #0]
+ 2820 003e 43F00403 		orr	r3, r3, #4
+ 2821 0042 1360     		str	r3, [r2, #0]
+ 2822 0044 14E0     		b	.L23
+ 2823              	.L22:
+ 600:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+ 601:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 602:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 603:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // If a compact mode is used, then the CSS bit needs to be set.
+ 604:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 605:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     else if((ulConfig & I2S_CONFIG_MODE_MASK) == I2S_CONFIG_MODE_COMPACT_8)
+ 2824              		.loc 1 605 0
+ 2825 0046 3B68     		ldr	r3, [r7, #0]
+ 2826 0048 03F04073 		and	r3, r3, #50331648
+ 2827 004c B3F1407F 		cmp	r3, #50331648
+ 2828 0050 0ED1     		bne	.L23
+ 606:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+ 607:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         HWREG(ulBase + I2S_O_RXFIFOCFG) |= I2S_RXFIFOCFG_CSS;
+ 2829              		.loc 1 607 0
+ 2830 0052 7B68     		ldr	r3, [r7, #4]
+ 2831 0054 03F50063 		add	r3, r3, #2048
+ 2832 0058 03F10403 		add	r3, r3, #4
+ 2833 005c 1A46     		mov	r2, r3
+ 2834 005e 7B68     		ldr	r3, [r7, #4]
+ 2835 0060 03F50063 		add	r3, r3, #2048
+ 2836 0064 03F10403 		add	r3, r3, #4
+ 2837 0068 1B68     		ldr	r3, [r3, #0]
+ 2838 006a 43F00203 		orr	r3, r3, #2
+ 2839 006e 1360     		str	r3, [r2, #0]
+ 2840              	.L23:
+ 608:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+ 609:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 610:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 611:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // The "mono" bits must be removed from the configuration word
+ 612:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // prior to writing to hardware, because the RX configuration register
+ 613:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // does not actually use these bits.
+ 614:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 615:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ulConfig &= ~I2S_CONFIG_MODE_MONO;
+ 2841              		.loc 1 615 0
+ 2842 0070 3B68     		ldr	r3, [r7, #0]
+ 2843 0072 23F00073 		bic	r3, r3, #33554432
+ 2844 0076 3B60     		str	r3, [r7, #0]
+ 616:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 617:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 618:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Write the configuration register.  Because all the fields are
+ 619:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // specified by the configuration parameter, it is not necessary
+ 620:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // to do a read-modify-write.
+ 621:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 622:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_RXCFG) = ulConfig;
+ 2845              		.loc 1 622 0
+ 2846 0078 7B68     		ldr	r3, [r7, #4]
+ 2847 007a 03F50063 		add	r3, r3, #2048
+ 2848 007e 03F10803 		add	r3, r3, #8
+ 2849 0082 3A68     		ldr	r2, [r7, #0]
+ 2850 0084 1A60     		str	r2, [r3, #0]
+ 623:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2851              		.loc 1 623 0
+ 2852 0086 07F10C07 		add	r7, r7, #12
+ 2853 008a BD46     		mov	sp, r7
+ 2854 008c 80BC     		pop	{r7}
+ 2855 008e 7047     		bx	lr
+ 2856              		.cfi_endproc
+ 2857              	.LFE12:
+ 2859              		.section	.text.I2SRxFIFOLimitSet,"ax",%progbits
+ 2860              		.align	2
+ 2861              		.global	I2SRxFIFOLimitSet
+ 2862              		.thumb
+ 2863              		.thumb_func
+ 2865              	I2SRxFIFOLimitSet:
+ 2866              	.LFB13:
+ 624:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 625:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 626:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 627:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Sets the FIFO level at which a service request is generated.
+ 628:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 629:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 630:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulLevel is the FIFO service request limit.
+ 631:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 632:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function is used to set the receive FIFO fullness level at which a
+ 633:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! service request occurs.  The service request is used to generate an
+ 634:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! interrupt or a DMA transfer request.  The receive FIFO generates a
+ 635:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! service request when the number of items in the FIFO is greater than the
+ 636:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! level specified in the \e ulLevel parameter.  For example, if \e ulLevel is
+ 637:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! 4, then a service request is generated when there are more than 4 samples
+ 638:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! available in the receive FIFO.
+ 639:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 640:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! For the purposes of counting the FIFO level, a left-right sample pair
+ 641:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! counts as 2, whether the mode is dual or compact stereo.  When mono mode is
+ 642:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! used, internally the mono sample is still treated as a sample pair, so a
+ 643:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! single mono sample counts as 2.  Because the FIFO always deals with sample
+ 644:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! pairs, the level must be an even number from 0 to 16.  The minimum value is
+ 645:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! 0, which causes a service request when there is any data available in
+ 646:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the FIFO.  The maximum value is 16, which disables the service request
+ 647:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! (because there cannot be more than 16 items in the FIFO).
+ 648:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 649:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 650:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 651:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 652:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 653:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SRxFIFOLimitSet(unsigned long ulBase, unsigned long ulLevel)
+ 654:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2867              		.loc 1 654 0
+ 2868              		.cfi_startproc
+ 2869              		@ args = 0, pretend = 0, frame = 8
+ 2870              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2871              		@ link register save eliminated.
+ 2872 0000 80B4     		push	{r7}
+ 2873              	.LCFI39:
+ 2874              		.cfi_def_cfa_offset 4
+ 2875 0002 83B0     		sub	sp, sp, #12
+ 2876              	.LCFI40:
+ 2877              		.cfi_def_cfa_offset 16
+ 2878 0004 00AF     		add	r7, sp, #0
+ 2879              		.cfi_offset 7, -4
+ 2880              	.LCFI41:
+ 2881              		.cfi_def_cfa_register 7
+ 2882 0006 7860     		str	r0, [r7, #4]
+ 2883 0008 3960     		str	r1, [r7, #0]
+ 655:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 656:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 657:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 658:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 659:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulLevel <= 16);
+ 660:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 661:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 662:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Write the FIFO limit
+ 663:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 664:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_RXLIMIT) = ulLevel;
+ 2884              		.loc 1 664 0
+ 2885 000a 7B68     		ldr	r3, [r7, #4]
+ 2886 000c 03F50063 		add	r3, r3, #2048
+ 2887 0010 03F10C03 		add	r3, r3, #12
+ 2888 0014 3A68     		ldr	r2, [r7, #0]
+ 2889 0016 1A60     		str	r2, [r3, #0]
+ 665:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2890              		.loc 1 665 0
+ 2891 0018 07F10C07 		add	r7, r7, #12
+ 2892 001c BD46     		mov	sp, r7
+ 2893 001e 80BC     		pop	{r7}
+ 2894 0020 7047     		bx	lr
+ 2895              		.cfi_endproc
+ 2896              	.LFE13:
+ 2898 0022 00BF     		.section	.text.I2SRxFIFOLimitGet,"ax",%progbits
+ 2899              		.align	2
+ 2900              		.global	I2SRxFIFOLimitGet
+ 2901              		.thumb
+ 2902              		.thumb_func
+ 2904              	I2SRxFIFOLimitGet:
+ 2905              	.LFB14:
+ 666:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 667:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 668:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 669:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Gets the current setting of the FIFO service request level.
+ 670:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 671:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 672:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 673:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function is used to get the value of the receive FIFO service
+ 674:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! request level.  This value is set using the I2SRxFIFOLimitSet()
+ 675:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! function.
+ 676:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 677:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return Returns the current value of the FIFO service request limit.
+ 678:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 679:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 680:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** unsigned long
+ 681:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SRxFIFOLimitGet(unsigned long ulBase)
+ 682:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2906              		.loc 1 682 0
+ 2907              		.cfi_startproc
+ 2908              		@ args = 0, pretend = 0, frame = 8
+ 2909              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2910              		@ link register save eliminated.
+ 2911 0000 80B4     		push	{r7}
+ 2912              	.LCFI42:
+ 2913              		.cfi_def_cfa_offset 4
+ 2914 0002 83B0     		sub	sp, sp, #12
+ 2915              	.LCFI43:
+ 2916              		.cfi_def_cfa_offset 16
+ 2917 0004 00AF     		add	r7, sp, #0
+ 2918              		.cfi_offset 7, -4
+ 2919              	.LCFI44:
+ 2920              		.cfi_def_cfa_register 7
+ 2921 0006 7860     		str	r0, [r7, #4]
+ 683:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 684:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 685:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 686:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 687:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 688:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 689:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Read and return the FIFO limit.  The lower bit is masked
+ 690:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // because it always reads as 1 and has no meaning.
+ 691:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 692:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     return(HWREG(ulBase + I2S_O_RXLIMIT) & 0xFFFE);
+ 2922              		.loc 1 692 0
+ 2923 0008 7B68     		ldr	r3, [r7, #4]
+ 2924 000a 03F50063 		add	r3, r3, #2048
+ 2925 000e 03F10C03 		add	r3, r3, #12
+ 2926 0012 1A68     		ldr	r2, [r3, #0]
+ 2927 0014 4FF6FE73 		movw	r3, #65534
+ 2928 0018 02EA0303 		and	r3, r2, r3
+ 693:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2929              		.loc 1 693 0
+ 2930 001c 1846     		mov	r0, r3
+ 2931 001e 07F10C07 		add	r7, r7, #12
+ 2932 0022 BD46     		mov	sp, r7
+ 2933 0024 80BC     		pop	{r7}
+ 2934 0026 7047     		bx	lr
+ 2935              		.cfi_endproc
+ 2936              	.LFE14:
+ 2938              		.section	.text.I2SRxFIFOLevelGet,"ax",%progbits
+ 2939              		.align	2
+ 2940              		.global	I2SRxFIFOLevelGet
+ 2941              		.thumb
+ 2942              		.thumb_func
+ 2944              	I2SRxFIFOLevelGet:
+ 2945              	.LFB15:
+ 694:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 695:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 696:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 697:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Gets the number of samples in the receive FIFO.
+ 698:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 699:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 700:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 701:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function is used to get the number of samples in the receive FIFO.
+ 702:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! For the purposes of measuring the FIFO level, a left-right sample pair
+ 703:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! counts as 2, whether the mode is dual or compact stereo.  When mono mode is
+ 704:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! used, internally the mono sample is still treated as a sample pair, so a
+ 705:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! single mono sample counts as 2.  Because the FIFO always deals with sample
+ 706:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! pairs, normally the level is an even number from 0 to 16.  If dual stereo
+ 707:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! mode is used and only the left sample has been read without reading the
+ 708:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! matching right sample, then the FIFO level is an odd value.  If the FIFO
+ 709:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! level is odd, it indicates a left-right sample mismatch.
+ 710:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 711:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return Returns the number of samples in the transmit FIFO, which is
+ 712:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! normally an even number.
+ 713:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 714:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 715:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** unsigned long
+ 716:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SRxFIFOLevelGet(unsigned long ulBase)
+ 717:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2946              		.loc 1 717 0
+ 2947              		.cfi_startproc
+ 2948              		@ args = 0, pretend = 0, frame = 8
+ 2949              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2950              		@ link register save eliminated.
+ 2951 0000 80B4     		push	{r7}
+ 2952              	.LCFI45:
+ 2953              		.cfi_def_cfa_offset 4
+ 2954 0002 83B0     		sub	sp, sp, #12
+ 2955              	.LCFI46:
+ 2956              		.cfi_def_cfa_offset 16
+ 2957 0004 00AF     		add	r7, sp, #0
+ 2958              		.cfi_offset 7, -4
+ 2959              	.LCFI47:
+ 2960              		.cfi_def_cfa_register 7
+ 2961 0006 7860     		str	r0, [r7, #4]
+ 718:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 719:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 720:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 721:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 722:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 723:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 724:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Read and return the receive FIFO level.
+ 725:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 726:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     return(HWREG(ulBase + I2S_O_RXLEV));
+ 2962              		.loc 1 726 0
+ 2963 0008 7B68     		ldr	r3, [r7, #4]
+ 2964 000a 03F50063 		add	r3, r3, #2048
+ 2965 000e 03F11803 		add	r3, r3, #24
+ 2966 0012 1B68     		ldr	r3, [r3, #0]
+ 727:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 2967              		.loc 1 727 0
+ 2968 0014 1846     		mov	r0, r3
+ 2969 0016 07F10C07 		add	r7, r7, #12
+ 2970 001a BD46     		mov	sp, r7
+ 2971 001c 80BC     		pop	{r7}
+ 2972 001e 7047     		bx	lr
+ 2973              		.cfi_endproc
+ 2974              	.LFE15:
+ 2976              		.section	.text.I2STxRxEnable,"ax",%progbits
+ 2977              		.align	2
+ 2978              		.global	I2STxRxEnable
+ 2979              		.thumb
+ 2980              		.thumb_func
+ 2982              	I2STxRxEnable:
+ 2983              	.LFB16:
+ 728:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 729:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 730:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 731:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Enables the I2S transmit and receive modules for operation.
+ 732:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 733:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 734:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 735:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function simultaneously enables the transmit and receive modules for
+ 736:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! operation, providing a synchronized SCLK and LRCLK.  The module should be
+ 737:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! enabled after configuration.  When the module is disabled, no data or
+ 738:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! clocks are generated on the I2S signals.
+ 739:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 740:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 741:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 742:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 743:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 744:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2STxRxEnable(unsigned long ulBase)
+ 745:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 2984              		.loc 1 745 0
+ 2985              		.cfi_startproc
+ 2986              		@ args = 0, pretend = 0, frame = 8
+ 2987              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2988              		@ link register save eliminated.
+ 2989 0000 80B4     		push	{r7}
+ 2990              	.LCFI48:
+ 2991              		.cfi_def_cfa_offset 4
+ 2992 0002 83B0     		sub	sp, sp, #12
+ 2993              	.LCFI49:
+ 2994              		.cfi_def_cfa_offset 16
+ 2995 0004 00AF     		add	r7, sp, #0
+ 2996              		.cfi_offset 7, -4
+ 2997              	.LCFI50:
+ 2998              		.cfi_def_cfa_register 7
+ 2999 0006 7860     		str	r0, [r7, #4]
+ 746:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 747:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 748:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 749:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 750:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 751:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 752:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Enable the Tx FIFO service request.
+ 753:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 754:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_TXISM) = I2S_TXISM_FFM;
+ 3000              		.loc 1 754 0
+ 3001 0008 7B68     		ldr	r3, [r7, #4]
+ 3002 000a 03F11003 		add	r3, r3, #16
+ 3003 000e 4FF00102 		mov	r2, #1
+ 3004 0012 1A60     		str	r2, [r3, #0]
+ 755:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 756:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 757:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Enable the Rx FIFO service request.
+ 758:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 759:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_RXISM) = I2S_RXISM_FFM;
+ 3005              		.loc 1 759 0
+ 3006 0014 7B68     		ldr	r3, [r7, #4]
+ 3007 0016 03F50163 		add	r3, r3, #2064
+ 3008 001a 4FF00102 		mov	r2, #1
+ 3009 001e 1A60     		str	r2, [r3, #0]
+ 760:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 761:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 762:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Enable the transmit and receive modules.
+ 763:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 764:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_CFG) |= I2S_CFG_TXEN | I2S_CFG_RXEN;
+ 3010              		.loc 1 764 0
+ 3011 0020 7B68     		ldr	r3, [r7, #4]
+ 3012 0022 03F54063 		add	r3, r3, #3072
+ 3013 0026 7A68     		ldr	r2, [r7, #4]
+ 3014 0028 02F54062 		add	r2, r2, #3072
+ 3015 002c 1268     		ldr	r2, [r2, #0]
+ 3016 002e 42F00302 		orr	r2, r2, #3
+ 3017 0032 1A60     		str	r2, [r3, #0]
+ 765:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 3018              		.loc 1 765 0
+ 3019 0034 07F10C07 		add	r7, r7, #12
+ 3020 0038 BD46     		mov	sp, r7
+ 3021 003a 80BC     		pop	{r7}
+ 3022 003c 7047     		bx	lr
+ 3023              		.cfi_endproc
+ 3024              	.LFE16:
+ 3026 003e 00BF     		.section	.text.I2STxRxDisable,"ax",%progbits
+ 3027              		.align	2
+ 3028              		.global	I2STxRxDisable
+ 3029              		.thumb
+ 3030              		.thumb_func
+ 3032              	I2STxRxDisable:
+ 3033              	.LFB17:
+ 766:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 767:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 768:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 769:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Disables the I2S transmit and receive modules.
+ 770:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 771:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 772:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 773:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function simultaneously disables the transmit and receive modules.
+ 774:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! When the module is disabled, no data or clocks are generated on the I2S
+ 775:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! signals.
+ 776:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 777:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 778:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 779:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 780:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 781:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2STxRxDisable(unsigned long ulBase)
+ 782:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 3034              		.loc 1 782 0
+ 3035              		.cfi_startproc
+ 3036              		@ args = 0, pretend = 0, frame = 8
+ 3037              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3038              		@ link register save eliminated.
+ 3039 0000 80B4     		push	{r7}
+ 3040              	.LCFI51:
+ 3041              		.cfi_def_cfa_offset 4
+ 3042 0002 83B0     		sub	sp, sp, #12
+ 3043              	.LCFI52:
+ 3044              		.cfi_def_cfa_offset 16
+ 3045 0004 00AF     		add	r7, sp, #0
+ 3046              		.cfi_offset 7, -4
+ 3047              	.LCFI53:
+ 3048              		.cfi_def_cfa_register 7
+ 3049 0006 7860     		str	r0, [r7, #4]
+ 783:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 784:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 785:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 786:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 787:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 788:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 789:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Disable the transmit and receive modules.
+ 790:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 791:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_CFG) &= ~(I2S_CFG_TXEN | I2S_CFG_RXEN);
+ 3050              		.loc 1 791 0
+ 3051 0008 7B68     		ldr	r3, [r7, #4]
+ 3052 000a 03F54063 		add	r3, r3, #3072
+ 3053 000e 7A68     		ldr	r2, [r7, #4]
+ 3054 0010 02F54062 		add	r2, r2, #3072
+ 3055 0014 1268     		ldr	r2, [r2, #0]
+ 3056 0016 22F00302 		bic	r2, r2, #3
+ 3057 001a 1A60     		str	r2, [r3, #0]
+ 792:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 3058              		.loc 1 792 0
+ 3059 001c 07F10C07 		add	r7, r7, #12
+ 3060 0020 BD46     		mov	sp, r7
+ 3061 0022 80BC     		pop	{r7}
+ 3062 0024 7047     		bx	lr
+ 3063              		.cfi_endproc
+ 3064              	.LFE17:
+ 3066 0026 00BF     		.section	.text.I2STxRxConfigSet,"ax",%progbits
+ 3067              		.align	2
+ 3068              		.global	I2STxRxConfigSet
+ 3069              		.thumb
+ 3070              		.thumb_func
+ 3072              	I2STxRxConfigSet:
+ 3073              	.LFB18:
+ 793:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 794:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 795:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 796:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Configures the I2S transmit and receive modules.
+ 797:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 798:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 799:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulConfig is the logical OR of the configuration options.
+ 800:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 801:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function is used to configure the options for the I2S transmit and
+ 802:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! receive channels with identical parameters.  The parameter \e ulConfig is
+ 803:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the logical OR of the following options:
+ 804:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 805:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_FORMAT_I2S for standard I2S format,
+ 806:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_FORMAT_LEFT_JUST for left justified format, or
+ 807:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_FORMAT_RIGHT_JUST for right justified format.
+ 808:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_SCLK_INVERT to invert the polarity of the serial bit clock.
+ 809:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_MODE_DUAL for dual-channel stereo,
+ 810:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_MODE_COMPACT_16 for 16-bit compact stereo mode,
+ 811:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_MODE_COMPACT_8 for 8-bit compact stereo mode, or
+ 812:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   \b I2S_CONFIG_MODE_MONO for single-channel mono format.
+ 813:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_CLK_MASTER or \b I2S_CONFIG_CLK_SLAVE to select whether
+ 814:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   the I2S transmitter is the clock master or slave.
+ 815:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_SAMPLE_SIZE_32, \b _24, \b _20, \b _16, or \b _8
+ 816:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   to select the number of bits per sample.
+ 817:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_WIRE_SIZE_32, \b _24, \b _20, \b _16, or \b _8
+ 818:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   to select the number of bits per word that are transferred on the data
+ 819:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   line.
+ 820:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_CONFIG_EMPTY_ZERO or \b I2S_CONFIG_EMPTY_REPEAT to select whether
+ 821:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   the module transmits zeroes or repeats the last sample when the FIFO is
+ 822:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!   empty.
+ 823:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 824:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 825:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 826:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 827:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 828:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2STxRxConfigSet(unsigned long ulBase, unsigned long ulConfig)
+ 829:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 3074              		.loc 1 829 0
+ 3075              		.cfi_startproc
+ 3076              		@ args = 0, pretend = 0, frame = 8
+ 3077              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3078              		@ link register save eliminated.
+ 3079 0000 80B4     		push	{r7}
+ 3080              	.LCFI54:
+ 3081              		.cfi_def_cfa_offset 4
+ 3082 0002 83B0     		sub	sp, sp, #12
+ 3083              	.LCFI55:
+ 3084              		.cfi_def_cfa_offset 16
+ 3085 0004 00AF     		add	r7, sp, #0
+ 3086              		.cfi_offset 7, -4
+ 3087              	.LCFI56:
+ 3088              		.cfi_def_cfa_register 7
+ 3089 0006 7860     		str	r0, [r7, #4]
+ 3090 0008 3960     		str	r1, [r7, #0]
+ 830:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 831:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 832:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 833:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 834:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT((ulConfig & (I2S_CONFIG_FORMAT_MASK | I2S_CONFIG_MODE_MASK |
+ 835:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****                         I2S_CONFIG_EMPTY_MASK | I2S_CONFIG_CLK_MASK |
+ 836:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****                         I2S_CONFIG_SAMPLE_SIZE_MASK |
+ 837:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****                         I2S_CONFIG_WIRE_SIZE_MASK)) == ulConfig);
+ 838:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 839:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 840:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Clear out any prior configuration of the FIFO config registers.
+ 841:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 842:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_TXFIFOCFG) = 0;
+ 3091              		.loc 1 842 0
+ 3092 000a 7B68     		ldr	r3, [r7, #4]
+ 3093 000c 03F10403 		add	r3, r3, #4
+ 3094 0010 4FF00002 		mov	r2, #0
+ 3095 0014 1A60     		str	r2, [r3, #0]
+ 843:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_RXFIFOCFG) = 0;
+ 3096              		.loc 1 843 0
+ 3097 0016 7B68     		ldr	r3, [r7, #4]
+ 3098 0018 03F50063 		add	r3, r3, #2048
+ 3099 001c 03F10403 		add	r3, r3, #4
+ 3100 0020 4FF00002 		mov	r2, #0
+ 3101 0024 1A60     		str	r2, [r3, #0]
+ 844:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 845:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 846:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // If mono mode is used, then the FMM bit needs to be set.
+ 847:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 848:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     if((ulConfig & I2S_CONFIG_MODE_MASK) == I2S_CONFIG_MODE_MONO)
+ 3102              		.loc 1 848 0
+ 3103 0026 3B68     		ldr	r3, [r7, #0]
+ 3104 0028 03F04073 		and	r3, r3, #50331648
+ 3105 002c B3F1007F 		cmp	r3, #33554432
+ 3106 0030 12D1     		bne	.L30
+ 849:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+ 850:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         HWREG(ulBase + I2S_O_RXFIFOCFG) |= I2S_RXFIFOCFG_FMM;
+ 3107              		.loc 1 850 0
+ 3108 0032 7B68     		ldr	r3, [r7, #4]
+ 3109 0034 03F50063 		add	r3, r3, #2048
+ 3110 0038 03F10403 		add	r3, r3, #4
+ 3111 003c 1A46     		mov	r2, r3
+ 3112 003e 7B68     		ldr	r3, [r7, #4]
+ 3113 0040 03F50063 		add	r3, r3, #2048
+ 3114 0044 03F10403 		add	r3, r3, #4
+ 3115 0048 1B68     		ldr	r3, [r3, #0]
+ 3116 004a 43F00403 		orr	r3, r3, #4
+ 3117 004e 1360     		str	r3, [r2, #0]
+ 851:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         ulConfig &= ~(I2S_CONFIG_MODE_MONO);
+ 3118              		.loc 1 851 0
+ 3119 0050 3B68     		ldr	r3, [r7, #0]
+ 3120 0052 23F00073 		bic	r3, r3, #33554432
+ 3121 0056 3B60     		str	r3, [r7, #0]
+ 3122              	.L30:
+ 852:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+ 853:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 854:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 855:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // If a compact mode is used, then the CSS bit needs to be set.
+ 856:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 857:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     if((ulConfig & I2S_CONFIG_MODE_MASK) == I2S_CONFIG_MODE_COMPACT_8)
+ 3123              		.loc 1 857 0
+ 3124 0058 3B68     		ldr	r3, [r7, #0]
+ 3125 005a 03F04073 		and	r3, r3, #50331648
+ 3126 005e B3F1407F 		cmp	r3, #50331648
+ 3127 0062 18D1     		bne	.L31
+ 858:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+ 859:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         HWREG(ulBase + I2S_O_TXFIFOCFG) |= I2S_TXFIFOCFG_CSS;
+ 3128              		.loc 1 859 0
+ 3129 0064 7B68     		ldr	r3, [r7, #4]
+ 3130 0066 03F10403 		add	r3, r3, #4
+ 3131 006a 7A68     		ldr	r2, [r7, #4]
+ 3132 006c 02F10402 		add	r2, r2, #4
+ 3133 0070 1268     		ldr	r2, [r2, #0]
+ 3134 0072 42F00202 		orr	r2, r2, #2
+ 3135 0076 1A60     		str	r2, [r3, #0]
+ 860:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         HWREG(ulBase + I2S_O_RXFIFOCFG) |= I2S_RXFIFOCFG_CSS;
+ 3136              		.loc 1 860 0
+ 3137 0078 7B68     		ldr	r3, [r7, #4]
+ 3138 007a 03F50063 		add	r3, r3, #2048
+ 3139 007e 03F10403 		add	r3, r3, #4
+ 3140 0082 1A46     		mov	r2, r3
+ 3141 0084 7B68     		ldr	r3, [r7, #4]
+ 3142 0086 03F50063 		add	r3, r3, #2048
+ 3143 008a 03F10403 		add	r3, r3, #4
+ 3144 008e 1B68     		ldr	r3, [r3, #0]
+ 3145 0090 43F00203 		orr	r3, r3, #2
+ 3146 0094 1360     		str	r3, [r2, #0]
+ 3147              	.L31:
+ 861:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+ 862:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 863:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 864:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Write the configuration register.  Because all the fields are specified 
+ 865:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // by the configuration parameter, it is not necessary to do a
+ 866:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // read-modify-write.
+ 867:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 868:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_TXCFG) = ulConfig;
+ 3148              		.loc 1 868 0
+ 3149 0096 7B68     		ldr	r3, [r7, #4]
+ 3150 0098 03F10803 		add	r3, r3, #8
+ 3151 009c 3A68     		ldr	r2, [r7, #0]
+ 3152 009e 1A60     		str	r2, [r3, #0]
+ 869:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_RXCFG) = ulConfig;
+ 3153              		.loc 1 869 0
+ 3154 00a0 7B68     		ldr	r3, [r7, #4]
+ 3155 00a2 03F50063 		add	r3, r3, #2048
+ 3156 00a6 03F10803 		add	r3, r3, #8
+ 3157 00aa 3A68     		ldr	r2, [r7, #0]
+ 3158 00ac 1A60     		str	r2, [r3, #0]
+ 870:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 3159              		.loc 1 870 0
+ 3160 00ae 07F10C07 		add	r7, r7, #12
+ 3161 00b2 BD46     		mov	sp, r7
+ 3162 00b4 80BC     		pop	{r7}
+ 3163 00b6 7047     		bx	lr
+ 3164              		.cfi_endproc
+ 3165              	.LFE18:
+ 3167              		.section	.text.I2SMasterClockSelect,"ax",%progbits
+ 3168              		.align	2
+ 3169              		.global	I2SMasterClockSelect
+ 3170              		.thumb
+ 3171              		.thumb_func
+ 3173              	I2SMasterClockSelect:
+ 3174              	.LFB19:
+ 871:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 872:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 873:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 874:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Selects the source of the master clock, internal or external.
+ 875:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 876:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 877:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulMClock is the logical OR of the master clock configuration
+ 878:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! choices.
+ 879:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 880:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function selects whether the master clock is sourced from the device
+ 881:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! internal PLL or comes from an external pin.  The I2S serial bit clock
+ 882:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! (SCLK) and left-right word clock (LRCLK) are derived from the I2S master
+ 883:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! clock.  The transmit and receive modules can be configured independently.
+ 884:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!  The \e ulMClock parameter is chosen from the following:
+ 885:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 886:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - one of \b I2S_TX_MCLK_EXT or \b I2S_TX_MCLK_INT
+ 887:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - one of \b I2S_RX_MCLK_EXT or \b I2S_RX_MCLK_INT
+ 888:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 889:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 890:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 891:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 892:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 893:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SMasterClockSelect(unsigned long ulBase, unsigned long ulMClock)
+ 894:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 3175              		.loc 1 894 0
+ 3176              		.cfi_startproc
+ 3177              		@ args = 0, pretend = 0, frame = 16
+ 3178              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3179              		@ link register save eliminated.
+ 3180 0000 80B4     		push	{r7}
+ 3181              	.LCFI57:
+ 3182              		.cfi_def_cfa_offset 4
+ 3183 0002 85B0     		sub	sp, sp, #20
+ 3184              	.LCFI58:
+ 3185              		.cfi_def_cfa_offset 24
+ 3186 0004 00AF     		add	r7, sp, #0
+ 3187              		.cfi_offset 7, -4
+ 3188              	.LCFI59:
+ 3189              		.cfi_def_cfa_register 7
+ 3190 0006 7860     		str	r0, [r7, #4]
+ 3191 0008 3960     		str	r1, [r7, #0]
+ 895:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     unsigned long ulConfig;
+ 896:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 897:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 898:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 899:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 900:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 901:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT((ulMClock & (I2S_TX_MCLK_EXT | I2S_RX_MCLK_EXT)) == ulMClock);
+ 902:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 903:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 904:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Set the clock selection bits in the configuation word.
+ 905:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 906:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ulConfig = HWREG(ulBase + I2S_O_CFG) &
+ 3192              		.loc 1 906 0
+ 3193 000a 7B68     		ldr	r3, [r7, #4]
+ 3194 000c 03F54063 		add	r3, r3, #3072
+ 3195 0010 1B68     		ldr	r3, [r3, #0]
+ 3196 0012 23F03003 		bic	r3, r3, #48
+ 3197 0016 FB60     		str	r3, [r7, #12]
+ 907:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****                    ~(I2S_TX_MCLK_EXT | I2S_RX_MCLK_EXT);
+ 908:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_CFG) = ulConfig | ulMClock;
+ 3198              		.loc 1 908 0
+ 3199 0018 7B68     		ldr	r3, [r7, #4]
+ 3200 001a 03F54063 		add	r3, r3, #3072
+ 3201 001e F968     		ldr	r1, [r7, #12]
+ 3202 0020 3A68     		ldr	r2, [r7, #0]
+ 3203 0022 41EA0202 		orr	r2, r1, r2
+ 3204 0026 1A60     		str	r2, [r3, #0]
+ 909:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 3205              		.loc 1 909 0
+ 3206 0028 07F11407 		add	r7, r7, #20
+ 3207 002c BD46     		mov	sp, r7
+ 3208 002e 80BC     		pop	{r7}
+ 3209 0030 7047     		bx	lr
+ 3210              		.cfi_endproc
+ 3211              	.LFE19:
+ 3213 0032 00BF     		.section	.text.I2SIntEnable,"ax",%progbits
+ 3214              		.align	2
+ 3215              		.global	I2SIntEnable
+ 3216              		.thumb
+ 3217              		.thumb_func
+ 3219              	I2SIntEnable:
+ 3220              	.LFB20:
+ 910:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 911:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 912:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 913:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Enables I2S interrupt sources.
+ 914:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 915:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 916:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be enabled.
+ 917:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 918:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function enables the specified I2S sources to generate interrupts.
+ 919:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! The \e ulIntFlags parameter can be the logical OR of any of the following
+ 920:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! values:
+ 921:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 922:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_INT_RXERR for receive errors
+ 923:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_INT_RXREQ for receive FIFO service requests
+ 924:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_INT_TXERR for transmit errors
+ 925:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! - \b I2S_INT_TXREQ for transmit FIFO service requests
+ 926:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 927:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 928:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 929:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 930:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 931:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SIntEnable(unsigned long ulBase, unsigned long ulIntFlags)
+ 932:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 3221              		.loc 1 932 0
+ 3222              		.cfi_startproc
+ 3223              		@ args = 0, pretend = 0, frame = 8
+ 3224              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3225              		@ link register save eliminated.
+ 3226 0000 80B4     		push	{r7}
+ 3227              	.LCFI60:
+ 3228              		.cfi_def_cfa_offset 4
+ 3229 0002 83B0     		sub	sp, sp, #12
+ 3230              	.LCFI61:
+ 3231              		.cfi_def_cfa_offset 16
+ 3232 0004 00AF     		add	r7, sp, #0
+ 3233              		.cfi_offset 7, -4
+ 3234              	.LCFI62:
+ 3235              		.cfi_def_cfa_register 7
+ 3236 0006 7860     		str	r0, [r7, #4]
+ 3237 0008 3960     		str	r1, [r7, #0]
+ 933:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 934:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 935:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 936:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 937:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT((ulIntFlags & (I2S_INT_RXERR | I2S_INT_RXREQ |
+ 938:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****                           I2S_INT_TXERR | I2S_INT_TXREQ)) == ulIntFlags);
+ 939:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 940:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 941:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Enable the specified interrupts.
+ 942:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 943:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_IM) |= ulIntFlags;
+ 3238              		.loc 1 943 0
+ 3239 000a 7B68     		ldr	r3, [r7, #4]
+ 3240 000c 03F54163 		add	r3, r3, #3088
+ 3241 0010 7A68     		ldr	r2, [r7, #4]
+ 3242 0012 02F54162 		add	r2, r2, #3088
+ 3243 0016 1168     		ldr	r1, [r2, #0]
+ 3244 0018 3A68     		ldr	r2, [r7, #0]
+ 3245 001a 41EA0202 		orr	r2, r1, r2
+ 3246 001e 1A60     		str	r2, [r3, #0]
+ 944:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 3247              		.loc 1 944 0
+ 3248 0020 07F10C07 		add	r7, r7, #12
+ 3249 0024 BD46     		mov	sp, r7
+ 3250 0026 80BC     		pop	{r7}
+ 3251 0028 7047     		bx	lr
+ 3252              		.cfi_endproc
+ 3253              	.LFE20:
+ 3255 002a 00BF     		.section	.text.I2SIntDisable,"ax",%progbits
+ 3256              		.align	2
+ 3257              		.global	I2SIntDisable
+ 3258              		.thumb
+ 3259              		.thumb_func
+ 3261              	I2SIntDisable:
+ 3262              	.LFB21:
+ 945:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 946:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 947:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 948:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Disables I2S interrupt sources.
+ 949:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 950:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 951:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be disabled.
+ 952:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 953:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function disables the specified I2S sources for interrupt
+ 954:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! generation.  The \e ulIntFlags parameter can be the logical OR
+ 955:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! of any of the following values: \b I2S_INT_RXERR, \b I2S_INT_RXREQ,
+ 956:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \b I2S_INT_TXERR, or \b I2S_INT_TXREQ.
+ 957:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 958:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+ 959:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 960:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 961:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+ 962:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SIntDisable(unsigned long ulBase, unsigned long ulIntFlags)
+ 963:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 3263              		.loc 1 963 0
+ 3264              		.cfi_startproc
+ 3265              		@ args = 0, pretend = 0, frame = 8
+ 3266              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3267              		@ link register save eliminated.
+ 3268 0000 80B4     		push	{r7}
+ 3269              	.LCFI63:
+ 3270              		.cfi_def_cfa_offset 4
+ 3271 0002 83B0     		sub	sp, sp, #12
+ 3272              	.LCFI64:
+ 3273              		.cfi_def_cfa_offset 16
+ 3274 0004 00AF     		add	r7, sp, #0
+ 3275              		.cfi_offset 7, -4
+ 3276              	.LCFI65:
+ 3277              		.cfi_def_cfa_register 7
+ 3278 0006 7860     		str	r0, [r7, #4]
+ 3279 0008 3960     		str	r1, [r7, #0]
+ 964:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 965:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 966:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 967:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+ 968:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT((ulIntFlags & (I2S_INT_RXERR | I2S_INT_RXREQ |
+ 969:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****                           I2S_INT_TXERR | I2S_INT_TXREQ)) == ulIntFlags);
+ 970:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 971:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 972:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Enable the specified interrupts.
+ 973:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 974:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_IM) &= ~ulIntFlags;
+ 3280              		.loc 1 974 0
+ 3281 000a 7B68     		ldr	r3, [r7, #4]
+ 3282 000c 03F54163 		add	r3, r3, #3088
+ 3283 0010 7A68     		ldr	r2, [r7, #4]
+ 3284 0012 02F54162 		add	r2, r2, #3088
+ 3285 0016 1168     		ldr	r1, [r2, #0]
+ 3286 0018 3A68     		ldr	r2, [r7, #0]
+ 3287 001a 6FEA0202 		mvn	r2, r2
+ 3288 001e 01EA0202 		and	r2, r1, r2
+ 3289 0022 1A60     		str	r2, [r3, #0]
+ 975:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 3290              		.loc 1 975 0
+ 3291 0024 07F10C07 		add	r7, r7, #12
+ 3292 0028 BD46     		mov	sp, r7
+ 3293 002a 80BC     		pop	{r7}
+ 3294 002c 7047     		bx	lr
+ 3295              		.cfi_endproc
+ 3296              	.LFE21:
+ 3298 002e 00BF     		.section	.text.I2SIntStatus,"ax",%progbits
+ 3299              		.align	2
+ 3300              		.global	I2SIntStatus
+ 3301              		.thumb
+ 3302              		.thumb_func
+ 3304              	I2SIntStatus:
+ 3305              	.LFB22:
+ 976:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+ 977:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 978:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 979:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Gets the I2S interrupt status.
+ 980:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 981:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+ 982:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param bMasked is set \b true to get the masked interrupt status, or
+ 983:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \b false to get the raw interrupt status.
+ 984:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 985:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function returns the I2S interrupt status.  It can return either
+ 986:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the raw or masked interrupt status.
+ 987:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+ 988:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return Returns the masked or raw I2S interrupt status, as a bit field
+ 989:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! of any of the following values: \b I2S_INT_RXERR, \b I2S_INT_RXREQ,
+ 990:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \b I2S_INT_TXERR, or \b I2S_INT_TXREQ
+ 991:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+ 992:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+ 993:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** unsigned long
+ 994:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SIntStatus(unsigned long ulBase, tBoolean bMasked)
+ 995:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 3306              		.loc 1 995 0
+ 3307              		.cfi_startproc
+ 3308              		@ args = 0, pretend = 0, frame = 8
+ 3309              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3310              		@ link register save eliminated.
+ 3311 0000 80B4     		push	{r7}
+ 3312              	.LCFI66:
+ 3313              		.cfi_def_cfa_offset 4
+ 3314 0002 83B0     		sub	sp, sp, #12
+ 3315              	.LCFI67:
+ 3316              		.cfi_def_cfa_offset 16
+ 3317 0004 00AF     		add	r7, sp, #0
+ 3318              		.cfi_offset 7, -4
+ 3319              	.LCFI68:
+ 3320              		.cfi_def_cfa_register 7
+ 3321 0006 7860     		str	r0, [r7, #4]
+ 3322 0008 0B46     		mov	r3, r1
+ 3323 000a FB70     		strb	r3, [r7, #3]
+ 996:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 997:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+ 998:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+ 999:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+1000:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+1001:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1002:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Return either the interrupt status or the raw interrupt status as
+1003:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // requested.
+1004:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1005:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     if(bMasked)
+ 3324              		.loc 1 1005 0
+ 3325 000c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 3326 000e 002B     		cmp	r3, #0
+ 3327 0010 06D0     		beq	.L36
+1006:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+1007:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         return(HWREG(ulBase + I2S_O_MIS));
+ 3328              		.loc 1 1007 0
+ 3329 0012 7B68     		ldr	r3, [r7, #4]
+ 3330 0014 03F54063 		add	r3, r3, #3072
+ 3331 0018 03F11803 		add	r3, r3, #24
+ 3332 001c 1B68     		ldr	r3, [r3, #0]
+ 3333 001e 05E0     		b	.L37
+ 3334              	.L36:
+1008:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+1009:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     else
+1010:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     {
+1011:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****         return(HWREG(ulBase + I2S_O_RIS));
+ 3335              		.loc 1 1011 0
+ 3336 0020 7B68     		ldr	r3, [r7, #4]
+ 3337 0022 03F54063 		add	r3, r3, #3072
+ 3338 0026 03F11403 		add	r3, r3, #20
+ 3339 002a 1B68     		ldr	r3, [r3, #0]
+ 3340              	.L37:
+1012:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     }
+1013:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 3341              		.loc 1 1013 0
+ 3342 002c 1846     		mov	r0, r3
+ 3343 002e 07F10C07 		add	r7, r7, #12
+ 3344 0032 BD46     		mov	sp, r7
+ 3345 0034 80BC     		pop	{r7}
+ 3346 0036 7047     		bx	lr
+ 3347              		.cfi_endproc
+ 3348              	.LFE22:
+ 3350              		.section	.text.I2SIntClear,"ax",%progbits
+ 3351              		.align	2
+ 3352              		.global	I2SIntClear
+ 3353              		.thumb
+ 3354              		.thumb_func
+ 3356              	I2SIntClear:
+ 3357              	.LFB23:
+1014:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+1015:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+1016:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+1017:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Clears pending I2S interrupt sources.
+1018:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+1019:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+1020:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be cleared.
+1021:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+1022:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function clears the specified pending I2S interrupts.  This function
+1023:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! must be called in the interrupt handler to keep the interrupt from being
+1024:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! triggered again immediately upon exit.  The \e ulIntFlags parameter can be 
+1025:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the logical OR of any of the following values: \b I2S_INT_RXERR,
+1026:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \b I2S_INT_RXREQ, \b I2S_INT_TXERR, or \b I2S_INT_TXREQ.
+1027:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+1028:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \note Because there is a write buffer in the Cortex-M processor, it may
+1029:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! take several clock cycles before the interrupt source is actually cleared.
+1030:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Therefore, it is recommended that the interrupt source be cleared early in
+1031:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the interrupt handler (as opposed to the very last action) to avoid
+1032:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! returning from the interrupt handler before the interrupt source is
+1033:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! actually cleared.  Failure to do so may result in the interrupt handler
+1034:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! being immediately reentered (because the interrupt controller still sees
+1035:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! the interrupt source asserted).
+1036:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+1037:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+1038:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+1039:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+1040:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+1041:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SIntClear(unsigned long ulBase, unsigned long ulIntFlags)
+1042:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 3358              		.loc 1 1042 0
+ 3359              		.cfi_startproc
+ 3360              		@ args = 0, pretend = 0, frame = 8
+ 3361              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3362              		@ link register save eliminated.
+ 3363 0000 80B4     		push	{r7}
+ 3364              	.LCFI69:
+ 3365              		.cfi_def_cfa_offset 4
+ 3366 0002 83B0     		sub	sp, sp, #12
+ 3367              	.LCFI70:
+ 3368              		.cfi_def_cfa_offset 16
+ 3369 0004 00AF     		add	r7, sp, #0
+ 3370              		.cfi_offset 7, -4
+ 3371              	.LCFI71:
+ 3372              		.cfi_def_cfa_register 7
+ 3373 0006 7860     		str	r0, [r7, #4]
+ 3374 0008 3960     		str	r1, [r7, #0]
+1043:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1044:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+1045:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1046:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+1047:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT((ulIntFlags & (I2S_INT_RXERR | I2S_INT_RXREQ |
+1048:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****                           I2S_INT_TXERR | I2S_INT_TXREQ)) == ulIntFlags);
+1049:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+1050:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1051:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Clear the requested interrupt sources.
+1052:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1053:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     HWREG(ulBase + I2S_O_IC) = ulIntFlags;
+ 3375              		.loc 1 1053 0
+ 3376 000a 7B68     		ldr	r3, [r7, #4]
+ 3377 000c 03F54063 		add	r3, r3, #3072
+ 3378 0010 03F11C03 		add	r3, r3, #28
+ 3379 0014 3A68     		ldr	r2, [r7, #0]
+ 3380 0016 1A60     		str	r2, [r3, #0]
+1054:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 3381              		.loc 1 1054 0
+ 3382 0018 07F10C07 		add	r7, r7, #12
+ 3383 001c BD46     		mov	sp, r7
+ 3384 001e 80BC     		pop	{r7}
+ 3385 0020 7047     		bx	lr
+ 3386              		.cfi_endproc
+ 3387              	.LFE23:
+ 3389 0022 00BF     		.section	.text.I2SIntRegister,"ax",%progbits
+ 3390              		.align	2
+ 3391              		.global	I2SIntRegister
+ 3392              		.thumb
+ 3393              		.thumb_func
+ 3395              	I2SIntRegister:
+ 3396              	.LFB24:
+1055:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+1056:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+1057:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+1058:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Registers an interrupt handler for the I2S controller.
+1059:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+1060:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+1061:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param pfnHandler is a pointer to the function to be called when the
+1062:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! interrupt is activated.
+1063:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+1064:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function sets and enables the handler to be called when the I2S 
+1065:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! controller generates an interrupt.  Specific I2S interrupts must still be 
+1066:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! enabled with the I2SIntEnable() function.  It is the responsibility of the
+1067:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! interrupt handler to clear any pending interrupts with I2SIntClear().
+1068:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+1069:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \sa IntRegister() for important information about registering interrupt
+1070:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! handlers.
+1071:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+1072:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+1073:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+1074:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+1075:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+1076:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SIntRegister(unsigned long ulBase, void (*pfnHandler)(void))
+1077:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 3397              		.loc 1 1077 0
+ 3398              		.cfi_startproc
+ 3399              		@ args = 0, pretend = 0, frame = 8
+ 3400              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3401 0000 80B5     		push	{r7, lr}
+ 3402              	.LCFI72:
+ 3403              		.cfi_def_cfa_offset 8
+ 3404 0002 82B0     		sub	sp, sp, #8
+ 3405              	.LCFI73:
+ 3406              		.cfi_def_cfa_offset 16
+ 3407 0004 00AF     		add	r7, sp, #0
+ 3408              		.cfi_offset 14, -4
+ 3409              		.cfi_offset 7, -8
+ 3410              	.LCFI74:
+ 3411              		.cfi_def_cfa_register 7
+ 3412 0006 7860     		str	r0, [r7, #4]
+ 3413 0008 3960     		str	r1, [r7, #0]
+1078:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1079:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+1080:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1081:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+1082:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(pfnHandler);
+1083:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+1084:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1085:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Register the interrupt handler.
+1086:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1087:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     IntRegister(INT_I2S0, pfnHandler);
+ 3414              		.loc 1 1087 0
+ 3415 000a 4FF04400 		mov	r0, #68
+ 3416 000e 3968     		ldr	r1, [r7, #0]
+ 3417 0010 FFF7FEFF 		bl	IntRegister
+1088:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+1089:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1090:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Enable the I2S interface interrupt.
+1091:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1092:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     IntEnable(INT_I2S0);
+ 3418              		.loc 1 1092 0
+ 3419 0014 4FF04400 		mov	r0, #68
+ 3420 0018 FFF7FEFF 		bl	IntEnable
+1093:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 3421              		.loc 1 1093 0
+ 3422 001c 07F10807 		add	r7, r7, #8
+ 3423 0020 BD46     		mov	sp, r7
+ 3424 0022 80BD     		pop	{r7, pc}
+ 3425              		.cfi_endproc
+ 3426              	.LFE24:
+ 3428              		.section	.text.I2SIntUnregister,"ax",%progbits
+ 3429              		.align	2
+ 3430              		.global	I2SIntUnregister
+ 3431              		.thumb
+ 3432              		.thumb_func
+ 3434              	I2SIntUnregister:
+ 3435              	.LFB25:
+1094:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+1095:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+1096:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+1097:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! Unregisters an interrupt handler for the I2S controller.
+1098:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+1099:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \param ulBase is the I2S module base address.
+1100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+1101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! This function disables and clears the handler to be called when the
+1102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! I2S interrupt occurs.
+1103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+1104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \sa IntRegister() for important information about registering interrupt
+1105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! handlers.
+1106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //!
+1107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //! \return None.
+1108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //
+1109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** //*****************************************************************************
+1110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** void
+1111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** I2SIntUnregister(unsigned long ulBase)
+1112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** {
+ 3436              		.loc 1 1112 0
+ 3437              		.cfi_startproc
+ 3438              		@ args = 0, pretend = 0, frame = 8
+ 3439              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3440 0000 80B5     		push	{r7, lr}
+ 3441              	.LCFI75:
+ 3442              		.cfi_def_cfa_offset 8
+ 3443 0002 82B0     		sub	sp, sp, #8
+ 3444              	.LCFI76:
+ 3445              		.cfi_def_cfa_offset 16
+ 3446 0004 00AF     		add	r7, sp, #0
+ 3447              		.cfi_offset 14, -4
+ 3448              		.cfi_offset 7, -8
+ 3449              	.LCFI77:
+ 3450              		.cfi_def_cfa_register 7
+ 3451 0006 7860     		str	r0, [r7, #4]
+1113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Check the arguments.
+1115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     ASSERT(ulBase == I2S0_BASE);
+1117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+1118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Disable the I2S interface interrupt.
+1120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     IntDisable(INT_I2S0);
+ 3452              		.loc 1 1121 0
+ 3453 0008 4FF04400 		mov	r0, #68
+ 3454 000c FFF7FEFF 		bl	IntDisable
+1122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** 
+1123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     // Unregister the interrupt handler.
+1125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     //
+1126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c ****     IntUnregister(INT_I2S0);
+ 3455              		.loc 1 1126 0
+ 3456 0010 4FF04400 		mov	r0, #68
+ 3457 0014 FFF7FEFF 		bl	IntUnregister
+1127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/i2s.c **** }
+ 3458              		.loc 1 1127 0
+ 3459 0018 07F10807 		add	r7, r7, #8
+ 3460 001c BD46     		mov	sp, r7
+ 3461 001e 80BD     		pop	{r7, pc}
+ 3462              		.cfi_endproc
+ 3463              	.LFE25:
+ 3465              		.text
+ 3466              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 i2s.c
+     /tmp/cccqa8fK.s:2234   .text.I2STxEnable:00000000 $t
+     /tmp/cccqa8fK.s:2239   .text.I2STxEnable:00000000 I2STxEnable
+     /tmp/cccqa8fK.s:2279   .text.I2STxDisable:00000000 $t
+     /tmp/cccqa8fK.s:2284   .text.I2STxDisable:00000000 I2STxDisable
+     /tmp/cccqa8fK.s:2319   .text.I2STxDataPut:00000000 $t
+     /tmp/cccqa8fK.s:2324   .text.I2STxDataPut:00000000 I2STxDataPut
+     /tmp/cccqa8fK.s:2365   .text.I2STxDataPutNonBlocking:00000000 $t
+     /tmp/cccqa8fK.s:2370   .text.I2STxDataPutNonBlocking:00000000 I2STxDataPutNonBlocking
+     /tmp/cccqa8fK.s:2416   .text.I2STxConfigSet:00000000 $t
+     /tmp/cccqa8fK.s:2421   .text.I2STxConfigSet:00000000 I2STxConfigSet
+     /tmp/cccqa8fK.s:2476   .text.I2STxFIFOLimitSet:00000000 $t
+     /tmp/cccqa8fK.s:2481   .text.I2STxFIFOLimitSet:00000000 I2STxFIFOLimitSet
+     /tmp/cccqa8fK.s:2514   .text.I2STxFIFOLimitGet:00000000 $t
+     /tmp/cccqa8fK.s:2519   .text.I2STxFIFOLimitGet:00000000 I2STxFIFOLimitGet
+     /tmp/cccqa8fK.s:2551   .text.I2STxFIFOLevelGet:00000000 $t
+     /tmp/cccqa8fK.s:2556   .text.I2STxFIFOLevelGet:00000000 I2STxFIFOLevelGet
+     /tmp/cccqa8fK.s:2588   .text.I2SRxEnable:00000000 $t
+     /tmp/cccqa8fK.s:2593   .text.I2SRxEnable:00000000 I2SRxEnable
+     /tmp/cccqa8fK.s:2633   .text.I2SRxDisable:00000000 $t
+     /tmp/cccqa8fK.s:2638   .text.I2SRxDisable:00000000 I2SRxDisable
+     /tmp/cccqa8fK.s:2673   .text.I2SRxDataGet:00000000 $t
+     /tmp/cccqa8fK.s:2678   .text.I2SRxDataGet:00000000 I2SRxDataGet
+     /tmp/cccqa8fK.s:2722   .text.I2SRxDataGetNonBlocking:00000000 $t
+     /tmp/cccqa8fK.s:2727   .text.I2SRxDataGetNonBlocking:00000000 I2SRxDataGetNonBlocking
+     /tmp/cccqa8fK.s:2776   .text.I2SRxConfigSet:00000000 $t
+     /tmp/cccqa8fK.s:2781   .text.I2SRxConfigSet:00000000 I2SRxConfigSet
+     /tmp/cccqa8fK.s:2860   .text.I2SRxFIFOLimitSet:00000000 $t
+     /tmp/cccqa8fK.s:2865   .text.I2SRxFIFOLimitSet:00000000 I2SRxFIFOLimitSet
+     /tmp/cccqa8fK.s:2899   .text.I2SRxFIFOLimitGet:00000000 $t
+     /tmp/cccqa8fK.s:2904   .text.I2SRxFIFOLimitGet:00000000 I2SRxFIFOLimitGet
+     /tmp/cccqa8fK.s:2939   .text.I2SRxFIFOLevelGet:00000000 $t
+     /tmp/cccqa8fK.s:2944   .text.I2SRxFIFOLevelGet:00000000 I2SRxFIFOLevelGet
+     /tmp/cccqa8fK.s:2977   .text.I2STxRxEnable:00000000 $t
+     /tmp/cccqa8fK.s:2982   .text.I2STxRxEnable:00000000 I2STxRxEnable
+     /tmp/cccqa8fK.s:3027   .text.I2STxRxDisable:00000000 $t
+     /tmp/cccqa8fK.s:3032   .text.I2STxRxDisable:00000000 I2STxRxDisable
+     /tmp/cccqa8fK.s:3067   .text.I2STxRxConfigSet:00000000 $t
+     /tmp/cccqa8fK.s:3072   .text.I2STxRxConfigSet:00000000 I2STxRxConfigSet
+     /tmp/cccqa8fK.s:3168   .text.I2SMasterClockSelect:00000000 $t
+     /tmp/cccqa8fK.s:3173   .text.I2SMasterClockSelect:00000000 I2SMasterClockSelect
+     /tmp/cccqa8fK.s:3214   .text.I2SIntEnable:00000000 $t
+     /tmp/cccqa8fK.s:3219   .text.I2SIntEnable:00000000 I2SIntEnable
+     /tmp/cccqa8fK.s:3256   .text.I2SIntDisable:00000000 $t
+     /tmp/cccqa8fK.s:3261   .text.I2SIntDisable:00000000 I2SIntDisable
+     /tmp/cccqa8fK.s:3299   .text.I2SIntStatus:00000000 $t
+     /tmp/cccqa8fK.s:3304   .text.I2SIntStatus:00000000 I2SIntStatus
+     /tmp/cccqa8fK.s:3351   .text.I2SIntClear:00000000 $t
+     /tmp/cccqa8fK.s:3356   .text.I2SIntClear:00000000 I2SIntClear
+     /tmp/cccqa8fK.s:3390   .text.I2SIntRegister:00000000 $t
+     /tmp/cccqa8fK.s:3395   .text.I2SIntRegister:00000000 I2SIntRegister
+     /tmp/cccqa8fK.s:3429   .text.I2SIntUnregister:00000000 $t
+     /tmp/cccqa8fK.s:3434   .text.I2SIntUnregister:00000000 I2SIntUnregister
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister

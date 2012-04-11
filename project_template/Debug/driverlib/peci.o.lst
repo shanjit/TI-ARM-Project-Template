@@ -1,0 +1,2126 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"peci.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c"
+ 8140              		.align	2
+ 8141              		.global	PECIConfigSet
+ 8142              		.thumb
+ 8143              		.thumb_func
+ 8145              	PECIConfigSet:
+ 8146              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // peci.c - Driver for the Platform Environment Control Interface (PECI)
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //          module.
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // Copyright (c) 2010-2011 Texas Instruments Incorporated.  All rights reserved.
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // Software License Agreement
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // 
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // Texas Instruments (TI) is supplying this software for use solely and
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // exclusively on TI's microcontroller products. The software is owned by
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // laws. You may not combine this software with "viral" open-source
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // software in order to form a larger program.
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // 
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // 
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \addtogroup peci_api
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! @{
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #include "inc/hw_ints.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #include "inc/hw_memmap.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #include "inc/hw_peci.h"
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #include "inc/hw_sysctl.h"
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #include "inc/hw_types.h"
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #include "driverlib/debug.h"
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #include "driverlib/interrupt.h"
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #include "driverlib/peci.h"
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // The following defines provide characteristics of the PECI module that are
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // important to the driver but which can not be gleaned from the register
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** // definitions.
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #define PECI_MAX_BAUD           2000000     // Maximum baud rate
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #define PECI_MIN_BAUD           2000        // Minimum baud rate
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #define PECI_MIN_RATIO          8           // Minimum baud rate divider
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #define PECI_MAX_RATIO          65535       // Maximum baud rate divider
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #define PECI_POLL_PRESCALE      4096        // Polling timer prescaler
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #define PECI_MIN_POLL           2           // Minimum polling interval (ms)
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #define PECI_MAX_POLL           1000        // Maximum polling interval (ms)
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \internal
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Checks a PECI domain.
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulDomain is the PECI domain identifier.
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function determines if a domain identifier is valid.
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return Returns \b true if the domain identifier is valid and \b false
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! otherwise.
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #ifdef DEBUG
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** static tBoolean
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIDomainValid(unsigned long ulDomain)
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     return((ulDomain == PECI_DOMAIN_M0D0) ||
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****            (ulDomain == PECI_DOMAIN_M0D1) ||
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****            (ulDomain == PECI_DOMAIN_M1D0) ||
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****            (ulDomain == PECI_DOMAIN_M1D1));
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** #endif
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Sets the configuration of the PECI module.
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase is the base address of the PECI module.
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulPECIClk is the rate of the clock supplied to the PECI module.
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBaud is the bit rate that should be used for the PECI transfers.
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulPoll is the polling rate, in ms, that should be used for the
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! time between PECI polls.
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulOffset is the offset to be applied to all temperature values to
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! convert from relative to absolute.
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulRetry is the number of retry attempts for a PECI transaction.
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function initializes operation of the PECI block.  It programs the bit
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! rate, polling rate and retry counts for PECI transactions.  It also
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! programs the offset value to be used to translate relative temperature
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! values from PECI transactions to absolute values.  At the end of this
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! function, no host/domain combinations are enabled.  Each desired
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! host/domain combination can be configured/enabled with a call to
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! PECIDomainEnable().
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The peripheral clock is the same as the processor clock.  This value is
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! returned by SysCtlClockGet(), or it can be explicitly hard coded if it is
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! constant and known (to save the code/execution overhead of a call to
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! SysCtlClockGet()).
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulBaud parameter defines the bit rate for the PECI transactions.
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This value is used to calculate a divisor value based on the specified
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \e ulPECIClk.  If the exact baud rate cannot be achieved (due to rounding),
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! the baud rate is programmed to the nearest value that is less than the
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! specified value.
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulPoll parameter defines the polling rate, in milliseconds, used
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! for PECI transactions.  For generation of the polling rate, the \e
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! ulPECIClk is pre-divided by \b 4096.  A value of 0 disables the polling
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! feature.  If the exact polling rate cannot be achieved (due to rounding),
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! the polling rate is programmed to the nearest value that is greater than
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! the specified value.
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulRetry parameter defines the number of PECI transactions that are
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! attempted before indicating an error condition.
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIConfigSet(unsigned long ulBase, unsigned long ulPECIClk,
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****               unsigned long ulBaud, unsigned long ulPoll,
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****               unsigned long ulOffset, unsigned long ulRetry)
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8147              		.loc 1 130 0
+ 8148              		.cfi_startproc
+ 8149              		@ args = 8, pretend = 0, frame = 24
+ 8150              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8151              		@ link register save eliminated.
+ 8152 0000 80B4     		push	{r7}
+ 8153              	.LCFI0:
+ 8154              		.cfi_def_cfa_offset 4
+ 8155 0002 87B0     		sub	sp, sp, #28
+ 8156              	.LCFI1:
+ 8157              		.cfi_def_cfa_offset 32
+ 8158 0004 00AF     		add	r7, sp, #0
+ 8159              		.cfi_offset 7, -4
+ 8160              	.LCFI2:
+ 8161              		.cfi_def_cfa_register 7
+ 8162 0006 F860     		str	r0, [r7, #12]
+ 8163 0008 B960     		str	r1, [r7, #8]
+ 8164 000a 7A60     		str	r2, [r7, #4]
+ 8165 000c 3B60     		str	r3, [r7, #0]
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     unsigned long ulTemp, ulDiv;
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulPECIClk != 0);
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT((ulBaud != 0) && (ulBaud <= PECI_MAX_BAUD) &&
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****            (ulBaud >= PECI_MIN_BAUD) &&
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****            ((ulBaud * 4 * PECI_MIN_RATIO) < ulPECIClk));
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT((ulPoll == 0) ||
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****            ((ulPoll >= PECI_MIN_POLL) && (ulPoll <= PECI_MAX_POLL)));
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Generate value for the PECI Control Register.
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulTemp = ((ulOffset << PECI_CTL_OFFSET_S) & PECI_CTL_OFFSET_M);
+ 8166              		.loc 1 147 0
+ 8167 000e 3B6A     		ldr	r3, [r7, #32]
+ 8168 0010 4FEA0343 		lsl	r3, r3, #16
+ 8169 0014 7B61     		str	r3, [r7, #20]
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulTemp |= ((ulRetry << PECI_CTL_CRETRY_S) & PECI_CTL_CRETRY_M);
+ 8170              		.loc 1 148 0
+ 8171 0016 7B6A     		ldr	r3, [r7, #36]
+ 8172 0018 4FEA0333 		lsl	r3, r3, #12
+ 8173 001c 03F4E043 		and	r3, r3, #28672
+ 8174 0020 7A69     		ldr	r2, [r7, #20]
+ 8175 0022 42EA0303 		orr	r3, r2, r3
+ 8176 0026 7B61     		str	r3, [r7, #20]
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_CTL) = ulTemp;
+ 8177              		.loc 1 149 0
+ 8178 0028 FB68     		ldr	r3, [r7, #12]
+ 8179 002a 7A69     		ldr	r2, [r7, #20]
+ 8180 002c 1A60     		str	r2, [r3, #0]
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Compute the divisor for the PECI baud rate clock.
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Round up, to ensure programmed baud rate is <= specified rate.
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Ensure that proper ratio is maintained for clock:baud.
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulDiv = (ulPECIClk + (4 * ulBaud) - 1) / (4 * ulBaud);
+ 8181              		.loc 1 156 0
+ 8182 002e 7B68     		ldr	r3, [r7, #4]
+ 8183 0030 4FEA8302 		lsl	r2, r3, #2
+ 8184 0034 BB68     		ldr	r3, [r7, #8]
+ 8185 0036 D318     		adds	r3, r2, r3
+ 8186 0038 03F1FF32 		add	r2, r3, #-1
+ 8187 003c 7B68     		ldr	r3, [r7, #4]
+ 8188 003e 4FEA8303 		lsl	r3, r3, #2
+ 8189 0042 B2FBF3F3 		udiv	r3, r2, r3
+ 8190 0046 3B61     		str	r3, [r7, #16]
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulDiv = (ulDiv < PECI_MIN_RATIO) ? PECI_MIN_RATIO : ulDiv;
+ 8191              		.loc 1 157 0
+ 8192 0048 3B69     		ldr	r3, [r7, #16]
+ 8193 004a 082B     		cmp	r3, #8
+ 8194 004c 38BF     		it	cc
+ 8195 004e 0823     		movcc	r3, #8
+ 8196 0050 3B61     		str	r3, [r7, #16]
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulDiv = (ulDiv > PECI_MAX_RATIO) ? PECI_MAX_RATIO : ulDiv;
+ 8197              		.loc 1 158 0
+ 8198 0052 3A69     		ldr	r2, [r7, #16]
+ 8199 0054 4FF6FF73 		movw	r3, #65535
+ 8200 0058 9A42     		cmp	r2, r3
+ 8201 005a 38BF     		it	cc
+ 8202 005c 1346     		movcc	r3, r2
+ 8203 005e 3B61     		str	r3, [r7, #16]
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulTemp = ((ulDiv << PECI_DIV_BAUD_S) & PECI_DIV_BAUD_M);
+ 8204              		.loc 1 159 0
+ 8205 0060 3B69     		ldr	r3, [r7, #16]
+ 8206 0062 4FEA0343 		lsl	r3, r3, #16
+ 8207 0066 7B61     		str	r3, [r7, #20]
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Compute the divisor for the PECI polling rate.
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Round up, to ensure programmed polling rate is >= specified rate.
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulDiv = ((ulPoll == 0) ? 0 : ((((ulPECIClk * ulPoll) / 1000) +
+ 8208              		.loc 1 165 0
+ 8209 0068 3B68     		ldr	r3, [r7, #0]
+ 8210 006a 002B     		cmp	r3, #0
+ 8211 006c 0FD0     		beq	.L2
+ 8212              		.loc 1 165 0 is_stmt 0 discriminator 1
+ 8213 006e BB68     		ldr	r3, [r7, #8]
+ 8214 0070 3A68     		ldr	r2, [r7, #0]
+ 8215 0072 02FB03F2 		mul	r2, r2, r3
+ 8216 0076 114B     		ldr	r3, .L4
+ 8217 0078 A3FB0213 		umull	r1, r3, r3, r2
+ 8218 007c 4FEA9313 		lsr	r3, r3, #6
+ 8219 0080 03F57E63 		add	r3, r3, #4064
+ 8220 0084 03F11F03 		add	r3, r3, #31
+ 8221 0088 4FEA1333 		lsr	r3, r3, #12
+ 8222 008c 01E0     		b	.L3
+ 8223              	.L2:
+ 8224              		.loc 1 165 0 discriminator 2
+ 8225 008e 4FF00003 		mov	r3, #0
+ 8226              	.L3:
+ 8227              		.loc 1 165 0 discriminator 3
+ 8228 0092 3B61     		str	r3, [r7, #16]
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                                    (PECI_POLL_PRESCALE - 1)) /
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                                   PECI_POLL_PRESCALE));
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulTemp |= ((ulDiv << PECI_DIV_POLL_S) & PECI_DIV_POLL_M);;
+ 8229              		.loc 1 168 0 is_stmt 1 discriminator 3
+ 8230 0094 3B69     		ldr	r3, [r7, #16]
+ 8231 0096 4FEA0343 		lsl	r3, r3, #16
+ 8232 009a 4FEA1343 		lsr	r3, r3, #16
+ 8233 009e 7A69     		ldr	r2, [r7, #20]
+ 8234 00a0 42EA0303 		orr	r3, r2, r3
+ 8235 00a4 7B61     		str	r3, [r7, #20]
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_DIV) = ulTemp;
+ 8236              		.loc 1 169 0 discriminator 3
+ 8237 00a6 FB68     		ldr	r3, [r7, #12]
+ 8238 00a8 03F10403 		add	r3, r3, #4
+ 8239 00ac 7A69     		ldr	r2, [r7, #20]
+ 8240 00ae 1A60     		str	r2, [r3, #0]
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8241              		.loc 1 170 0 discriminator 3
+ 8242 00b0 07F11C07 		add	r7, r7, #28
+ 8243 00b4 BD46     		mov	sp, r7
+ 8244 00b6 80BC     		pop	{r7}
+ 8245 00b8 7047     		bx	lr
+ 8246              	.L5:
+ 8247 00ba 00BF     		.align	2
+ 8248              	.L4:
+ 8249 00bc D34D6210 		.word	274877907
+ 8250              		.cfi_endproc
+ 8251              	.LFE0:
+ 8253              		.section	.text.PECIConfigGet,"ax",%progbits
+ 8254              		.align	2
+ 8255              		.global	PECIConfigGet
+ 8256              		.thumb
+ 8257              		.thumb_func
+ 8259              	PECIConfigGet:
+ 8260              	.LFB1:
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Gets the current configuration of the PECI module.
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase is the base address of the PECI module.
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulPECIClk is the rate of the clock supplied to the PECI module.
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param pulBaud is a pointer to storage for the bit rate.
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param pulPoll is a pointer to storage for the polling rate.
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param pulOffset is a pointer to stoarage for the offset.
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param pulRetry is a pointer to storage for the retry count.
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The baud rate and poll rate for the PECI module are determined, given an
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! explicitly provided peripheral clock.  The returned rates are the actual
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! rates being used; they may not be the same as the requested rates, due to
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! rounding in the calculations.
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The peripheral clock is the same as the processor clock.  This value is
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! returned by SysCtlClockGet(), or it can be explicitly hard coded if it is
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! constant and known (to save the code/execution overhead of a call to
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! SysCtlClockGet()).
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIConfigGet(unsigned long ulBase, unsigned long ulPECIClk,
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****               unsigned long *pulBaud, unsigned long *pulPoll,
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****               unsigned long *pulOffset, unsigned long *pulRetry)
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8261              		.loc 1 200 0
+ 8262              		.cfi_startproc
+ 8263              		@ args = 8, pretend = 0, frame = 24
+ 8264              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8265              		@ link register save eliminated.
+ 8266 0000 80B4     		push	{r7}
+ 8267              	.LCFI3:
+ 8268              		.cfi_def_cfa_offset 4
+ 8269 0002 87B0     		sub	sp, sp, #28
+ 8270              	.LCFI4:
+ 8271              		.cfi_def_cfa_offset 32
+ 8272 0004 00AF     		add	r7, sp, #0
+ 8273              		.cfi_offset 7, -4
+ 8274              	.LCFI5:
+ 8275              		.cfi_def_cfa_register 7
+ 8276 0006 F860     		str	r0, [r7, #12]
+ 8277 0008 B960     		str	r1, [r7, #8]
+ 8278 000a 7A60     		str	r2, [r7, #4]
+ 8279 000c 3B60     		str	r3, [r7, #0]
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     unsigned long ulTemp;
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulPECIClk != 0);
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(*pulBaud != 0);
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(*pulPoll != 0);
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(*pulOffset != 0);
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(*pulRetry != 0);
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Retrieve the Offset and Retry values
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulTemp = HWREG(ulBase + PECI_O_CTL);
+ 8280              		.loc 1 216 0
+ 8281 000e FB68     		ldr	r3, [r7, #12]
+ 8282 0010 1B68     		ldr	r3, [r3, #0]
+ 8283 0012 7B61     		str	r3, [r7, #20]
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     *pulOffset = ((ulTemp & PECI_CTL_OFFSET_M) >> PECI_CTL_OFFSET_S);
+ 8284              		.loc 1 217 0
+ 8285 0014 7B69     		ldr	r3, [r7, #20]
+ 8286 0016 4FEA1342 		lsr	r2, r3, #16
+ 8287 001a 3B6A     		ldr	r3, [r7, #32]
+ 8288 001c 1A60     		str	r2, [r3, #0]
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     *pulRetry = ((ulTemp & PECI_CTL_CRETRY_M) >> PECI_CTL_CRETRY_S);
+ 8289              		.loc 1 218 0
+ 8290 001e 7B69     		ldr	r3, [r7, #20]
+ 8291 0020 03F4E043 		and	r3, r3, #28672
+ 8292 0024 4FEA1332 		lsr	r2, r3, #12
+ 8293 0028 7B6A     		ldr	r3, [r7, #36]
+ 8294 002a 1A60     		str	r2, [r3, #0]
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Calculate the baud rate.
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulTemp = HWREG(ulBase + PECI_O_DIV);
+ 8295              		.loc 1 223 0
+ 8296 002c FB68     		ldr	r3, [r7, #12]
+ 8297 002e 03F10403 		add	r3, r3, #4
+ 8298 0032 1B68     		ldr	r3, [r3, #0]
+ 8299 0034 7B61     		str	r3, [r7, #20]
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     *pulBaud = ulPECIClk / ((ulTemp & PECI_DIV_BAUD_M) >> PECI_DIV_BAUD_S);
+ 8300              		.loc 1 224 0
+ 8301 0036 7B69     		ldr	r3, [r7, #20]
+ 8302 0038 4FEA1343 		lsr	r3, r3, #16
+ 8303 003c BA68     		ldr	r2, [r7, #8]
+ 8304 003e B2FBF3F2 		udiv	r2, r2, r3
+ 8305 0042 7B68     		ldr	r3, [r7, #4]
+ 8306 0044 1A60     		str	r2, [r3, #0]
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Compute the divisor for the PECI polling rate.
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Round up, to ensure programmed polling rate is >= specified rate.
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     *pulPoll = ((((ulTemp & PECI_DIV_POLL_M) >> PECI_DIV_POLL_S) * 1000) /
+ 8307              		.loc 1 230 0
+ 8308 0046 7B69     		ldr	r3, [r7, #20]
+ 8309 0048 4FEA0343 		lsl	r3, r3, #16
+ 8310 004c 4FEA1343 		lsr	r3, r3, #16
+ 8311 0050 4FF47A72 		mov	r2, #1000
+ 8312 0054 02FB03F2 		mul	r2, r2, r3
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****         (ulPECIClk / PECI_POLL_PRESCALE));
+ 8313              		.loc 1 231 0
+ 8314 0058 BB68     		ldr	r3, [r7, #8]
+ 8315 005a 4FEA1333 		lsr	r3, r3, #12
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     *pulPoll = ((((ulTemp & PECI_DIV_POLL_M) >> PECI_DIV_POLL_S) * 1000) /
+ 8316              		.loc 1 230 0
+ 8317 005e B2FBF3F2 		udiv	r2, r2, r3
+ 8318 0062 3B68     		ldr	r3, [r7, #0]
+ 8319 0064 1A60     		str	r2, [r3, #0]
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8320              		.loc 1 232 0
+ 8321 0066 07F11C07 		add	r7, r7, #28
+ 8322 006a BD46     		mov	sp, r7
+ 8323 006c 80BC     		pop	{r7}
+ 8324 006e 7047     		bx	lr
+ 8325              		.cfi_endproc
+ 8326              	.LFE1:
+ 8328              		.section	.text.PECIBypassEnable,"ax",%progbits
+ 8329              		.align	2
+ 8330              		.global	PECIBypassEnable
+ 8331              		.thumb
+ 8332              		.thumb_func
+ 8334              	PECIBypassEnable:
+ 8335              	.LFB2:
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Enables bypassing of negotiation errors.
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase is the base address of the PECI module.
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function enables bypassing of negotiation errors that might occur
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! during a PECI transaction.  When enabled, negotiation errors are ignored.
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIBypassEnable(unsigned long ulBase)
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8336              		.loc 1 248 0
+ 8337              		.cfi_startproc
+ 8338              		@ args = 0, pretend = 0, frame = 8
+ 8339              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8340              		@ link register save eliminated.
+ 8341 0000 80B4     		push	{r7}
+ 8342              	.LCFI6:
+ 8343              		.cfi_def_cfa_offset 4
+ 8344 0002 83B0     		sub	sp, sp, #12
+ 8345              	.LCFI7:
+ 8346              		.cfi_def_cfa_offset 16
+ 8347 0004 00AF     		add	r7, sp, #0
+ 8348              		.cfi_offset 7, -4
+ 8349              	.LCFI8:
+ 8350              		.cfi_def_cfa_register 7
+ 8351 0006 7860     		str	r0, [r7, #4]
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Enable bypass.
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_CTL) |= PECI_CTL_BYERR;
+ 8352              		.loc 1 257 0
+ 8353 0008 7B68     		ldr	r3, [r7, #4]
+ 8354 000a 7A68     		ldr	r2, [r7, #4]
+ 8355 000c 1268     		ldr	r2, [r2, #0]
+ 8356 000e 42F40062 		orr	r2, r2, #2048
+ 8357 0012 1A60     		str	r2, [r3, #0]
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8358              		.loc 1 258 0
+ 8359 0014 07F10C07 		add	r7, r7, #12
+ 8360 0018 BD46     		mov	sp, r7
+ 8361 001a 80BC     		pop	{r7}
+ 8362 001c 7047     		bx	lr
+ 8363              		.cfi_endproc
+ 8364              	.LFE2:
+ 8366 001e 00BF     		.section	.text.PECIBypassDisable,"ax",%progbits
+ 8367              		.align	2
+ 8368              		.global	PECIBypassDisable
+ 8369              		.thumb
+ 8370              		.thumb_func
+ 8372              	PECIBypassDisable:
+ 8373              	.LFB3:
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Disables bypassing of negotiation errors.
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase is the base address of the PECI module.
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function disables bypassing of negotiation errors that might occur
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! during a PECI transaction.  When disabled, negotiation errors are reported
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! and the remainder of the transaction is aborted.
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIBypassDisable(unsigned long ulBase)
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8374              		.loc 1 275 0
+ 8375              		.cfi_startproc
+ 8376              		@ args = 0, pretend = 0, frame = 8
+ 8377              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8378              		@ link register save eliminated.
+ 8379 0000 80B4     		push	{r7}
+ 8380              	.LCFI9:
+ 8381              		.cfi_def_cfa_offset 4
+ 8382 0002 83B0     		sub	sp, sp, #12
+ 8383              	.LCFI10:
+ 8384              		.cfi_def_cfa_offset 16
+ 8385 0004 00AF     		add	r7, sp, #0
+ 8386              		.cfi_offset 7, -4
+ 8387              	.LCFI11:
+ 8388              		.cfi_def_cfa_register 7
+ 8389 0006 7860     		str	r0, [r7, #4]
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Disable bypass.
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_CTL) &= ~PECI_CTL_BYERR;
+ 8390              		.loc 1 284 0
+ 8391 0008 7B68     		ldr	r3, [r7, #4]
+ 8392 000a 7A68     		ldr	r2, [r7, #4]
+ 8393 000c 1268     		ldr	r2, [r2, #0]
+ 8394 000e 22F40062 		bic	r2, r2, #2048
+ 8395 0012 1A60     		str	r2, [r3, #0]
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8396              		.loc 1 285 0
+ 8397 0014 07F10C07 		add	r7, r7, #12
+ 8398 0018 BD46     		mov	sp, r7
+ 8399 001a 80BC     		pop	{r7}
+ 8400 001c 7047     		bx	lr
+ 8401              		.cfi_endproc
+ 8402              	.LFE3:
+ 8404 001e 00BF     		.section	.text.PECIDomainConfigSet,"ax",%progbits
+ 8405              		.align	2
+ 8406              		.global	PECIDomainConfigSet
+ 8407              		.thumb
+ 8408              		.thumb_func
+ 8410              	PECIDomainConfigSet:
+ 8411              	.LFB4:
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Sets the configuration of the specified PECI domain.
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase is the base address of the PECI module.
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulDomain is the PECI domain that should be configured.
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulHigh is the high temperature threshold value.
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulLow is the low temperature threshold value.
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function configures the specified PECI domain for temperature
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! monitoring  operations.  The values for \e ulHigh and \e ulLow can be
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! specified as values relative to the maximum temperature allowed, or they
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! can be specified as absolute temperatures if an offset was programmed
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! in the PECIConfigSet() function.
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulDomain parameter can be one of the following values:
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M0D0, \b PECI_DOMAIN_M0D1, \b PECI_DOMAIN_M1D0, or
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M1D1.
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIDomainConfigSet(unsigned long ulBase, unsigned long ulDomain,
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                     unsigned long ulHigh, unsigned long ulLow)
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8412              		.loc 1 312 0
+ 8413              		.cfi_startproc
+ 8414              		@ args = 0, pretend = 0, frame = 16
+ 8415              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8416              		@ link register save eliminated.
+ 8417 0000 80B4     		push	{r7}
+ 8418              	.LCFI12:
+ 8419              		.cfi_def_cfa_offset 4
+ 8420 0002 85B0     		sub	sp, sp, #20
+ 8421              	.LCFI13:
+ 8422              		.cfi_def_cfa_offset 24
+ 8423 0004 00AF     		add	r7, sp, #0
+ 8424              		.cfi_offset 7, -4
+ 8425              	.LCFI14:
+ 8426              		.cfi_def_cfa_register 7
+ 8427 0006 F860     		str	r0, [r7, #12]
+ 8428 0008 B960     		str	r1, [r7, #8]
+ 8429 000a 7A60     		str	r2, [r7, #4]
+ 8430 000c 3B60     		str	r3, [r7, #0]
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(PECIDomainValid(ulDomain));
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulHigh <= 0xFFFF);
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulLow <= 0xFFFF);
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulHigh > ulLow);
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Set the HTHRESH and LTHRESH fields in the domain control/status
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // register.
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_M0D0C + (ulDomain * 4)) =
+ 8431              		.loc 1 326 0
+ 8432 000e BB68     		ldr	r3, [r7, #8]
+ 8433 0010 4FEA8302 		lsl	r2, r3, #2
+ 8434 0014 FB68     		ldr	r3, [r7, #12]
+ 8435 0016 D318     		adds	r3, r2, r3
+ 8436 0018 03F11003 		add	r3, r3, #16
+ 8437 001c 1A46     		mov	r2, r3
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****         (((ulHigh << PECI_M0D0C_HITHR_S) & PECI_M0D0C_HITHR_M) |
+ 8438              		.loc 1 327 0
+ 8439 001e 7B68     		ldr	r3, [r7, #4]
+ 8440 0020 4FEA0341 		lsl	r1, r3, #16
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****          ((ulLow << PECI_M0D0C_LOTHR_S) & PECI_M0D0C_LOTHR_M));
+ 8441              		.loc 1 328 0
+ 8442 0024 3B68     		ldr	r3, [r7, #0]
+ 8443 0026 4FEA0343 		lsl	r3, r3, #16
+ 8444 002a 4FEA1343 		lsr	r3, r3, #16
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****         (((ulHigh << PECI_M0D0C_HITHR_S) & PECI_M0D0C_HITHR_M) |
+ 8445              		.loc 1 327 0
+ 8446 002e 41EA0303 		orr	r3, r1, r3
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_M0D0C + (ulDomain * 4)) =
+ 8447              		.loc 1 326 0
+ 8448 0032 1360     		str	r3, [r2, #0]
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8449              		.loc 1 329 0
+ 8450 0034 07F11407 		add	r7, r7, #20
+ 8451 0038 BD46     		mov	sp, r7
+ 8452 003a 80BC     		pop	{r7}
+ 8453 003c 7047     		bx	lr
+ 8454              		.cfi_endproc
+ 8455              	.LFE4:
+ 8457 003e 00BF     		.section	.text.PECIDomainConfigGet,"ax",%progbits
+ 8458              		.align	2
+ 8459              		.global	PECIDomainConfigGet
+ 8460              		.thumb
+ 8461              		.thumb_func
+ 8463              	PECIDomainConfigGet:
+ 8464              	.LFB5:
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Gets the configuration of the specified PECI domain.
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase is the base address of the PECI module.
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulDomain is the PECI domain that should be configured.
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param pulHigh is a pointer to storage for the high threshold.
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param pulLow is a pointer to storage for the low threshold.
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function configures the specified PECI domain for temperature
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! monitoring  operations.  The values for \e ulHigh and \e ulLow can be
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! specified as values relative to the maximum temperature allowed, or they
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! can be specified as absolute temperatures if an offset was programmed
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! in the PECIConfigSet() function.
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulDomain parameter can be one of the following values:
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M0D0, \b PECI_DOMAIN_M0D1, \b PECI_DOMAIN_M1D0, or
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M1D1.
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIDomainConfigGet(unsigned long ulBase, unsigned long ulDomain,
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                     unsigned long *pulHigh, unsigned long *pulLow)
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8465              		.loc 1 356 0
+ 8466              		.cfi_startproc
+ 8467              		@ args = 0, pretend = 0, frame = 24
+ 8468              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8469              		@ link register save eliminated.
+ 8470 0000 80B4     		push	{r7}
+ 8471              	.LCFI15:
+ 8472              		.cfi_def_cfa_offset 4
+ 8473 0002 87B0     		sub	sp, sp, #28
+ 8474              	.LCFI16:
+ 8475              		.cfi_def_cfa_offset 32
+ 8476 0004 00AF     		add	r7, sp, #0
+ 8477              		.cfi_offset 7, -4
+ 8478              	.LCFI17:
+ 8479              		.cfi_def_cfa_register 7
+ 8480 0006 F860     		str	r0, [r7, #12]
+ 8481 0008 B960     		str	r1, [r7, #8]
+ 8482 000a 7A60     		str	r2, [r7, #4]
+ 8483 000c 3B60     		str	r3, [r7, #0]
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     unsigned long ulTemp;
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(PECIDomainValid(ulDomain));
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(pulHigh != 0);
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(pulLow != 0);
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Get the HTHRESH and LTHRESH fields in the domain control/status
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // register.
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulTemp = HWREG(ulBase + PECI_O_M0D0C + (ulDomain * 4));
+ 8484              		.loc 1 371 0
+ 8485 000e BB68     		ldr	r3, [r7, #8]
+ 8486 0010 4FEA8302 		lsl	r2, r3, #2
+ 8487 0014 FB68     		ldr	r3, [r7, #12]
+ 8488 0016 D318     		adds	r3, r2, r3
+ 8489 0018 03F11003 		add	r3, r3, #16
+ 8490 001c 1B68     		ldr	r3, [r3, #0]
+ 8491 001e 7B61     		str	r3, [r7, #20]
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     *pulHigh = ((ulTemp && PECI_M0D0C_HITHR_M) >> PECI_M0D0C_HITHR_S);
+ 8492              		.loc 1 372 0
+ 8493 0020 7B68     		ldr	r3, [r7, #4]
+ 8494 0022 4FF00002 		mov	r2, #0
+ 8495 0026 1A60     		str	r2, [r3, #0]
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     *pulLow = ((ulTemp && PECI_M0D0C_LOTHR_M) >> PECI_M0D0C_LOTHR_S);
+ 8496              		.loc 1 373 0
+ 8497 0028 7B69     		ldr	r3, [r7, #20]
+ 8498 002a 002B     		cmp	r3, #0
+ 8499 002c 0CBF     		ite	eq
+ 8500 002e 0022     		moveq	r2, #0
+ 8501 0030 0122     		movne	r2, #1
+ 8502 0032 3B68     		ldr	r3, [r7, #0]
+ 8503 0034 1A60     		str	r2, [r3, #0]
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8504              		.loc 1 374 0
+ 8505 0036 07F11C07 		add	r7, r7, #28
+ 8506 003a BD46     		mov	sp, r7
+ 8507 003c 80BC     		pop	{r7}
+ 8508 003e 7047     		bx	lr
+ 8509              		.cfi_endproc
+ 8510              	.LFE5:
+ 8512              		.section	.text.PECIDomainEnable,"ax",%progbits
+ 8513              		.align	2
+ 8514              		.global	PECIDomainEnable
+ 8515              		.thumb
+ 8516              		.thumb_func
+ 8518              	PECIDomainEnable:
+ 8519              	.LFB6:
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Enables a domain within the PECI module.
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase is the base address of the PECI module.
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulDomain is the PECI domain that should be enabled.
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function enables the specified PECI domain for temperature monitoring
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! operations.
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulDomain parameter can be one of the following values:
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M0D0, \b PECI_DOMAIN_M0D1, \b PECI_DOMAIN_M1D0, or
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M1D1.
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIDomainEnable(unsigned long ulBase, unsigned long ulDomain)
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8520              		.loc 1 395 0
+ 8521              		.cfi_startproc
+ 8522              		@ args = 0, pretend = 0, frame = 8
+ 8523              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8524              		@ link register save eliminated.
+ 8525 0000 80B4     		push	{r7}
+ 8526              	.LCFI18:
+ 8527              		.cfi_def_cfa_offset 4
+ 8528 0002 83B0     		sub	sp, sp, #12
+ 8529              	.LCFI19:
+ 8530              		.cfi_def_cfa_offset 16
+ 8531 0004 00AF     		add	r7, sp, #0
+ 8532              		.cfi_offset 7, -4
+ 8533              	.LCFI20:
+ 8534              		.cfi_def_cfa_register 7
+ 8535 0006 7860     		str	r0, [r7, #4]
+ 8536 0008 3960     		str	r1, [r7, #0]
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(PECIDomainValid(ulDomain));
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Enable the specified domain.
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_CTL) |= (1 << ulDomain);
+ 8537              		.loc 1 405 0
+ 8538 000a 7B68     		ldr	r3, [r7, #4]
+ 8539 000c 7A68     		ldr	r2, [r7, #4]
+ 8540 000e 1168     		ldr	r1, [r2, #0]
+ 8541 0010 3A68     		ldr	r2, [r7, #0]
+ 8542 0012 4FF00100 		mov	r0, #1
+ 8543 0016 00FA02F2 		lsl	r2, r0, r2
+ 8544 001a 41EA0202 		orr	r2, r1, r2
+ 8545 001e 1A60     		str	r2, [r3, #0]
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8546              		.loc 1 406 0
+ 8547 0020 07F10C07 		add	r7, r7, #12
+ 8548 0024 BD46     		mov	sp, r7
+ 8549 0026 80BC     		pop	{r7}
+ 8550 0028 7047     		bx	lr
+ 8551              		.cfi_endproc
+ 8552              	.LFE6:
+ 8554 002a 00BF     		.section	.text.PECIDomainDisable,"ax",%progbits
+ 8555              		.align	2
+ 8556              		.global	PECIDomainDisable
+ 8557              		.thumb
+ 8558              		.thumb_func
+ 8560              	PECIDomainDisable:
+ 8561              	.LFB7:
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Disables a domain within the PECI module.
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase is the base address of the PECI module.
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulDomain is the PECI domain that should be disabled.
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function disables the specified PECI domain.
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulDomain parameter can be one of the following values:
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M0D0, \b PECI_DOMAIN_M0D1, \b PECI_DOMAIN_M1D0, or
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M1D1.
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIDomainDisable(unsigned long ulBase, unsigned long ulDomain)
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8562              		.loc 1 426 0
+ 8563              		.cfi_startproc
+ 8564              		@ args = 0, pretend = 0, frame = 8
+ 8565              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8566              		@ link register save eliminated.
+ 8567 0000 80B4     		push	{r7}
+ 8568              	.LCFI21:
+ 8569              		.cfi_def_cfa_offset 4
+ 8570 0002 83B0     		sub	sp, sp, #12
+ 8571              	.LCFI22:
+ 8572              		.cfi_def_cfa_offset 16
+ 8573 0004 00AF     		add	r7, sp, #0
+ 8574              		.cfi_offset 7, -4
+ 8575              	.LCFI23:
+ 8576              		.cfi_def_cfa_register 7
+ 8577 0006 7860     		str	r0, [r7, #4]
+ 8578 0008 3960     		str	r1, [r7, #0]
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(PECIDomainValid(ulDomain));
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Disable the specified domain.
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_CTL) &= ~(1 << ulDomain);
+ 8579              		.loc 1 436 0
+ 8580 000a 7B68     		ldr	r3, [r7, #4]
+ 8581 000c 7A68     		ldr	r2, [r7, #4]
+ 8582 000e 1168     		ldr	r1, [r2, #0]
+ 8583 0010 3A68     		ldr	r2, [r7, #0]
+ 8584 0012 4FF00100 		mov	r0, #1
+ 8585 0016 00FA02F2 		lsl	r2, r0, r2
+ 8586 001a 6FEA0202 		mvn	r2, r2
+ 8587 001e 01EA0202 		and	r2, r1, r2
+ 8588 0022 1A60     		str	r2, [r3, #0]
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8589              		.loc 1 437 0
+ 8590 0024 07F10C07 		add	r7, r7, #12
+ 8591 0028 BD46     		mov	sp, r7
+ 8592 002a 80BC     		pop	{r7}
+ 8593 002c 7047     		bx	lr
+ 8594              		.cfi_endproc
+ 8595              	.LFE7:
+ 8597 002e 00BF     		.section	.text.PECIDomainValueGet,"ax",%progbits
+ 8598              		.align	2
+ 8599              		.global	PECIDomainValueGet
+ 8600              		.thumb
+ 8601              		.thumb_func
+ 8603              	PECIDomainValueGet:
+ 8604              	.LFB8:
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Reads the current temperature value for the specified domain.
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase is the base address of the PECI module.
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulDomain is the PECI domain that should be disabled.
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function returns the most recently read temperature value from the
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! specified domain.
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulDomain parameter can be one of the following values:
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M0D0, \b PECI_DOMAIN_M0D1, \b PECI_DOMAIN_M1D0, or
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M1D1.
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** unsigned long
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIDomainValueGet(unsigned long ulBase, unsigned long ulDomain)
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8605              		.loc 1 458 0
+ 8606              		.cfi_startproc
+ 8607              		@ args = 0, pretend = 0, frame = 8
+ 8608              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8609              		@ link register save eliminated.
+ 8610 0000 80B4     		push	{r7}
+ 8611              	.LCFI24:
+ 8612              		.cfi_def_cfa_offset 4
+ 8613 0002 83B0     		sub	sp, sp, #12
+ 8614              	.LCFI25:
+ 8615              		.cfi_def_cfa_offset 16
+ 8616 0004 00AF     		add	r7, sp, #0
+ 8617              		.cfi_offset 7, -4
+ 8618              	.LCFI26:
+ 8619              		.cfi_def_cfa_register 7
+ 8620 0006 7860     		str	r0, [r7, #4]
+ 8621 0008 3960     		str	r1, [r7, #0]
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(PECIDomainValid(ulDomain));
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Return the most recently polled temperature value
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     return(((HWREG(ulBase + PECI_O_M0D0 + (ulDomain * 4)) &
+ 8622              		.loc 1 468 0
+ 8623 000a 3B68     		ldr	r3, [r7, #0]
+ 8624 000c 4FEA8302 		lsl	r2, r3, #2
+ 8625 0010 7B68     		ldr	r3, [r7, #4]
+ 8626 0012 D318     		adds	r3, r2, r3
+ 8627 0014 03F14003 		add	r3, r3, #64
+ 8628 0018 1B68     		ldr	r3, [r3, #0]
+ 8629 001a 4FEA0343 		lsl	r3, r3, #16
+ 8630 001e 4FEA1343 		lsr	r3, r3, #16
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****              PECI_M0D0_VALUE_M)));
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8631              		.loc 1 470 0
+ 8632 0022 1846     		mov	r0, r3
+ 8633 0024 07F10C07 		add	r7, r7, #12
+ 8634 0028 BD46     		mov	sp, r7
+ 8635 002a 80BC     		pop	{r7}
+ 8636 002c 7047     		bx	lr
+ 8637              		.cfi_endproc
+ 8638              	.LFE8:
+ 8640 002e 00BF     		.section	.text.PECIDomainMaxReadGet,"ax",%progbits
+ 8641              		.align	2
+ 8642              		.global	PECIDomainMaxReadGet
+ 8643              		.thumb
+ 8644              		.thumb_func
+ 8646              	PECIDomainMaxReadGet:
+ 8647              	.LFB9:
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Reads the maximum/error value for the specified domain.
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase is the base address of the PECI module.
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulDomain is the PECI domain that should be disabled.
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function returns the maximum temperature value for the specified
+ 480:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! domain.
+ 481:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 482:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulDomain parameter can be one of the following values:
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M0D0, \b PECI_DOMAIN_M0D1, \b PECI_DOMAIN_M1D0, or
+ 484:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M1D1.
+ 485:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 486:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 487:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 488:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 489:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** unsigned long
+ 490:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIDomainMaxReadGet(unsigned long ulBase, unsigned long ulDomain)
+ 491:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8648              		.loc 1 491 0
+ 8649              		.cfi_startproc
+ 8650              		@ args = 0, pretend = 0, frame = 8
+ 8651              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8652              		@ link register save eliminated.
+ 8653 0000 80B4     		push	{r7}
+ 8654              	.LCFI27:
+ 8655              		.cfi_def_cfa_offset 4
+ 8656 0002 83B0     		sub	sp, sp, #12
+ 8657              	.LCFI28:
+ 8658              		.cfi_def_cfa_offset 16
+ 8659 0004 00AF     		add	r7, sp, #0
+ 8660              		.cfi_offset 7, -4
+ 8661              	.LCFI29:
+ 8662              		.cfi_def_cfa_register 7
+ 8663 0006 7860     		str	r0, [r7, #4]
+ 8664 0008 3960     		str	r1, [r7, #0]
+ 492:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 493:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 494:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 495:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 496:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(PECIDomainValid(ulDomain));
+ 497:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 498:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 499:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Return the most recently polled temperature value
+ 500:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 501:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     return(((HWREG(ulBase + PECI_O_M0D0 + (ulDomain * 4)) &
+ 8665              		.loc 1 501 0
+ 8666 000a 3B68     		ldr	r3, [r7, #0]
+ 8667 000c 4FEA8302 		lsl	r2, r3, #2
+ 8668 0010 7B68     		ldr	r3, [r7, #4]
+ 8669 0012 D318     		adds	r3, r2, r3
+ 8670 0014 03F14003 		add	r3, r3, #64
+ 8671 0018 1B68     		ldr	r3, [r3, #0]
+ 8672 001a 4FEA1343 		lsr	r3, r3, #16
+ 502:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****              PECI_M0D0_MAXREAD_M) >> PECI_M0D0_MAXREAD_S));
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8673              		.loc 1 503 0
+ 8674 001e 1846     		mov	r0, r3
+ 8675 0020 07F10C07 		add	r7, r7, #12
+ 8676 0024 BD46     		mov	sp, r7
+ 8677 0026 80BC     		pop	{r7}
+ 8678 0028 7047     		bx	lr
+ 8679              		.cfi_endproc
+ 8680              	.LFE9:
+ 8682 002a 00BF     		.section	.text.PECIDomainValueClear,"ax",%progbits
+ 8683              		.align	2
+ 8684              		.global	PECIDomainValueClear
+ 8685              		.thumb
+ 8686              		.thumb_func
+ 8688              	PECIDomainValueClear:
+ 8689              	.LFB10:
+ 504:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 505:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 506:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 507:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Clears the current temperature value for the specified domain.
+ 508:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 509:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase is the base address of the PECI module.
+ 510:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulDomain is the PECI domain that should be disabled.
+ 511:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 512:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function clears the current and maximum values for the specified
+ 513:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! domain.
+ 514:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 515:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulDomain parameter can be one of the following values:
+ 516:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M0D0, \b PECI_DOMAIN_M0D1, \b PECI_DOMAIN_M1D0, or
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M1D1.
+ 518:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 519:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 520:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 521:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 522:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 523:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIDomainValueClear(unsigned long ulBase, unsigned long ulDomain)
+ 524:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8690              		.loc 1 524 0
+ 8691              		.cfi_startproc
+ 8692              		@ args = 0, pretend = 0, frame = 8
+ 8693              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8694              		@ link register save eliminated.
+ 8695 0000 80B4     		push	{r7}
+ 8696              	.LCFI30:
+ 8697              		.cfi_def_cfa_offset 4
+ 8698 0002 83B0     		sub	sp, sp, #12
+ 8699              	.LCFI31:
+ 8700              		.cfi_def_cfa_offset 16
+ 8701 0004 00AF     		add	r7, sp, #0
+ 8702              		.cfi_offset 7, -4
+ 8703              	.LCFI32:
+ 8704              		.cfi_def_cfa_register 7
+ 8705 0006 7860     		str	r0, [r7, #4]
+ 8706 0008 3960     		str	r1, [r7, #0]
+ 525:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 526:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 527:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 528:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 529:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(PECIDomainValid(ulDomain));
+ 530:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 531:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 532:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Clear the temperature value.
+ 533:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 534:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_M0D0 + (ulDomain * 4) ) &= ~PECI_M0D0_VALUE_M;
+ 8707              		.loc 1 534 0
+ 8708 000a 3B68     		ldr	r3, [r7, #0]
+ 8709 000c 4FEA8302 		lsl	r2, r3, #2
+ 8710 0010 7B68     		ldr	r3, [r7, #4]
+ 8711 0012 D318     		adds	r3, r2, r3
+ 8712 0014 03F14003 		add	r3, r3, #64
+ 8713 0018 1A46     		mov	r2, r3
+ 8714 001a 3B68     		ldr	r3, [r7, #0]
+ 8715 001c 4FEA8301 		lsl	r1, r3, #2
+ 8716 0020 7B68     		ldr	r3, [r7, #4]
+ 8717 0022 CB18     		adds	r3, r1, r3
+ 8718 0024 03F14003 		add	r3, r3, #64
+ 8719 0028 1B68     		ldr	r3, [r3, #0]
+ 8720 002a 4FEA1343 		lsr	r3, r3, #16
+ 8721 002e 4FEA0343 		lsl	r3, r3, #16
+ 8722 0032 1360     		str	r3, [r2, #0]
+ 535:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8723              		.loc 1 535 0
+ 8724 0034 07F10C07 		add	r7, r7, #12
+ 8725 0038 BD46     		mov	sp, r7
+ 8726 003a 80BC     		pop	{r7}
+ 8727 003c 7047     		bx	lr
+ 8728              		.cfi_endproc
+ 8729              	.LFE10:
+ 8731              		.section	.text.PECIDomainMaxReadClear,"ax",%progbits
+ 8732              		.align	2
+ 8733              		.global	PECIDomainMaxReadClear
+ 8734              		.thumb
+ 8735              		.thumb_func
+ 8737              	PECIDomainMaxReadClear:
+ 8738              	.LFB11:
+ 536:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 537:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 538:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 539:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Clears the maximum/error value for the specified domain.
+ 540:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 541:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase is the base address of the PECI module.
+ 542:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulDomain is the PECI domain that should be disabled.
+ 543:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 544:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function clears the current and maximum values for the specified
+ 545:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! domain.
+ 546:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 547:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulDomain parameter can be one of the following values:
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M0D0, \b PECI_DOMAIN_M0D1, \b PECI_DOMAIN_M1D0, or
+ 549:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_DOMAIN_M1D1.
+ 550:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 551:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 552:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 553:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 554:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 555:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIDomainMaxReadClear(unsigned long ulBase, unsigned long ulDomain)
+ 556:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8739              		.loc 1 556 0
+ 8740              		.cfi_startproc
+ 8741              		@ args = 0, pretend = 0, frame = 8
+ 8742              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8743              		@ link register save eliminated.
+ 8744 0000 80B4     		push	{r7}
+ 8745              	.LCFI33:
+ 8746              		.cfi_def_cfa_offset 4
+ 8747 0002 83B0     		sub	sp, sp, #12
+ 8748              	.LCFI34:
+ 8749              		.cfi_def_cfa_offset 16
+ 8750 0004 00AF     		add	r7, sp, #0
+ 8751              		.cfi_offset 7, -4
+ 8752              	.LCFI35:
+ 8753              		.cfi_def_cfa_register 7
+ 8754 0006 7860     		str	r0, [r7, #4]
+ 8755 0008 3960     		str	r1, [r7, #0]
+ 557:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 558:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 559:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 560:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 561:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(PECIDomainValid(ulDomain));
+ 562:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 563:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 564:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Clear the maximum/error value.
+ 565:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 566:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_M0D0 + (ulDomain * 4) ) &= ~PECI_M0D0_MAXREAD_M;
+ 8756              		.loc 1 566 0
+ 8757 000a 3B68     		ldr	r3, [r7, #0]
+ 8758 000c 4FEA8302 		lsl	r2, r3, #2
+ 8759 0010 7B68     		ldr	r3, [r7, #4]
+ 8760 0012 D318     		adds	r3, r2, r3
+ 8761 0014 03F14003 		add	r3, r3, #64
+ 8762 0018 1A46     		mov	r2, r3
+ 8763 001a 3B68     		ldr	r3, [r7, #0]
+ 8764 001c 4FEA8301 		lsl	r1, r3, #2
+ 8765 0020 7B68     		ldr	r3, [r7, #4]
+ 8766 0022 CB18     		adds	r3, r1, r3
+ 8767 0024 03F14003 		add	r3, r3, #64
+ 8768 0028 1B68     		ldr	r3, [r3, #0]
+ 8769 002a 4FEA0343 		lsl	r3, r3, #16
+ 8770 002e 4FEA1343 		lsr	r3, r3, #16
+ 8771 0032 1360     		str	r3, [r2, #0]
+ 567:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8772              		.loc 1 567 0
+ 8773 0034 07F10C07 		add	r7, r7, #12
+ 8774 0038 BD46     		mov	sp, r7
+ 8775 003a 80BC     		pop	{r7}
+ 8776 003c 7047     		bx	lr
+ 8777              		.cfi_endproc
+ 8778              	.LFE11:
+ 8780              		.section	.text.PECIIntRegister,"ax",%progbits
+ 8781              		.align	2
+ 8782              		.global	PECIIntRegister
+ 8783              		.thumb
+ 8784              		.thumb_func
+ 8786              	PECIIntRegister:
+ 8787              	.LFB12:
+ 568:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 569:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 570:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 571:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Registers an interrupt handler for the PECI module.
+ 572:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 573:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase specifies the PECI module base address.
+ 574:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param pfnHandler is a pointer to the function to be called when the
+ 575:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! PECI interrupt occurs.
+ 576:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 577:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function registers the handler to be called when an PECI interrupt   
+ 578:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! occurs. This function enables the global interrupt in the interrupt  
+ 579:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! controller; specific PECI interrupts must be enabled via PECIIntEnable().   
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! If necessary, it is the interrupt handler's responsibility to clear the 
+ 581:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! interrupt source via PECIIntClear().
+ 582:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 583:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \sa IntRegister() for important information about registering interrupt
+ 584:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! handlers.
+ 585:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 586:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 587:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 588:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 589:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 590:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIIntRegister(unsigned long ulBase, void (*pfnHandler)(void))
+ 591:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8788              		.loc 1 591 0
+ 8789              		.cfi_startproc
+ 8790              		@ args = 0, pretend = 0, frame = 8
+ 8791              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8792 0000 80B5     		push	{r7, lr}
+ 8793              	.LCFI36:
+ 8794              		.cfi_def_cfa_offset 8
+ 8795 0002 82B0     		sub	sp, sp, #8
+ 8796              	.LCFI37:
+ 8797              		.cfi_def_cfa_offset 16
+ 8798 0004 00AF     		add	r7, sp, #0
+ 8799              		.cfi_offset 14, -4
+ 8800              		.cfi_offset 7, -8
+ 8801              	.LCFI38:
+ 8802              		.cfi_def_cfa_register 7
+ 8803 0006 7860     		str	r0, [r7, #4]
+ 8804 0008 3960     		str	r1, [r7, #0]
+ 592:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 593:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 594:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 595:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 596:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(pfnHandler != 0);
+ 597:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 598:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 599:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Register the interrupt handler.
+ 600:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 601:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     IntRegister(INT_PECI0, pfnHandler);
+ 8805              		.loc 1 601 0
+ 8806 000a 4FF07B00 		mov	r0, #123
+ 8807 000e 3968     		ldr	r1, [r7, #0]
+ 8808 0010 FFF7FEFF 		bl	IntRegister
+ 602:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 603:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 604:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Enable the PECI interrupt.
+ 605:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 606:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     IntEnable(INT_PECI0);
+ 8809              		.loc 1 606 0
+ 8810 0014 4FF07B00 		mov	r0, #123
+ 8811 0018 FFF7FEFF 		bl	IntEnable
+ 607:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8812              		.loc 1 607 0
+ 8813 001c 07F10807 		add	r7, r7, #8
+ 8814 0020 BD46     		mov	sp, r7
+ 8815 0022 80BD     		pop	{r7, pc}
+ 8816              		.cfi_endproc
+ 8817              	.LFE12:
+ 8819              		.section	.text.PECIIntUnregister,"ax",%progbits
+ 8820              		.align	2
+ 8821              		.global	PECIIntUnregister
+ 8822              		.thumb
+ 8823              		.thumb_func
+ 8825              	PECIIntUnregister:
+ 8826              	.LFB13:
+ 608:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 609:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 610:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 611:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Unregisters an interrupt handler for the PECI module.
+ 612:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 613:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase specifies the PECI module base address.
+ 614:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 615:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function unregisters the handler to be called when a PECI interrupt
+ 616:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! occurs.  This function also masks off the interrupt in the interrupt 
+ 617:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! controller so that the interrupt handler no longer is called.
+ 618:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 619:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \sa IntRegister() for important information about registering interrupt
+ 620:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! handlers.
+ 621:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 622:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 623:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 624:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 625:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 626:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIIntUnregister(unsigned long ulBase)
+ 627:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8827              		.loc 1 627 0
+ 8828              		.cfi_startproc
+ 8829              		@ args = 0, pretend = 0, frame = 8
+ 8830              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8831 0000 80B5     		push	{r7, lr}
+ 8832              	.LCFI39:
+ 8833              		.cfi_def_cfa_offset 8
+ 8834 0002 82B0     		sub	sp, sp, #8
+ 8835              	.LCFI40:
+ 8836              		.cfi_def_cfa_offset 16
+ 8837 0004 00AF     		add	r7, sp, #0
+ 8838              		.cfi_offset 14, -4
+ 8839              		.cfi_offset 7, -8
+ 8840              	.LCFI41:
+ 8841              		.cfi_def_cfa_register 7
+ 8842 0006 7860     		str	r0, [r7, #4]
+ 628:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 629:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 630:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 631:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 632:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 633:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 634:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Disable the PECI interrupt.
+ 635:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 636:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     IntDisable(INT_PECI0);
+ 8843              		.loc 1 636 0
+ 8844 0008 4FF07B00 		mov	r0, #123
+ 8845 000c FFF7FEFF 		bl	IntDisable
+ 637:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 638:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 639:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Unregister the interrupt handler.
+ 640:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 641:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     IntUnregister(INT_PECI0);
+ 8846              		.loc 1 641 0
+ 8847 0010 4FF07B00 		mov	r0, #123
+ 8848 0014 FFF7FEFF 		bl	IntUnregister
+ 642:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8849              		.loc 1 642 0
+ 8850 0018 07F10807 		add	r7, r7, #8
+ 8851 001c BD46     		mov	sp, r7
+ 8852 001e 80BD     		pop	{r7, pc}
+ 8853              		.cfi_endproc
+ 8854              	.LFE13:
+ 8856              		.section	.text.PECIIntEnable,"ax",%progbits
+ 8857              		.align	2
+ 8858              		.global	PECIIntEnable
+ 8859              		.thumb
+ 8860              		.thumb_func
+ 8862              	PECIIntEnable:
+ 8863              	.LFB14:
+ 643:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 644:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 645:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 646:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Enables individual PECI interrupt sources.
+ 647:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 648:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase specifies the PECI module base address.
+ 649:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be enabled.
+ 650:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulIntMode is the mode for the PECI domain interrupts.
+ 651:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 652:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function enables the indicated PECI interrupt sources.  Only the 
+ 653:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! sources that are enabled can be reflected to the processor interrupt; 
+ 654:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! disabled sources have no effect on the processor.
+ 655:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 656:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulIntFlags parameter can be any of the following values:
+ 657:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_READ, \b PECI_ERR, \b PECI_AC, \b PECI_M0D0, \b PECI_M0D1,
+ 658:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_M1D0, or \b PECI_M1D1.
+ 659:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 660:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulIntMode parameter is used to configure the interrupt mode for
+ 661:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! the corresponding \b PECI_DOMAIN_MnDm field, and can be any of the
+ 662:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! following values:  \b PECI_M0D0_MODE1, \b PECI_M0D0_MODE2,
+ 663:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_M0D0_MODE3, \b PECI_M0D1_MODE1, \b PECI_M0D1_MODE2,
+ 664:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_M0D1_MODE3. \b PECI_M1D0_MODE1, \b PECI_M1D0_MODE2,
+ 665:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_M1D0_MODE3, \b PECI_M1D1_MODE1, \b PECI_M1D1_MODE2, or
+ 666:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_M1D1_MODE3.
+ 667:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 668:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 669:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 670:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 671:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 672:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIIntEnable(unsigned long ulBase, unsigned long ulIntFlags,
+ 673:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****               unsigned long ulIntMode)
+ 674:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8864              		.loc 1 674 0
+ 8865              		.cfi_startproc
+ 8866              		@ args = 0, pretend = 0, frame = 24
+ 8867              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8868              		@ link register save eliminated.
+ 8869 0000 80B4     		push	{r7}
+ 8870              	.LCFI42:
+ 8871              		.cfi_def_cfa_offset 4
+ 8872 0002 87B0     		sub	sp, sp, #28
+ 8873              	.LCFI43:
+ 8874              		.cfi_def_cfa_offset 32
+ 8875 0004 00AF     		add	r7, sp, #0
+ 8876              		.cfi_offset 7, -4
+ 8877              	.LCFI44:
+ 8878              		.cfi_def_cfa_register 7
+ 8879 0006 F860     		str	r0, [r7, #12]
+ 8880 0008 B960     		str	r1, [r7, #8]
+ 8881 000a 7A60     		str	r2, [r7, #4]
+ 675:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     unsigned long ulTemp;
+ 676:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 677:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 678:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 679:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 680:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 681:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 682:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 683:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Get the current mask value.
+ 684:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 685:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulTemp = HWREG(ulBase + PECI_O_IM);
+ 8882              		.loc 1 685 0
+ 8883 000c FB68     		ldr	r3, [r7, #12]
+ 8884 000e 03F18003 		add	r3, r3, #128
+ 8885 0012 1B68     		ldr	r3, [r3, #0]
+ 8886 0014 7B61     		str	r3, [r7, #20]
+ 686:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 687:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 688:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Clear the bit/bit-fields that are configured, based on the value
+ 689:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // in the flags parameter.
+ 690:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 691:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulTemp &= ~ulIntFlags;
+ 8887              		.loc 1 691 0
+ 8888 0016 BB68     		ldr	r3, [r7, #8]
+ 8889 0018 6FEA0303 		mvn	r3, r3
+ 8890 001c 7A69     		ldr	r2, [r7, #20]
+ 8891 001e 02EA0303 		and	r3, r2, r3
+ 8892 0022 7B61     		str	r3, [r7, #20]
+ 692:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 693:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 694:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Set/Enable the bit/bit-fields based on the value in the flags and mode
+ 695:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // parameter.  The flags parameter alters the bits in the lower half
+ 696:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // of the mask, while the mode alters the bit fields in the upper
+ 697:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // half of the mask.
+ 698:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 699:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulTemp |= (0x0000FFFF & ulIntFlags);
+ 8893              		.loc 1 699 0
+ 8894 0024 BB68     		ldr	r3, [r7, #8]
+ 8895 0026 4FEA0343 		lsl	r3, r3, #16
+ 8896 002a 4FEA1343 		lsr	r3, r3, #16
+ 8897 002e 7A69     		ldr	r2, [r7, #20]
+ 8898 0030 42EA0303 		orr	r3, r2, r3
+ 8899 0034 7B61     		str	r3, [r7, #20]
+ 700:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulTemp |= (0xFFFF0000 & ulIntMode);
+ 8900              		.loc 1 700 0
+ 8901 0036 7B68     		ldr	r3, [r7, #4]
+ 8902 0038 4FEA1343 		lsr	r3, r3, #16
+ 8903 003c 4FEA0343 		lsl	r3, r3, #16
+ 8904 0040 7A69     		ldr	r2, [r7, #20]
+ 8905 0042 42EA0303 		orr	r3, r2, r3
+ 8906 0046 7B61     		str	r3, [r7, #20]
+ 701:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_IM) = ulTemp;
+ 8907              		.loc 1 701 0
+ 8908 0048 FB68     		ldr	r3, [r7, #12]
+ 8909 004a 03F18003 		add	r3, r3, #128
+ 8910 004e 7A69     		ldr	r2, [r7, #20]
+ 8911 0050 1A60     		str	r2, [r3, #0]
+ 702:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8912              		.loc 1 702 0
+ 8913 0052 07F11C07 		add	r7, r7, #28
+ 8914 0056 BD46     		mov	sp, r7
+ 8915 0058 80BC     		pop	{r7}
+ 8916 005a 7047     		bx	lr
+ 8917              		.cfi_endproc
+ 8918              	.LFE14:
+ 8920              		.section	.text.PECIIntDisable,"ax",%progbits
+ 8921              		.align	2
+ 8922              		.global	PECIIntDisable
+ 8923              		.thumb
+ 8924              		.thumb_func
+ 8926              	PECIIntDisable:
+ 8927              	.LFB15:
+ 703:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 704:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 705:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 706:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Disables individual PECI interrupt sources.
+ 707:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 708:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase specifies the PECI module base address.
+ 709:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be disabled.
+ 710:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 711:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function disables the indicated PECI interrupt sources.  Only the 
+ 712:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! sources that are enabled can be reflected to the processor interrupt; 
+ 713:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! disabled sources have no effect on the processor.
+ 714:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 715:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulIntFlags parameter can be any of the following values:
+ 716:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_READ, \b PECI_ERR, \b PECI_AC, \b PECI_M0D0, \b PECI_M0D1,
+ 717:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_M1D0, or \b PECI_M1D1.
+ 718:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 719:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 720:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 721:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 722:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 723:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIIntDisable(unsigned long ulBase, unsigned long ulIntFlags)
+ 724:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8928              		.loc 1 724 0
+ 8929              		.cfi_startproc
+ 8930              		@ args = 0, pretend = 0, frame = 8
+ 8931              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8932              		@ link register save eliminated.
+ 8933 0000 80B4     		push	{r7}
+ 8934              	.LCFI45:
+ 8935              		.cfi_def_cfa_offset 4
+ 8936 0002 83B0     		sub	sp, sp, #12
+ 8937              	.LCFI46:
+ 8938              		.cfi_def_cfa_offset 16
+ 8939 0004 00AF     		add	r7, sp, #0
+ 8940              		.cfi_offset 7, -4
+ 8941              	.LCFI47:
+ 8942              		.cfi_def_cfa_register 7
+ 8943 0006 7860     		str	r0, [r7, #4]
+ 8944 0008 3960     		str	r1, [r7, #0]
+ 725:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 726:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 727:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 728:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 729:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 730:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 731:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Disable the specified interrupts.
+ 732:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 733:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_IM) &= ~ulIntFlags;
+ 8945              		.loc 1 733 0
+ 8946 000a 7B68     		ldr	r3, [r7, #4]
+ 8947 000c 03F18003 		add	r3, r3, #128
+ 8948 0010 7A68     		ldr	r2, [r7, #4]
+ 8949 0012 02F18002 		add	r2, r2, #128
+ 8950 0016 1168     		ldr	r1, [r2, #0]
+ 8951 0018 3A68     		ldr	r2, [r7, #0]
+ 8952 001a 6FEA0202 		mvn	r2, r2
+ 8953 001e 01EA0202 		and	r2, r1, r2
+ 8954 0022 1A60     		str	r2, [r3, #0]
+ 734:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 8955              		.loc 1 734 0
+ 8956 0024 07F10C07 		add	r7, r7, #12
+ 8957 0028 BD46     		mov	sp, r7
+ 8958 002a 80BC     		pop	{r7}
+ 8959 002c 7047     		bx	lr
+ 8960              		.cfi_endproc
+ 8961              	.LFE15:
+ 8963 002e 00BF     		.section	.text.PECIIntStatus,"ax",%progbits
+ 8964              		.align	2
+ 8965              		.global	PECIIntStatus
+ 8966              		.thumb
+ 8967              		.thumb_func
+ 8969              	PECIIntStatus:
+ 8970              	.LFB16:
+ 735:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 736:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 737:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 738:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Gets the current interrupt status.
+ 739:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 740:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase specifies the PECI module base address.
+ 741:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param bMasked is \b false if the raw interrupt status is required or
+ 742:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b true if the masked interrupt status is required.
+ 743:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 744:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function returns the interrupt status for the PECI module.  Either the
+ 745:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! raw interrupt status or the status of interrupts that are allowed to
+ 746:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! reflect to the processor can be returned.
+ 747:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 748:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The interpretation of the PECI_DOMAIN_MnDm fields vary based on the mode
+ 749:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! value programed using the PECIIntEnable() function for the field.  Each
+ 750:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! field may take on one of the following values:
+ 751:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_MnDm_MODE1_HIGH, \b PECI_MnDm_MODE2_MID, \b PECI_MnDm_MODE2_HIGH,
+ 752:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_MnDm_MODE3_LOW, \b PECI_MnDm_MODE3_MID, or \b PECI_MnDm_MODE3_HIGH.
+ 753:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 754:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return The current interrupt status, enumerated as a bit field of
+ 755:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_READ, \b PECI_ERR, \b PECI_AC, \b PECI_M0D0, \b PECI_M0D1,
+ 756:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_M1D0, or \b PECI_M1D1.
+ 757:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 758:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 759:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** unsigned long
+ 760:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIIntStatus(unsigned long ulBase, tBoolean bMasked)
+ 761:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 8971              		.loc 1 761 0
+ 8972              		.cfi_startproc
+ 8973              		@ args = 0, pretend = 0, frame = 8
+ 8974              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8975              		@ link register save eliminated.
+ 8976 0000 80B4     		push	{r7}
+ 8977              	.LCFI48:
+ 8978              		.cfi_def_cfa_offset 4
+ 8979 0002 83B0     		sub	sp, sp, #12
+ 8980              	.LCFI49:
+ 8981              		.cfi_def_cfa_offset 16
+ 8982 0004 00AF     		add	r7, sp, #0
+ 8983              		.cfi_offset 7, -4
+ 8984              	.LCFI50:
+ 8985              		.cfi_def_cfa_register 7
+ 8986 0006 7860     		str	r0, [r7, #4]
+ 8987 0008 0B46     		mov	r3, r1
+ 8988 000a FB70     		strb	r3, [r7, #3]
+ 762:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 763:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 764:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 765:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 766:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 767:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 768:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Return either the interrupt status or the raw interrupt status as
+ 769:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // requested.
+ 770:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 771:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     if(bMasked)
+ 8989              		.loc 1 771 0
+ 8990 000c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 8991 000e 002B     		cmp	r3, #0
+ 8992 0010 04D0     		beq	.L22
+ 772:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     {
+ 773:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****         return(HWREG(ulBase + PECI_O_MIS));
+ 8993              		.loc 1 773 0
+ 8994 0012 7B68     		ldr	r3, [r7, #4]
+ 8995 0014 03F18803 		add	r3, r3, #136
+ 8996 0018 1B68     		ldr	r3, [r3, #0]
+ 8997 001a 03E0     		b	.L23
+ 8998              	.L22:
+ 774:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     }
+ 775:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     else
+ 776:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     {
+ 777:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****         return(HWREG(ulBase + PECI_O_RIS));
+ 8999              		.loc 1 777 0
+ 9000 001c 7B68     		ldr	r3, [r7, #4]
+ 9001 001e 03F18403 		add	r3, r3, #132
+ 9002 0022 1B68     		ldr	r3, [r3, #0]
+ 9003              	.L23:
+ 778:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     }
+ 779:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 9004              		.loc 1 779 0
+ 9005 0024 1846     		mov	r0, r3
+ 9006 0026 07F10C07 		add	r7, r7, #12
+ 9007 002a BD46     		mov	sp, r7
+ 9008 002c 80BC     		pop	{r7}
+ 9009 002e 7047     		bx	lr
+ 9010              		.cfi_endproc
+ 9011              	.LFE16:
+ 9013              		.section	.text.PECIIntClear,"ax",%progbits
+ 9014              		.align	2
+ 9015              		.global	PECIIntClear
+ 9016              		.thumb
+ 9017              		.thumb_func
+ 9019              	PECIIntClear:
+ 9020              	.LFB17:
+ 780:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 781:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 782:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 783:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Clears PECI interrupt sources.
+ 784:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 785:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase specifies the PECI module base address.
+ 786:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be cleared.
+ 787:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 788:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function clears the specified PECI interrupt sources so that they no 
+ 789:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! longer assert.  This function must be called in the interrupt handler to
+ 790:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! keep the interrupts from being recognized again immediately upon exit.  
+ 791:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! The \e ulIntFlags parameter can consist of any combination of the 
+ 792:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_READ, \b PECI_ERR, \b PECI_AC, \b PECI_M0D0, \b PECI_M0D1, 
+ 793:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \b PECI_M1D0, or \b PECI_M1D1 values.
+ 794:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 795:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \note Because there is a write buffer in the Cortex-M processor, it may
+ 796:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! take several clock cycles before the interrupt source is actually cleared.
+ 797:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Therefore, it is recommended that the interrupt source be cleared early in
+ 798:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! the interrupt handler (as opposed to the very last action) to avoid
+ 799:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! returning from the interrupt handler before the interrupt source is
+ 800:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! actually cleared.  Failure to do so may result in the interrupt handler
+ 801:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! being immediately reentered (because the interrupt controller still sees
+ 802:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! the interrupt source asserted).
+ 803:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 804:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 805:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 806:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 807:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 808:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIIntClear(unsigned long ulBase, unsigned long ulIntFlags)
+ 809:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 9021              		.loc 1 809 0
+ 9022              		.cfi_startproc
+ 9023              		@ args = 0, pretend = 0, frame = 8
+ 9024              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9025              		@ link register save eliminated.
+ 9026 0000 80B4     		push	{r7}
+ 9027              	.LCFI51:
+ 9028              		.cfi_def_cfa_offset 4
+ 9029 0002 83B0     		sub	sp, sp, #12
+ 9030              	.LCFI52:
+ 9031              		.cfi_def_cfa_offset 16
+ 9032 0004 00AF     		add	r7, sp, #0
+ 9033              		.cfi_offset 7, -4
+ 9034              	.LCFI53:
+ 9035              		.cfi_def_cfa_register 7
+ 9036 0006 7860     		str	r0, [r7, #4]
+ 9037 0008 3960     		str	r1, [r7, #0]
+ 810:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 811:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 812:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 813:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 814:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 815:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 816:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Clear the requested interrupt sources.
+ 817:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 818:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_IC) = ulIntFlags;
+ 9038              		.loc 1 818 0
+ 9039 000a 7B68     		ldr	r3, [r7, #4]
+ 9040 000c 03F18C03 		add	r3, r3, #140
+ 9041 0010 3A68     		ldr	r2, [r7, #0]
+ 9042 0012 1A60     		str	r2, [r3, #0]
+ 819:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 9043              		.loc 1 819 0
+ 9044 0014 07F10C07 		add	r7, r7, #12
+ 9045 0018 BD46     		mov	sp, r7
+ 9046 001a 80BC     		pop	{r7}
+ 9047 001c 7047     		bx	lr
+ 9048              		.cfi_endproc
+ 9049              	.LFE17:
+ 9051 001e 00BF     		.section	.text.PECIAdvCmdSend,"ax",%progbits
+ 9052              		.align	2
+ 9053              		.global	PECIAdvCmdSend
+ 9054              		.thumb
+ 9055              		.thumb_func
+ 9057              	PECIAdvCmdSend:
+ 9058              	.LFB18:
+ 820:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 821:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 822:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 823:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Sends a PECI Advanced Command.
+ 824:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 825:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase specifies the PECI module base address.
+ 826:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 827:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function sends a PECI Advanced Command.  If the interface is not IDLE,
+ 828:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! it waits for the interface to become IDLE then sends the command.  The
+ 829:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! function parameters are used to populate the message control fields before
+ 830:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! activating the command.
+ 831:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 832:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 833:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 834:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 835:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** void
+ 836:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIAdvCmdSend(unsigned long ulBase, unsigned char ucCmd,
+ 837:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                unsigned char ucHidRe, unsigned char ucDomain,
+ 838:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                unsigned char ucProcAdd, unsigned long ulArg,
+ 839:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                unsigned char ucSize, unsigned long ulData0,
+ 840:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                unsigned long ulData1)
+ 841:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 9059              		.loc 1 841 0
+ 9060              		.cfi_startproc
+ 9061              		@ args = 20, pretend = 0, frame = 8
+ 9062              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9063              		@ link register save eliminated.
+ 9064 0000 80B4     		push	{r7}
+ 9065              	.LCFI54:
+ 9066              		.cfi_def_cfa_offset 4
+ 9067 0002 83B0     		sub	sp, sp, #12
+ 9068              	.LCFI55:
+ 9069              		.cfi_def_cfa_offset 16
+ 9070 0004 00AF     		add	r7, sp, #0
+ 9071              		.cfi_offset 7, -4
+ 9072              	.LCFI56:
+ 9073              		.cfi_def_cfa_register 7
+ 9074 0006 7860     		str	r0, [r7, #4]
+ 9075 0008 F970     		strb	r1, [r7, #3]
+ 9076 000a BA70     		strb	r2, [r7, #2]
+ 9077 000c 7B70     		strb	r3, [r7, #1]
+ 842:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 843:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 844:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 845:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 846:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 847:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 848:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Wait for the interface to be idle.
+ 849:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 850:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     while(HWREG(ulBase + PECI_O_ACCODE) == 0xFFFFFFFF)
+ 9078              		.loc 1 850 0
+ 9079 000e 00BF     		nop
+ 9080              	.L26:
+ 9081              		.loc 1 850 0 is_stmt 0 discriminator 1
+ 9082 0010 7B68     		ldr	r3, [r7, #4]
+ 9083 0012 03F58A73 		add	r3, r3, #276
+ 9084 0016 1B68     		ldr	r3, [r3, #0]
+ 9085 0018 B3F1FF3F 		cmp	r3, #-1
+ 9086 001c F8D0     		beq	.L26
+ 851:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     {
+ 852:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     }
+ 853:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 854:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 855:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Fill in the registers for the advanced command.
+ 856:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 857:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_ACARG) = ulArg;
+ 9087              		.loc 1 857 0 is_stmt 1
+ 9088 001e 7B68     		ldr	r3, [r7, #4]
+ 9089 0020 03F58273 		add	r3, r3, #260
+ 9090 0024 7A69     		ldr	r2, [r7, #20]
+ 9091 0026 1A60     		str	r2, [r3, #0]
+ 858:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_ACRDWR0) = ulData0;
+ 9092              		.loc 1 858 0
+ 9093 0028 7B68     		ldr	r3, [r7, #4]
+ 9094 002a 03F58473 		add	r3, r3, #264
+ 9095 002e FA69     		ldr	r2, [r7, #28]
+ 9096 0030 1A60     		str	r2, [r3, #0]
+ 859:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_ACRDWR1) = ulData1;
+ 9097              		.loc 1 859 0
+ 9098 0032 7B68     		ldr	r3, [r7, #4]
+ 9099 0034 03F58673 		add	r3, r3, #268
+ 9100 0038 3A6A     		ldr	r2, [r7, #32]
+ 9101 003a 1A60     		str	r2, [r3, #0]
+ 860:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_ACADDR) = (ucHidRe << 24) |
+ 9102              		.loc 1 860 0
+ 9103 003c 7B68     		ldr	r3, [r7, #4]
+ 9104 003e 03F58073 		add	r3, r3, #256
+ 9105 0042 BA78     		ldrb	r2, [r7, #2]	@ zero_extendqisi2
+ 9106 0044 4FEA0261 		lsl	r1, r2, #24
+ 861:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                                     (ucSize  << 16) |
+ 9107              		.loc 1 861 0
+ 9108 0048 3A7E     		ldrb	r2, [r7, #24]	@ zero_extendqisi2
+ 9109 004a 4FEA0242 		lsl	r2, r2, #16
+ 860:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_ACADDR) = (ucHidRe << 24) |
+ 9110              		.loc 1 860 0
+ 9111 004e 1143     		orrs	r1, r1, r2
+ 862:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                                     (ucDomain << 8) |
+ 9112              		.loc 1 862 0
+ 9113 0050 7A78     		ldrb	r2, [r7, #1]	@ zero_extendqisi2
+ 9114 0052 4FEA0222 		lsl	r2, r2, #8
+ 861:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                                     (ucSize  << 16) |
+ 9115              		.loc 1 861 0
+ 9116 0056 1143     		orrs	r1, r1, r2
+ 863:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                                     (ucProcAdd << 0);
+ 9117              		.loc 1 863 0
+ 9118 0058 3A7C     		ldrb	r2, [r7, #16]	@ zero_extendqisi2
+ 862:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                                     (ucDomain << 8) |
+ 9119              		.loc 1 862 0
+ 9120 005a 41EA0202 		orr	r2, r1, r2
+ 860:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_ACADDR) = (ucHidRe << 24) |
+ 9121              		.loc 1 860 0
+ 9122 005e 1A60     		str	r2, [r3, #0]
+ 864:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 865:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 866:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Now, issue the command.
+ 867:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 868:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     HWREG(ulBase + PECI_O_ACCMD) = ucCmd;
+ 9123              		.loc 1 868 0
+ 9124 0060 7B68     		ldr	r3, [r7, #4]
+ 9125 0062 03F58873 		add	r3, r3, #272
+ 9126 0066 FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 9127 0068 1A60     		str	r2, [r3, #0]
+ 869:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 9128              		.loc 1 869 0
+ 9129 006a 07F10C07 		add	r7, r7, #12
+ 9130 006e BD46     		mov	sp, r7
+ 9131 0070 80BC     		pop	{r7}
+ 9132 0072 7047     		bx	lr
+ 9133              		.cfi_endproc
+ 9134              	.LFE18:
+ 9136              		.section	.text.PECIAdvCmdSendNonBlocking,"ax",%progbits
+ 9137              		.align	2
+ 9138              		.global	PECIAdvCmdSendNonBlocking
+ 9139              		.thumb
+ 9140              		.thumb_func
+ 9142              	PECIAdvCmdSendNonBlocking:
+ 9143              	.LFB19:
+ 870:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 871:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 872:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 873:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Sends a PECI Advanced Command (non blocking).
+ 874:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 875:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase specifies the PECI module base address.
+ 876:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 877:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function sends a PECI Advanced Command.  If the interface is not IDLE,
+ 878:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! it returns immediately.  Otherwise, it sends the the command.  The function
+ 879:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! paramters are used to populate the message control fields before activating
+ 880:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! the command.
+ 881:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 882:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return None.
+ 883:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 884:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 885:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** unsigned long
+ 886:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIAdvCmdSendNonBlocking(unsigned long ulBase, unsigned char ucCmd,
+ 887:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                           unsigned char ucHidRe, unsigned char ucDomain,
+ 888:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                           unsigned char ucProcAdd, unsigned long ulArg,
+ 889:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                           unsigned char ucSize, unsigned long ulData0,
+ 890:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                           unsigned long ulData1)
+ 891:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 9144              		.loc 1 891 0
+ 9145              		.cfi_startproc
+ 9146              		@ args = 20, pretend = 0, frame = 8
+ 9147              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9148 0000 80B5     		push	{r7, lr}
+ 9149              	.LCFI57:
+ 9150              		.cfi_def_cfa_offset 8
+ 9151 0002 88B0     		sub	sp, sp, #32
+ 9152              	.LCFI58:
+ 9153              		.cfi_def_cfa_offset 40
+ 9154 0004 06AF     		add	r7, sp, #24
+ 9155              		.cfi_offset 14, -4
+ 9156              		.cfi_offset 7, -8
+ 9157              	.LCFI59:
+ 9158              		.cfi_def_cfa 7, 16
+ 9159 0006 7860     		str	r0, [r7, #4]
+ 9160 0008 F970     		strb	r1, [r7, #3]
+ 9161 000a BA70     		strb	r2, [r7, #2]
+ 9162 000c 7B70     		strb	r3, [r7, #1]
+ 892:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 893:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 894:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 895:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 896:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 897:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 898:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check for the interface to be idle.
+ 899:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // If not, return immediately.
+ 900:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 901:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     if(HWREG(ulBase + PECI_O_ACCODE) == 0xFFFFFFFF)
+ 9163              		.loc 1 901 0
+ 9164 000e 7B68     		ldr	r3, [r7, #4]
+ 9165 0010 03F58A73 		add	r3, r3, #276
+ 9166 0014 1B68     		ldr	r3, [r3, #0]
+ 9167 0016 B3F1FF3F 		cmp	r3, #-1
+ 9168 001a 02D1     		bne	.L28
+ 902:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     {
+ 903:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****         return(0);
+ 9169              		.loc 1 903 0
+ 9170 001c 4FF00003 		mov	r3, #0
+ 9171 0020 11E0     		b	.L29
+ 9172              	.L28:
+ 904:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     }
+ 905:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 906:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 907:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Send the command.
+ 908:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 909:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     PECIAdvCmdSend(ulBase, ucCmd, ucHidRe, ucDomain, ucProcAdd, ulArg,
+ 9173              		.loc 1 909 0
+ 9174 0022 F978     		ldrb	r1, [r7, #3]	@ zero_extendqisi2
+ 9175 0024 BA78     		ldrb	r2, [r7, #2]	@ zero_extendqisi2
+ 9176 0026 7B78     		ldrb	r3, [r7, #1]	@ zero_extendqisi2
+ 9177 0028 387C     		ldrb	r0, [r7, #16]	@ zero_extendqisi2
+ 9178 002a 0090     		str	r0, [sp, #0]
+ 9179 002c 7869     		ldr	r0, [r7, #20]
+ 9180 002e 0190     		str	r0, [sp, #4]
+ 9181 0030 387E     		ldrb	r0, [r7, #24]	@ zero_extendqisi2
+ 9182 0032 0290     		str	r0, [sp, #8]
+ 9183 0034 F869     		ldr	r0, [r7, #28]
+ 9184 0036 0390     		str	r0, [sp, #12]
+ 9185 0038 386A     		ldr	r0, [r7, #32]
+ 9186 003a 0490     		str	r0, [sp, #16]
+ 9187 003c 7868     		ldr	r0, [r7, #4]
+ 9188 003e FFF7FEFF 		bl	PECIAdvCmdSend
+ 910:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                    ucSize, ulData0, ulData1);
+ 911:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 912:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 913:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Return, indicating that the command has been issued.
+ 914:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 915:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     return(1);
+ 9189              		.loc 1 915 0
+ 9190 0042 4FF00103 		mov	r3, #1
+ 9191              	.L29:
+ 916:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 9192              		.loc 1 916 0
+ 9193 0046 1846     		mov	r0, r3
+ 9194 0048 07F10807 		add	r7, r7, #8
+ 9195 004c BD46     		mov	sp, r7
+ 9196 004e 80BD     		pop	{r7, pc}
+ 9197              		.cfi_endproc
+ 9198              	.LFE19:
+ 9200              		.section	.text.PECIAdvCmdStatusGet,"ax",%progbits
+ 9201              		.align	2
+ 9202              		.global	PECIAdvCmdStatusGet
+ 9203              		.thumb
+ 9204              		.thumb_func
+ 9206              	PECIAdvCmdStatusGet:
+ 9207              	.LFB20:
+ 917:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 918:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 919:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 920:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! Obtains status of previous PECI Advanced Command.
+ 921:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 922:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \param ulBase specifies the PECI module base address.
+ 923:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 924:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! This function gets the status of a previously issued PECI Advanced Command.
+ 925:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! If the command has completed, and the data pointers are non-zero, the data
+ 926:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! registers are read and saved.
+ 927:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //!
+ 928:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! \return -1 if command has not yet been completed, otherwise, the return
+ 929:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //! code associated with the Advanced Command.
+ 930:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //
+ 931:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** //*****************************************************************************
+ 932:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** unsigned long
+ 933:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** PECIAdvCmdStatusGet(unsigned long ulBase, unsigned long *pulData0,
+ 934:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****                     unsigned long *pulData1)
+ 935:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** {
+ 9208              		.loc 1 935 0
+ 9209              		.cfi_startproc
+ 9210              		@ args = 0, pretend = 0, frame = 24
+ 9211              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9212              		@ link register save eliminated.
+ 9213 0000 80B4     		push	{r7}
+ 9214              	.LCFI60:
+ 9215              		.cfi_def_cfa_offset 4
+ 9216 0002 87B0     		sub	sp, sp, #28
+ 9217              	.LCFI61:
+ 9218              		.cfi_def_cfa_offset 32
+ 9219 0004 00AF     		add	r7, sp, #0
+ 9220              		.cfi_offset 7, -4
+ 9221              	.LCFI62:
+ 9222              		.cfi_def_cfa_register 7
+ 9223 0006 F860     		str	r0, [r7, #12]
+ 9224 0008 B960     		str	r1, [r7, #8]
+ 9225 000a 7A60     		str	r2, [r7, #4]
+ 936:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     unsigned long ulCode;
+ 937:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 938:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 939:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Check the arguments.
+ 940:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 941:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ASSERT(ulBase == PECI0_BASE);
+ 942:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 943:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 944:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // If the command has completed, optionally read and save the data
+ 945:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // registers.
+ 946:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 947:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     ulCode = HWREG(ulBase + PECI_O_ACCODE);
+ 9226              		.loc 1 947 0
+ 9227 000c FB68     		ldr	r3, [r7, #12]
+ 9228 000e 03F58A73 		add	r3, r3, #276
+ 9229 0012 1B68     		ldr	r3, [r3, #0]
+ 9230 0014 7B61     		str	r3, [r7, #20]
+ 948:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     if(ulCode != 0xFFFFFFFF)
+ 9231              		.loc 1 948 0
+ 9232 0016 7B69     		ldr	r3, [r7, #20]
+ 9233 0018 B3F1FF3F 		cmp	r3, #-1
+ 9234 001c 11D0     		beq	.L31
+ 949:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     {
+ 950:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****         if(pulData0 != (void *)0)
+ 9235              		.loc 1 950 0
+ 9236 001e BB68     		ldr	r3, [r7, #8]
+ 9237 0020 002B     		cmp	r3, #0
+ 9238 0022 05D0     		beq	.L32
+ 951:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****         {
+ 952:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****             *pulData0 = HWREG(ulBase + PECI_O_ACRDWR0);
+ 9239              		.loc 1 952 0
+ 9240 0024 FB68     		ldr	r3, [r7, #12]
+ 9241 0026 03F58473 		add	r3, r3, #264
+ 9242 002a 1A68     		ldr	r2, [r3, #0]
+ 9243 002c BB68     		ldr	r3, [r7, #8]
+ 9244 002e 1A60     		str	r2, [r3, #0]
+ 9245              	.L32:
+ 953:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****         }
+ 954:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****         if(pulData1 != (void *)0)
+ 9246              		.loc 1 954 0
+ 9247 0030 7B68     		ldr	r3, [r7, #4]
+ 9248 0032 002B     		cmp	r3, #0
+ 9249 0034 05D0     		beq	.L31
+ 955:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****         {
+ 956:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****             *pulData1 = HWREG(ulBase + PECI_O_ACRDWR1);
+ 9250              		.loc 1 956 0
+ 9251 0036 FB68     		ldr	r3, [r7, #12]
+ 9252 0038 03F58673 		add	r3, r3, #268
+ 9253 003c 1A68     		ldr	r2, [r3, #0]
+ 9254 003e 7B68     		ldr	r3, [r7, #4]
+ 9255 0040 1A60     		str	r2, [r3, #0]
+ 9256              	.L31:
+ 957:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****         }
+ 958:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     }
+ 959:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** 
+ 960:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 961:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     // Return the command code from the most recently completed command.
+ 962:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     //
+ 963:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c ****     return(ulCode);
+ 9257              		.loc 1 963 0
+ 9258 0042 7B69     		ldr	r3, [r7, #20]
+ 964:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/peci.c **** }
+ 9259              		.loc 1 964 0
+ 9260 0044 1846     		mov	r0, r3
+ 9261 0046 07F11C07 		add	r7, r7, #28
+ 9262 004a BD46     		mov	sp, r7
+ 9263 004c 80BC     		pop	{r7}
+ 9264 004e 7047     		bx	lr
+ 9265              		.cfi_endproc
+ 9266              	.LFE20:
+ 9268              		.text
+ 9269              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 peci.c
+     /tmp/ccs2OYae.s:8140   .text.PECIConfigSet:00000000 $t
+     /tmp/ccs2OYae.s:8145   .text.PECIConfigSet:00000000 PECIConfigSet
+     /tmp/ccs2OYae.s:8249   .text.PECIConfigSet:000000bc $d
+     /tmp/ccs2OYae.s:8254   .text.PECIConfigGet:00000000 $t
+     /tmp/ccs2OYae.s:8259   .text.PECIConfigGet:00000000 PECIConfigGet
+     /tmp/ccs2OYae.s:8329   .text.PECIBypassEnable:00000000 $t
+     /tmp/ccs2OYae.s:8334   .text.PECIBypassEnable:00000000 PECIBypassEnable
+     /tmp/ccs2OYae.s:8367   .text.PECIBypassDisable:00000000 $t
+     /tmp/ccs2OYae.s:8372   .text.PECIBypassDisable:00000000 PECIBypassDisable
+     /tmp/ccs2OYae.s:8405   .text.PECIDomainConfigSet:00000000 $t
+     /tmp/ccs2OYae.s:8410   .text.PECIDomainConfigSet:00000000 PECIDomainConfigSet
+     /tmp/ccs2OYae.s:8458   .text.PECIDomainConfigGet:00000000 $t
+     /tmp/ccs2OYae.s:8463   .text.PECIDomainConfigGet:00000000 PECIDomainConfigGet
+     /tmp/ccs2OYae.s:8513   .text.PECIDomainEnable:00000000 $t
+     /tmp/ccs2OYae.s:8518   .text.PECIDomainEnable:00000000 PECIDomainEnable
+     /tmp/ccs2OYae.s:8555   .text.PECIDomainDisable:00000000 $t
+     /tmp/ccs2OYae.s:8560   .text.PECIDomainDisable:00000000 PECIDomainDisable
+     /tmp/ccs2OYae.s:8598   .text.PECIDomainValueGet:00000000 $t
+     /tmp/ccs2OYae.s:8603   .text.PECIDomainValueGet:00000000 PECIDomainValueGet
+     /tmp/ccs2OYae.s:8641   .text.PECIDomainMaxReadGet:00000000 $t
+     /tmp/ccs2OYae.s:8646   .text.PECIDomainMaxReadGet:00000000 PECIDomainMaxReadGet
+     /tmp/ccs2OYae.s:8683   .text.PECIDomainValueClear:00000000 $t
+     /tmp/ccs2OYae.s:8688   .text.PECIDomainValueClear:00000000 PECIDomainValueClear
+     /tmp/ccs2OYae.s:8732   .text.PECIDomainMaxReadClear:00000000 $t
+     /tmp/ccs2OYae.s:8737   .text.PECIDomainMaxReadClear:00000000 PECIDomainMaxReadClear
+     /tmp/ccs2OYae.s:8781   .text.PECIIntRegister:00000000 $t
+     /tmp/ccs2OYae.s:8786   .text.PECIIntRegister:00000000 PECIIntRegister
+     /tmp/ccs2OYae.s:8820   .text.PECIIntUnregister:00000000 $t
+     /tmp/ccs2OYae.s:8825   .text.PECIIntUnregister:00000000 PECIIntUnregister
+     /tmp/ccs2OYae.s:8857   .text.PECIIntEnable:00000000 $t
+     /tmp/ccs2OYae.s:8862   .text.PECIIntEnable:00000000 PECIIntEnable
+     /tmp/ccs2OYae.s:8921   .text.PECIIntDisable:00000000 $t
+     /tmp/ccs2OYae.s:8926   .text.PECIIntDisable:00000000 PECIIntDisable
+     /tmp/ccs2OYae.s:8964   .text.PECIIntStatus:00000000 $t
+     /tmp/ccs2OYae.s:8969   .text.PECIIntStatus:00000000 PECIIntStatus
+     /tmp/ccs2OYae.s:9014   .text.PECIIntClear:00000000 $t
+     /tmp/ccs2OYae.s:9019   .text.PECIIntClear:00000000 PECIIntClear
+     /tmp/ccs2OYae.s:9052   .text.PECIAdvCmdSend:00000000 $t
+     /tmp/ccs2OYae.s:9057   .text.PECIAdvCmdSend:00000000 PECIAdvCmdSend
+     /tmp/ccs2OYae.s:9137   .text.PECIAdvCmdSendNonBlocking:00000000 $t
+     /tmp/ccs2OYae.s:9142   .text.PECIAdvCmdSendNonBlocking:00000000 PECIAdvCmdSendNonBlocking
+     /tmp/ccs2OYae.s:9201   .text.PECIAdvCmdStatusGet:00000000 $t
+     /tmp/ccs2OYae.s:9206   .text.PECIAdvCmdStatusGet:00000000 PECIAdvCmdStatusGet
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister

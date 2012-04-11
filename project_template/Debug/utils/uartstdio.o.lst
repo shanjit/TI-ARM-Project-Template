@@ -1,0 +1,2343 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"uartstdio.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c"
+ 6310              		.align	2
+ 6311              	g_ulBase:
+ 6312 0000 00000000 		.space	4
+ 6313              		.section	.rodata
+ 6314              		.align	2
+ 6315              	.LC0:
+ 6316 0000 30313233 		.ascii	"0123456789abcdef\000"
+ 6316      34353637 
+ 6316      38396162 
+ 6316      63646566 
+ 6316      00
+ 6317 0011 000000   		.align	2
+ 6320              	g_pcHex:
+ 6321 0014 00000000 		.word	.LC0
+ 6322              		.align	2
+ 6325              	g_ulUARTBase:
+ 6326 0018 00C00040 		.word	1073790976
+ 6327 001c 00D00040 		.word	1073795072
+ 6328 0020 00E00040 		.word	1073799168
+ 6329              		.align	2
+ 6332              	g_ulUARTPeriph:
+ 6333 0024 01000010 		.word	268435457
+ 6334 0028 02000010 		.word	268435458
+ 6335 002c 04000010 		.word	268435460
+ 6336              		.section	.text.UARTStdioInit,"ax",%progbits
+ 6337              		.align	2
+ 6338              		.global	UARTStdioInit
+ 6339              		.thumb
+ 6340              		.thumb_func
+ 6342              	UARTStdioInit:
+ 6343              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // uartstdio.c - Utility driver to provide simple UART console functions.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // Copyright (c) 2007-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // This is part of revision 8264 of the Stellaris Firmware Development Package.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #include <stdarg.h>
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #include "inc/hw_ints.h"
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #include "inc/hw_memmap.h"
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #include "inc/hw_types.h"
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #include "inc/hw_uart.h"
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #include "driverlib/debug.h"
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #include "driverlib/interrupt.h"
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #include "driverlib/rom.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #include "driverlib/rom_map.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #include "driverlib/sysctl.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #include "driverlib/uart.h"
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #include "utils/uartstdio.h"
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \addtogroup uartstdio_api
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! @{
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // If buffered mode is defined, set aside RX and TX buffers and read/write
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // pointers to control them.
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #ifdef UART_BUFFERED
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // This global controls whether or not we are echoing characters back to the
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // transmitter.  By default, echo is enabled but if using this module as a
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // convenient method of implementing a buffered serial interface over which
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // you will be running an application protocol, you are likely to want to
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // disable echo by calling UARTEchoSet(false).
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static tBoolean g_bDisableEcho;
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // Output ring buffer.  Buffer is full if g_ulUARTTxReadIndex is one ahead of
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // g_ulUARTTxWriteIndex.  Buffer is empty if the two indices are the same.
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static unsigned char g_pcUARTTxBuffer[UART_TX_BUFFER_SIZE];
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static volatile unsigned long g_ulUARTTxWriteIndex = 0;
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static volatile unsigned long g_ulUARTTxReadIndex = 0;
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // Input ring buffer.  Buffer is full if g_ulUARTTxReadIndex is one ahead of
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // g_ulUARTTxWriteIndex.  Buffer is empty if the two indices are the same.
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static unsigned char g_pcUARTRxBuffer[UART_RX_BUFFER_SIZE];
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static volatile unsigned long g_ulUARTRxWriteIndex = 0;
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static volatile unsigned long g_ulUARTRxReadIndex = 0;
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // Macros to determine number of free and used bytes in the transmit buffer.
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #define TX_BUFFER_USED          (GetBufferCount(&g_ulUARTTxReadIndex,  \
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                                 &g_ulUARTTxWriteIndex, \
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                                 UART_TX_BUFFER_SIZE))
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #define TX_BUFFER_FREE          (UART_TX_BUFFER_SIZE - TX_BUFFER_USED)
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #define TX_BUFFER_EMPTY         (IsBufferEmpty(&g_ulUARTTxReadIndex,   \
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                                &g_ulUARTTxWriteIndex))
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #define TX_BUFFER_FULL          (IsBufferFull(&g_ulUARTTxReadIndex,  \
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                               &g_ulUARTTxWriteIndex, \
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                               UART_TX_BUFFER_SIZE))
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #define ADVANCE_TX_BUFFER_INDEX(Index) \
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                 (Index) = ((Index) + 1) % UART_TX_BUFFER_SIZE
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // Macros to determine number of free and used bytes in the receive buffer.
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #define RX_BUFFER_USED          (GetBufferCount(&g_ulUARTRxReadIndex,  \
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                                 &g_ulUARTRxWriteIndex, \
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                                 UART_RX_BUFFER_SIZE))
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #define RX_BUFFER_FREE          (UART_RX_BUFFER_SIZE - RX_BUFFER_USED)
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #define RX_BUFFER_EMPTY         (IsBufferEmpty(&g_ulUARTRxReadIndex,   \
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                                &g_ulUARTRxWriteIndex))
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #define RX_BUFFER_FULL          (IsBufferFull(&g_ulUARTRxReadIndex,  \
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                               &g_ulUARTRxWriteIndex, \
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                               UART_RX_BUFFER_SIZE))
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #define ADVANCE_RX_BUFFER_INDEX(Index) \
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                 (Index) = ((Index) + 1) % UART_RX_BUFFER_SIZE
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #endif
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // The base address of the chosen UART.
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static unsigned long g_ulBase = 0;
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // A mapping from an integer between 0 and 15 to its ASCII character
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // equivalent.
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static const char * const g_pcHex = "0123456789abcdef";
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // The list of possible base addresses for the console UART.
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static const unsigned long g_ulUARTBase[3] =
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** {
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     UART0_BASE, UART1_BASE, UART2_BASE
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** };
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #ifdef UART_BUFFERED
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // The list of possible interrupts for the console UART.
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static const unsigned long g_ulUARTInt[3] =
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** {
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     INT_UART0, INT_UART1, INT_UART2
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** };
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // The port number in use.
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static unsigned long g_ulPortNum;
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #endif
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // The list of UART peripherals.
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static const unsigned long g_ulUARTPeriph[3] =
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** {
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     SYSCTL_PERIPH_UART0, SYSCTL_PERIPH_UART1, SYSCTL_PERIPH_UART2
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** };
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! Determines whether the ring buffer whose pointers and size are provided
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! is full or not.
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param pulRead points to the read index for the buffer.
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param pulWrite points to the write index for the buffer.
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param ulSize is the size of the buffer in bytes.
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! This function is used to determine whether or not a given ring buffer is
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! full.  The structure of the code is specifically to ensure that we do not
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! see warnings from the compiler related to the order of volatile accesses
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! being undefined.
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \return Returns \b true if the buffer is full or \b false otherwise.
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #ifdef UART_BUFFERED
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static tBoolean
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** IsBufferFull(volatile unsigned long *pulRead,
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****              volatile unsigned long *pulWrite, unsigned long ulSize)
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** {
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     unsigned long ulWrite;
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     unsigned long ulRead;
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ulWrite = *pulWrite;
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ulRead = *pulRead;
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     return((((ulWrite + 1) % ulSize) == ulRead) ? true : false);
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** }
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #endif
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! Determines whether the ring buffer whose pointers and size are provided
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! is empty or not.
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param pulRead points to the read index for the buffer.
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param pulWrite points to the write index for the buffer.
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! This function is used to determine whether or not a given ring buffer is
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! empty.  The structure of the code is specifically to ensure that we do not
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! see warnings from the compiler related to the order of volatile accesses
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! being undefined.
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \return Returns \b true if the buffer is empty or \b false otherwise.
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #ifdef UART_BUFFERED
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static tBoolean
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** IsBufferEmpty(volatile unsigned long *pulRead,
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****               volatile unsigned long *pulWrite)
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** {
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     unsigned long ulWrite;
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     unsigned long ulRead;
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ulWrite = *pulWrite;
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ulRead = *pulRead;
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     return((ulWrite  == ulRead) ? true : false);
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** }
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #endif
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! Determines the number of bytes of data contained in a ring buffer.
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param pulRead points to the read index for the buffer.
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param pulWrite points to the write index for the buffer.
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param ulSize is the size of the buffer in bytes.
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! This function is used to determine how many bytes of data a given ring
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! buffer currently contains.  The structure of the code is specifically to
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! ensure that we do not see warnings from the compiler related to the order
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! of volatile accesses being undefined.
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \return Returns the number of bytes of data currently in the buffer.
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #ifdef UART_BUFFERED
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static unsigned long
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** GetBufferCount(volatile unsigned long *pulRead,
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                volatile unsigned long *pulWrite, unsigned long ulSize)
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** {
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     unsigned long ulWrite;
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     unsigned long ulRead;
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ulWrite = *pulWrite;
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ulRead = *pulRead;
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     return((ulWrite >= ulRead) ? (ulWrite - ulRead) :
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                  (ulSize - (ulRead - ulWrite)));
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** }
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #endif
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // Take as many bytes from the transmit buffer as we have space for and move
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** // them into the UART transmit FIFO.
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #ifdef UART_BUFFERED
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** static void
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** UARTPrimeTransmit(unsigned long ulBase)
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** {
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Do we have any data to transmit?
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     if(!TX_BUFFER_EMPTY)
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     {
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // Disable the UART interrupt. If we don't do this there is a race
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // condition which can cause the read index to be corrupted.
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         MAP_IntDisable(g_ulUARTInt[g_ulPortNum]);
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // Yes - take some characters out of the transmit buffer and feed
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // them to the UART transmit FIFO.
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         while(MAP_UARTSpaceAvail(ulBase) && !TX_BUFFER_EMPTY)
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         {
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             MAP_UARTCharPutNonBlocking(ulBase,
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                                        g_pcUARTTxBuffer[g_ulUARTTxReadIndex]);
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             ADVANCE_TX_BUFFER_INDEX(g_ulUARTTxReadIndex);
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         }
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // Reenable the UART interrupt.
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         MAP_IntEnable(g_ulUARTInt[g_ulPortNum]);
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     }
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** }
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #endif
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! Initializes the UART console.
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param ulPortNum is the number of UART port to use for the serial console
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! (0-2)
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! This function will initialize the specified serial port to be used as a
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! serial console.  The serial parameters will be set to 115200, 8-N-1.
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! An application wishing to use a different baud rate may call
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! UARTStdioInitExpClk() instead of this function.
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! This function or UARTStdioInitExpClk() must be called prior to using any
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! of the other UART console functions: UARTprintf() or UARTgets().  In order
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! for this function to work correctly, SysCtlClockSet() must be called prior
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! to calling this function.
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! It is assumed that the caller has previously configured the relevant UART
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! pins for operation as a UART rather than as GPIOs.
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \return None.
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** void
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** UARTStdioInit(unsigned long ulPortNum)
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** {
+ 6344              		.loc 1 333 0
+ 6345              		.cfi_startproc
+ 6346              		@ args = 0, pretend = 0, frame = 8
+ 6347              		@ frame_needed = 1, uses_anonymous_args = 0
+ 6348 0000 80B5     		push	{r7, lr}
+ 6349              	.LCFI0:
+ 6350              		.cfi_def_cfa_offset 8
+ 6351 0002 82B0     		sub	sp, sp, #8
+ 6352              	.LCFI1:
+ 6353              		.cfi_def_cfa_offset 16
+ 6354 0004 00AF     		add	r7, sp, #0
+ 6355              		.cfi_offset 14, -4
+ 6356              		.cfi_offset 7, -8
+ 6357              	.LCFI2:
+ 6358              		.cfi_def_cfa_register 7
+ 6359 0006 7860     		str	r0, [r7, #4]
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Pass this call on to the version of the function allowing the baud rate
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // to be specified.
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     UARTStdioInitExpClk(ulPortNum, 115200);
+ 6360              		.loc 1 338 0
+ 6361 0008 7868     		ldr	r0, [r7, #4]
+ 6362 000a 4FF4E131 		mov	r1, #115200
+ 6363 000e FFF7FEFF 		bl	UARTStdioInitExpClk
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** }
+ 6364              		.loc 1 339 0
+ 6365 0012 07F10807 		add	r7, r7, #8
+ 6366 0016 BD46     		mov	sp, r7
+ 6367 0018 80BD     		pop	{r7, pc}
+ 6368              		.cfi_endproc
+ 6369              	.LFE0:
+ 6371 001a 00BF     		.section	.text.UARTStdioInitExpClk,"ax",%progbits
+ 6372              		.align	2
+ 6373              		.global	UARTStdioInitExpClk
+ 6374              		.thumb
+ 6375              		.thumb_func
+ 6377              	UARTStdioInitExpClk:
+ 6378              	.LFB1:
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! Initializes the UART console and allows the baud rate to be selected.
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param ulPortNum is the number of UART port to use for the serial console
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! (0-2)
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param ulBaud is the bit rate that the UART is to be configured to use.
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! This function will initialize the specified serial port to be used as a
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! serial console.  The serial parameters will be set to 8-N-1 and the bit
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! rate set according to the value of the \e ulBaud parameter.
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! This function or UARTStdioInit() must be called prior to using any of the
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! other UART console functions: UARTprintf() or UARTgets().  In order for
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! this function to work correctly, SysCtlClockSet() must be called prior to
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! calling this function.  An application wishing to use 115,200 baud may call
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! UARTStdioInit() instead of this function but should not call both
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! functions.
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! It is assumed that the caller has previously configured the relevant UART
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! pins for operation as a UART rather than as GPIOs.
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \return None.
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** void
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** UARTStdioInitExpClk(unsigned long ulPortNum, unsigned long ulBaud)
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** {
+ 6379              		.loc 1 368 0
+ 6380              		.cfi_startproc
+ 6381              		@ args = 0, pretend = 0, frame = 8
+ 6382              		@ frame_needed = 1, uses_anonymous_args = 0
+ 6383 0000 90B5     		push	{r4, r7, lr}
+ 6384              	.LCFI3:
+ 6385              		.cfi_def_cfa_offset 12
+ 6386 0002 83B0     		sub	sp, sp, #12
+ 6387              	.LCFI4:
+ 6388              		.cfi_def_cfa_offset 24
+ 6389 0004 00AF     		add	r7, sp, #0
+ 6390              		.cfi_offset 14, -4
+ 6391              		.cfi_offset 7, -8
+ 6392              		.cfi_offset 4, -12
+ 6393              	.LCFI5:
+ 6394              		.cfi_def_cfa_register 7
+ 6395 0006 7860     		str	r0, [r7, #4]
+ 6396 0008 3960     		str	r1, [r7, #0]
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Check the arguments.
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ASSERT((ulPortNum == 0) || (ulPortNum == 1) ||
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****            (ulPortNum == 2));
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #ifdef UART_BUFFERED
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // In buffered mode, we only allow a single instance to be opened.
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ASSERT(g_ulBase == 0);
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #endif
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Check to make sure the UART peripheral is present.
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     if(!MAP_SysCtlPeripheralPresent(g_ulUARTPeriph[ulPortNum]))
+ 6397              		.loc 1 385 0
+ 6398 000a 174B     		ldr	r3, .L6
+ 6399 000c 7A68     		ldr	r2, [r7, #4]
+ 6400 000e 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 6401 0012 1846     		mov	r0, r3
+ 6402 0014 FFF7FEFF 		bl	SysCtlPeripheralPresent
+ 6403 0018 0346     		mov	r3, r0
+ 6404 001a 002B     		cmp	r3, #0
+ 6405 001c 1ED0     		beq	.L5
+ 6406              	.L3:
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     {
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         return;
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     }
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Select the base address of the UART.
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     g_ulBase = g_ulUARTBase[ulPortNum];
+ 6407              		.loc 1 393 0
+ 6408 001e 134B     		ldr	r3, .L6+4
+ 6409 0020 7A68     		ldr	r2, [r7, #4]
+ 6410 0022 53F82220 		ldr	r2, [r3, r2, lsl #2]
+ 6411 0026 124B     		ldr	r3, .L6+8
+ 6412 0028 1A60     		str	r2, [r3, #0]
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Enable the UART peripheral for use.
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     MAP_SysCtlPeripheralEnable(g_ulUARTPeriph[ulPortNum]);
+ 6413              		.loc 1 398 0
+ 6414 002a 0F4B     		ldr	r3, .L6
+ 6415 002c 7A68     		ldr	r2, [r7, #4]
+ 6416 002e 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 6417 0032 1846     		mov	r0, r3
+ 6418 0034 FFF7FEFF 		bl	SysCtlPeripheralEnable
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Configure the UART for 115200, n, 8, 1
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     MAP_UARTConfigSetExpClk(g_ulBase, MAP_SysCtlClockGet(), ulBaud,
+ 6419              		.loc 1 403 0
+ 6420 0038 0D4B     		ldr	r3, .L6+8
+ 6421 003a 1C68     		ldr	r4, [r3, #0]
+ 6422 003c FFF7FEFF 		bl	SysCtlClockGet
+ 6423 0040 0346     		mov	r3, r0
+ 6424 0042 2046     		mov	r0, r4
+ 6425 0044 1946     		mov	r1, r3
+ 6426 0046 3A68     		ldr	r2, [r7, #0]
+ 6427 0048 4FF06003 		mov	r3, #96
+ 6428 004c FFF7FEFF 		bl	UARTConfigSetExpClk
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                             (UART_CONFIG_PAR_NONE | UART_CONFIG_STOP_ONE |
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                              UART_CONFIG_WLEN_8));
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #ifdef UART_BUFFERED
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Set the UART to interrupt whenever the TX FIFO is almost empty or
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // when any character is received.
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     MAP_UARTFIFOLevelSet(g_ulBase, UART_FIFO_TX1_8, UART_FIFO_RX1_8);
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Flush both the buffers.
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     UARTFlushRx();
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     UARTFlushTx(true);
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Remember which interrupt we are dealing with.
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     g_ulPortNum = ulPortNum;
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // We are configured for buffered output so enable the master interrupt
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // for this UART and the receive interrupts.  We don't actually enable the
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // transmit interrupt in the UART itself until some data has been placed
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // in the transmit buffer.
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     MAP_UARTIntDisable(g_ulBase, 0xFFFFFFFF);
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     MAP_UARTIntEnable(g_ulBase, UART_INT_RX | UART_INT_RT);
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     MAP_IntEnable(g_ulUARTInt[ulPortNum]);
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #endif
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Enable the UART operation.
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     MAP_UARTEnable(g_ulBase);
+ 6429              		.loc 1 439 0
+ 6430 0050 074B     		ldr	r3, .L6+8
+ 6431 0052 1B68     		ldr	r3, [r3, #0]
+ 6432 0054 1846     		mov	r0, r3
+ 6433 0056 FFF7FEFF 		bl	UARTEnable
+ 6434 005a 00E0     		b	.L2
+ 6435              	.L5:
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         return;
+ 6436              		.loc 1 387 0
+ 6437 005c 00BF     		nop
+ 6438              	.L2:
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** }
+ 6439              		.loc 1 440 0
+ 6440 005e 07F10C07 		add	r7, r7, #12
+ 6441 0062 BD46     		mov	sp, r7
+ 6442 0064 90BD     		pop	{r4, r7, pc}
+ 6443              	.L7:
+ 6444 0066 00BF     		.align	2
+ 6445              	.L6:
+ 6446 0068 24000000 		.word	g_ulUARTPeriph
+ 6447 006c 18000000 		.word	g_ulUARTBase
+ 6448 0070 00000000 		.word	g_ulBase
+ 6449              		.cfi_endproc
+ 6450              	.LFE1:
+ 6452              		.section	.text.UARTwrite,"ax",%progbits
+ 6453              		.align	2
+ 6454              		.global	UARTwrite
+ 6455              		.thumb
+ 6456              		.thumb_func
+ 6458              	UARTwrite:
+ 6459              	.LFB2:
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! Writes a string of characters to the UART output.
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param pcBuf points to a buffer containing the string to transmit.
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param ulLen is the length of the string to transmit.
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! This function will transmit the string to the UART output.  The number of
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! characters transmitted is determined by the \e ulLen parameter.  This
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! function does no interpretation or translation of any characters.  Since
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! the output is sent to a UART, any LF (/n) characters encountered will be
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! replaced with a CRLF pair.
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! Besides using the \e ulLen parameter to stop transmitting the string, if a
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! null character (0) is encountered, then no more characters will be
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! transmitted and the function will return.
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! In non-buffered mode, this function is blocking and will not return until
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! all the characters have been written to the output FIFO.  In buffered mode,
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! the characters are written to the UART transmit buffer and the call returns
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! immediately.  If insufficient space remains in the transmit buffer,
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! additional characters are discarded.
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \return Returns the count of characters written.
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** int
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** UARTwrite(const char *pcBuf, unsigned long ulLen)
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** {
+ 6460              		.loc 1 470 0
+ 6461              		.cfi_startproc
+ 6462              		@ args = 0, pretend = 0, frame = 16
+ 6463              		@ frame_needed = 1, uses_anonymous_args = 0
+ 6464 0000 80B5     		push	{r7, lr}
+ 6465              	.LCFI6:
+ 6466              		.cfi_def_cfa_offset 8
+ 6467 0002 84B0     		sub	sp, sp, #16
+ 6468              	.LCFI7:
+ 6469              		.cfi_def_cfa_offset 24
+ 6470 0004 00AF     		add	r7, sp, #0
+ 6471              		.cfi_offset 14, -4
+ 6472              		.cfi_offset 7, -8
+ 6473              	.LCFI8:
+ 6474              		.cfi_def_cfa_register 7
+ 6475 0006 7860     		str	r0, [r7, #4]
+ 6476 0008 3960     		str	r1, [r7, #0]
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #ifdef UART_BUFFERED
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     unsigned int uIdx;
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Check for valid arguments.
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ASSERT(pcBuf != 0);
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ASSERT(g_ulBase != 0);
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 480:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 481:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Send the characters
+ 482:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     for(uIdx = 0; uIdx < ulLen; uIdx++)
+ 484:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     {
+ 485:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 486:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // If the character to the UART is \n, then add a \r before it so that
+ 487:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // \n is translated to \n\r in the output.
+ 488:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 489:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if(pcBuf[uIdx] == '\n')
+ 490:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         {
+ 491:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             if(!TX_BUFFER_FULL)
+ 492:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             {
+ 493:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 g_pcUARTTxBuffer[g_ulUARTTxWriteIndex] = '\r';
+ 494:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 ADVANCE_TX_BUFFER_INDEX(g_ulUARTTxWriteIndex);
+ 495:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             }
+ 496:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             else
+ 497:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             {
+ 498:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 499:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Buffer is full - discard remaining characters and return.
+ 500:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 501:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 break;
+ 502:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             }
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         }
+ 504:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 505:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 506:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // Send the character to the UART output.
+ 507:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 508:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if(!TX_BUFFER_FULL)
+ 509:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         {
+ 510:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             g_pcUARTTxBuffer[g_ulUARTTxWriteIndex] = pcBuf[uIdx];
+ 511:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             ADVANCE_TX_BUFFER_INDEX(g_ulUARTTxWriteIndex);
+ 512:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         }
+ 513:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         else
+ 514:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         {
+ 515:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 516:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // Buffer is full - discard remaining characters and return.
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 518:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             break;
+ 519:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         }
+ 520:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     }
+ 521:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 522:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 523:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // If we have anything in the buffer, make sure that the UART is set
+ 524:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // up to transmit it.
+ 525:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 526:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     if(!TX_BUFFER_EMPTY)
+ 527:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     {
+ 528:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         UARTPrimeTransmit(g_ulBase);
+ 529:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         MAP_UARTIntEnable(g_ulBase, UART_INT_TX);
+ 530:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     }
+ 531:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 532:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 533:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Return the number of characters written.
+ 534:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 535:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     return(uIdx);
+ 536:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #else
+ 537:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     unsigned int uIdx;
+ 538:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 539:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 540:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Check for valid UART base address, and valid arguments.
+ 541:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 542:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ASSERT(g_ulBase != 0);
+ 543:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ASSERT(pcBuf != 0);
+ 544:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 545:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 546:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Send the characters
+ 547:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     for(uIdx = 0; uIdx < ulLen; uIdx++)
+ 6477              		.loc 1 548 0
+ 6478 000a 4FF00003 		mov	r3, #0
+ 6479 000e FB60     		str	r3, [r7, #12]
+ 6480 0010 1AE0     		b	.L9
+ 6481              	.L11:
+ 549:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     {
+ 550:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 551:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // If the character to the UART is \n, then add a \r before it so that
+ 552:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // \n is translated to \n\r in the output.
+ 553:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 554:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if(pcBuf[uIdx] == '\n')
+ 6482              		.loc 1 554 0
+ 6483 0012 7A68     		ldr	r2, [r7, #4]
+ 6484 0014 FB68     		ldr	r3, [r7, #12]
+ 6485 0016 D318     		adds	r3, r2, r3
+ 6486 0018 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 6487 001a 0A2B     		cmp	r3, #10
+ 6488 001c 06D1     		bne	.L10
+ 555:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         {
+ 556:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             MAP_UARTCharPut(g_ulBase, '\r');
+ 6489              		.loc 1 556 0
+ 6490 001e 0F4B     		ldr	r3, .L12
+ 6491 0020 1B68     		ldr	r3, [r3, #0]
+ 6492 0022 1846     		mov	r0, r3
+ 6493 0024 4FF00D01 		mov	r1, #13
+ 6494 0028 FFF7FEFF 		bl	UARTCharPut
+ 6495              	.L10:
+ 557:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         }
+ 558:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 559:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 560:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // Send the character to the UART output.
+ 561:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 562:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         MAP_UARTCharPut(g_ulBase, pcBuf[uIdx]);
+ 6496              		.loc 1 562 0
+ 6497 002c 0B4B     		ldr	r3, .L12
+ 6498 002e 1A68     		ldr	r2, [r3, #0]
+ 6499 0030 7968     		ldr	r1, [r7, #4]
+ 6500 0032 FB68     		ldr	r3, [r7, #12]
+ 6501 0034 CB18     		adds	r3, r1, r3
+ 6502 0036 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 6503 0038 1046     		mov	r0, r2
+ 6504 003a 1946     		mov	r1, r3
+ 6505 003c FFF7FEFF 		bl	UARTCharPut
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     for(uIdx = 0; uIdx < ulLen; uIdx++)
+ 6506              		.loc 1 548 0
+ 6507 0040 FB68     		ldr	r3, [r7, #12]
+ 6508 0042 03F10103 		add	r3, r3, #1
+ 6509 0046 FB60     		str	r3, [r7, #12]
+ 6510              	.L9:
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     for(uIdx = 0; uIdx < ulLen; uIdx++)
+ 6511              		.loc 1 548 0 is_stmt 0 discriminator 1
+ 6512 0048 FA68     		ldr	r2, [r7, #12]
+ 6513 004a 3B68     		ldr	r3, [r7, #0]
+ 6514 004c 9A42     		cmp	r2, r3
+ 6515 004e E0D3     		bcc	.L11
+ 563:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     }
+ 564:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 565:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 566:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Return the number of characters written.
+ 567:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 568:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     return(uIdx);
+ 6516              		.loc 1 568 0 is_stmt 1
+ 6517 0050 FB68     		ldr	r3, [r7, #12]
+ 569:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #endif
+ 570:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** }
+ 6518              		.loc 1 570 0
+ 6519 0052 1846     		mov	r0, r3
+ 6520 0054 07F11007 		add	r7, r7, #16
+ 6521 0058 BD46     		mov	sp, r7
+ 6522 005a 80BD     		pop	{r7, pc}
+ 6523              	.L13:
+ 6524              		.align	2
+ 6525              	.L12:
+ 6526 005c 00000000 		.word	g_ulBase
+ 6527              		.cfi_endproc
+ 6528              	.LFE2:
+ 6530              		.section	.rodata
+ 6531              		.align	2
+ 6532              	.LC1:
+ 6533 0030 08200800 		.ascii	"\010 \010\000"
+ 6534              		.align	2
+ 6535              	.LC2:
+ 6536 0034 0D0A00   		.ascii	"\015\012\000"
+ 6537              		.section	.text.UARTgets,"ax",%progbits
+ 6538              		.align	2
+ 6539              		.global	UARTgets
+ 6540              		.thumb
+ 6541              		.thumb_func
+ 6543              	UARTgets:
+ 6544              	.LFB3:
+ 571:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 572:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 573:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 574:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! A simple UART based get string function, with some line processing.
+ 575:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 576:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param pcBuf points to a buffer for the incoming string from the UART.
+ 577:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param ulLen is the length of the buffer for storage of the string,
+ 578:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! including the trailing 0.
+ 579:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! This function will receive a string from the UART input and store the
+ 581:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! characters in the buffer pointed to by \e pcBuf.  The characters will
+ 582:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! continue to be stored until a termination character is received.  The
+ 583:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! termination characters are CR, LF, or ESC.  A CRLF pair is treated as a
+ 584:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! single termination character.  The termination characters are not stored in
+ 585:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! the string.  The string will be terminated with a 0 and the function will
+ 586:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! return.
+ 587:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 588:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! In both buffered and unbuffered modes, this function will block until
+ 589:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! a termination character is received.  If non-blocking operation is required
+ 590:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! in buffered mode, a call to UARTPeek() may be made to determine whether
+ 591:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! a termination character already exists in the receive buffer prior to
+ 592:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! calling UARTgets().
+ 593:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 594:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! Since the string will be null terminated, the user must ensure that the
+ 595:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! buffer is sized to allow for the additional null character.
+ 596:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 597:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \return Returns the count of characters that were stored, not including
+ 598:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! the trailing 0.
+ 599:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 600:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 601:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** int
+ 602:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** UARTgets(char *pcBuf, unsigned long ulLen)
+ 603:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** {
+ 6545              		.loc 1 603 0
+ 6546              		.cfi_startproc
+ 6547              		@ args = 0, pretend = 0, frame = 16
+ 6548              		@ frame_needed = 1, uses_anonymous_args = 0
+ 6549 0000 80B5     		push	{r7, lr}
+ 6550              	.LCFI9:
+ 6551              		.cfi_def_cfa_offset 8
+ 6552 0002 84B0     		sub	sp, sp, #16
+ 6553              	.LCFI10:
+ 6554              		.cfi_def_cfa_offset 24
+ 6555 0004 00AF     		add	r7, sp, #0
+ 6556              		.cfi_offset 14, -4
+ 6557              		.cfi_offset 7, -8
+ 6558              	.LCFI11:
+ 6559              		.cfi_def_cfa_register 7
+ 6560 0006 7860     		str	r0, [r7, #4]
+ 6561 0008 3960     		str	r1, [r7, #0]
+ 604:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #ifdef UART_BUFFERED
+ 605:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     unsigned long ulCount = 0;
+ 606:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     char cChar;
+ 607:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 608:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 609:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Check the arguments.
+ 610:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 611:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ASSERT(pcBuf != 0);
+ 612:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ASSERT(ulLen != 0);
+ 613:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ASSERT(g_ulBase != 0);
+ 614:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 615:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 616:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Adjust the length back by 1 to leave space for the trailing
+ 617:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // null terminator.
+ 618:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 619:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ulLen--;
+ 620:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 621:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 622:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Process characters until a newline is received.
+ 623:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 624:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     while(1)
+ 625:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     {
+ 626:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 627:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // Read the next character from the receive buffer.
+ 628:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 629:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if(!RX_BUFFER_EMPTY)
+ 630:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         {
+ 631:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             cChar = g_pcUARTRxBuffer[g_ulUARTRxReadIndex];
+ 632:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             ADVANCE_RX_BUFFER_INDEX(g_ulUARTRxReadIndex);
+ 633:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 634:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 635:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // See if a newline or escape character was received.
+ 636:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 637:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             if((cChar == '\r') || (cChar == '\n') || (cChar == 0x1b))
+ 638:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             {
+ 639:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 640:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Stop processing the input and end the line.
+ 641:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 642:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 break;
+ 643:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             }
+ 644:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 645:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 646:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // Process the received character as long as we are not at the end
+ 647:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // of the buffer.  If the end of the buffer has been reached then
+ 648:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // all additional characters are ignored until a newline is
+ 649:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // received.
+ 650:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 651:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             if(ulCount < ulLen)
+ 652:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             {
+ 653:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 654:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Store the character in the caller supplied buffer.
+ 655:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 656:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 pcBuf[ulCount] = cChar;
+ 657:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 658:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 659:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Increment the count of characters received.
+ 660:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 661:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 ulCount++;
+ 662:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             }
+ 663:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         }
+ 664:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     }
+ 665:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 666:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 667:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Add a null termination to the string.
+ 668:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 669:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     pcBuf[ulCount] = 0;
+ 670:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 671:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 672:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Return the count of chars in the buffer, not counting the trailing 0.
+ 673:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 674:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     return(ulCount);
+ 675:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #else
+ 676:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     unsigned long ulCount = 0;
+ 6562              		.loc 1 676 0
+ 6563 000a 4FF00003 		mov	r3, #0
+ 6564 000e FB60     		str	r3, [r7, #12]
+ 677:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     char cChar;
+ 678:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     static char bLastWasCR = 0;
+ 679:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 680:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 681:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Check the arguments.
+ 682:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 683:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ASSERT(pcBuf != 0);
+ 684:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ASSERT(ulLen != 0);
+ 685:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ASSERT(g_ulBase != 0);
+ 686:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 687:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 688:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Adjust the length back by 1 to leave space for the trailing
+ 689:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // null terminator.
+ 690:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 691:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ulLen--;
+ 6565              		.loc 1 691 0
+ 6566 0010 3B68     		ldr	r3, [r7, #0]
+ 6567 0012 03F1FF33 		add	r3, r3, #-1
+ 6568 0016 3B60     		str	r3, [r7, #0]
+ 6569 0018 00E0     		b	.L22
+ 6570              	.L23:
+ 692:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 693:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 694:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Process characters until a newline is received.
+ 695:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 696:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     while(1)
+ 697:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     {
+ 698:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 699:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // Read the next character from the console.
+ 700:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 701:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         cChar = MAP_UARTCharGet(g_ulBase);
+ 702:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 703:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 704:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // See if the backspace key was pressed.
+ 705:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 706:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if(cChar == '\b')
+ 707:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         {
+ 708:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 709:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // If there are any characters already in the buffer, then delete
+ 710:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // the last.
+ 711:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 712:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             if(ulCount)
+ 713:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             {
+ 714:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 715:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Rub out the previous character.
+ 716:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 717:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 UARTwrite("\b \b", 3);
+ 718:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 719:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 720:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Decrement the number of characters in the buffer.
+ 721:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 722:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 ulCount--;
+ 723:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             }
+ 724:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 725:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 726:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // Skip ahead to read the next character.
+ 727:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 728:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             continue;
+ 729:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         }
+ 730:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 731:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 732:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // If this character is LF and last was CR, then just gobble up the
+ 733:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // character because the EOL processing was taken care of with the CR.
+ 734:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 735:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if((cChar == '\n') && bLastWasCR)
+ 736:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         {
+ 737:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             bLastWasCR = 0;
+ 738:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             continue;
+ 739:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         }
+ 740:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 741:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 742:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // See if a newline or escape character was received.
+ 743:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 744:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if((cChar == '\r') || (cChar == '\n') || (cChar == 0x1b))
+ 745:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         {
+ 746:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 747:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // If the character is a CR, then it may be followed by a LF which
+ 748:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // should be paired with the CR.  So remember that a CR was
+ 749:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // received.
+ 750:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 751:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             if(cChar == '\r')
+ 752:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             {
+ 753:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 bLastWasCR = 1;
+ 754:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             }
+ 755:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 756:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 757:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // Stop processing the input and end the line.
+ 758:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 759:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             break;
+ 760:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         }
+ 761:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 762:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 763:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // Process the received character as long as we are not at the end of
+ 764:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // the buffer.  If the end of the buffer has been reached then all
+ 765:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // additional characters are ignored until a newline is received.
+ 766:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 767:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if(ulCount < ulLen)
+ 768:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         {
+ 769:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 770:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // Store the character in the caller supplied buffer.
+ 771:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 772:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             pcBuf[ulCount] = cChar;
+ 773:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 774:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 775:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // Increment the count of characters received.
+ 776:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 777:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             ulCount++;
+ 778:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 779:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 780:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // Reflect the character back to the user.
+ 781:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 782:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             MAP_UARTCharPut(g_ulBase, cChar);
+ 783:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         }
+ 784:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     }
+ 6571              		.loc 1 784 0
+ 6572 001a 00BF     		nop
+ 6573              	.L22:
+ 701:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         cChar = MAP_UARTCharGet(g_ulBase);
+ 6574              		.loc 1 701 0
+ 6575 001c 2C4B     		ldr	r3, .L24
+ 6576 001e 1B68     		ldr	r3, [r3, #0]
+ 6577 0020 1846     		mov	r0, r3
+ 6578 0022 FFF7FEFF 		bl	UARTCharGet
+ 6579 0026 0346     		mov	r3, r0
+ 6580 0028 FB72     		strb	r3, [r7, #11]
+ 706:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if(cChar == '\b')
+ 6581              		.loc 1 706 0
+ 6582 002a FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 6583 002c 082B     		cmp	r3, #8
+ 6584 002e 0CD1     		bne	.L15
+ 712:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             if(ulCount)
+ 6585              		.loc 1 712 0
+ 6586 0030 FB68     		ldr	r3, [r7, #12]
+ 6587 0032 002B     		cmp	r3, #0
+ 6588 0034 08D0     		beq	.L16
+ 717:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 UARTwrite("\b \b", 3);
+ 6589              		.loc 1 717 0
+ 6590 0036 2748     		ldr	r0, .L24+4
+ 6591 0038 4FF00301 		mov	r1, #3
+ 6592 003c FFF7FEFF 		bl	UARTwrite
+ 722:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 ulCount--;
+ 6593              		.loc 1 722 0
+ 6594 0040 FB68     		ldr	r3, [r7, #12]
+ 6595 0042 03F1FF33 		add	r3, r3, #-1
+ 6596 0046 FB60     		str	r3, [r7, #12]
+ 6597              	.L16:
+ 728:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             continue;
+ 6598              		.loc 1 728 0
+ 6599 0048 41E0     		b	.L17
+ 6600              	.L15:
+ 735:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if((cChar == '\n') && bLastWasCR)
+ 6601              		.loc 1 735 0
+ 6602 004a FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 6603 004c 0A2B     		cmp	r3, #10
+ 6604 004e 08D1     		bne	.L18
+ 735:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if((cChar == '\n') && bLastWasCR)
+ 6605              		.loc 1 735 0 is_stmt 0 discriminator 1
+ 6606 0050 214B     		ldr	r3, .L24+8
+ 6607 0052 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 6608 0054 002B     		cmp	r3, #0
+ 6609 0056 04D0     		beq	.L18
+ 737:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             bLastWasCR = 0;
+ 6610              		.loc 1 737 0 is_stmt 1
+ 6611 0058 1F4B     		ldr	r3, .L24+8
+ 6612 005a 4FF00002 		mov	r2, #0
+ 6613 005e 1A70     		strb	r2, [r3, #0]
+ 738:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             continue;
+ 6614              		.loc 1 738 0
+ 6615 0060 35E0     		b	.L17
+ 6616              	.L18:
+ 744:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if((cChar == '\r') || (cChar == '\n') || (cChar == 0x1b))
+ 6617              		.loc 1 744 0
+ 6618 0062 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 6619 0064 0D2B     		cmp	r3, #13
+ 6620 0066 05D0     		beq	.L19
+ 744:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if((cChar == '\r') || (cChar == '\n') || (cChar == 0x1b))
+ 6621              		.loc 1 744 0 is_stmt 0 discriminator 1
+ 6622 0068 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 6623 006a 0A2B     		cmp	r3, #10
+ 6624 006c 02D0     		beq	.L19
+ 6625 006e FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 6626 0070 1B2B     		cmp	r3, #27
+ 6627 0072 17D1     		bne	.L20
+ 6628              	.L19:
+ 751:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             if(cChar == '\r')
+ 6629              		.loc 1 751 0 is_stmt 1
+ 6630 0074 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 6631 0076 0D2B     		cmp	r3, #13
+ 6632 0078 03D1     		bne	.L21
+ 753:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 bLastWasCR = 1;
+ 6633              		.loc 1 753 0
+ 6634 007a 174B     		ldr	r3, .L24+8
+ 6635 007c 4FF00102 		mov	r2, #1
+ 6636 0080 1A70     		strb	r2, [r3, #0]
+ 6637              	.L21:
+ 785:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 786:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 787:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Add a null termination to the string.
+ 788:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 789:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     pcBuf[ulCount] = 0;
+ 6638              		.loc 1 789 0
+ 6639 0082 7A68     		ldr	r2, [r7, #4]
+ 6640 0084 FB68     		ldr	r3, [r7, #12]
+ 6641 0086 D318     		adds	r3, r2, r3
+ 6642 0088 4FF00002 		mov	r2, #0
+ 6643 008c 1A70     		strb	r2, [r3, #0]
+ 790:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 791:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 792:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Send a CRLF pair to the terminal to end the line.
+ 793:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 794:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     UARTwrite("\r\n", 2);
+ 6644              		.loc 1 794 0
+ 6645 008e 1348     		ldr	r0, .L24+12
+ 6646 0090 4FF00201 		mov	r1, #2
+ 6647 0094 FFF7FEFF 		bl	UARTwrite
+ 795:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 796:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 797:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Return the count of chars in the buffer, not counting the trailing 0.
+ 798:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 799:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     return(ulCount);
+ 6648              		.loc 1 799 0
+ 6649 0098 FB68     		ldr	r3, [r7, #12]
+ 800:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #endif
+ 801:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** }
+ 6650              		.loc 1 801 0
+ 6651 009a 1846     		mov	r0, r3
+ 6652 009c 07F11007 		add	r7, r7, #16
+ 6653 00a0 BD46     		mov	sp, r7
+ 6654 00a2 80BD     		pop	{r7, pc}
+ 6655              	.L20:
+ 767:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if(ulCount < ulLen)
+ 6656              		.loc 1 767 0
+ 6657 00a4 FA68     		ldr	r2, [r7, #12]
+ 6658 00a6 3B68     		ldr	r3, [r7, #0]
+ 6659 00a8 9A42     		cmp	r2, r3
+ 6660 00aa B6D2     		bcs	.L23
+ 772:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             pcBuf[ulCount] = cChar;
+ 6661              		.loc 1 772 0
+ 6662 00ac 7A68     		ldr	r2, [r7, #4]
+ 6663 00ae FB68     		ldr	r3, [r7, #12]
+ 6664 00b0 D318     		adds	r3, r2, r3
+ 6665 00b2 FA7A     		ldrb	r2, [r7, #11]
+ 6666 00b4 1A70     		strb	r2, [r3, #0]
+ 777:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             ulCount++;
+ 6667              		.loc 1 777 0
+ 6668 00b6 FB68     		ldr	r3, [r7, #12]
+ 6669 00b8 03F10103 		add	r3, r3, #1
+ 6670 00bc FB60     		str	r3, [r7, #12]
+ 782:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             MAP_UARTCharPut(g_ulBase, cChar);
+ 6671              		.loc 1 782 0
+ 6672 00be 044B     		ldr	r3, .L24
+ 6673 00c0 1A68     		ldr	r2, [r3, #0]
+ 6674 00c2 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 6675 00c4 1046     		mov	r0, r2
+ 6676 00c6 1946     		mov	r1, r3
+ 6677 00c8 FFF7FEFF 		bl	UARTCharPut
+ 784:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     }
+ 6678              		.loc 1 784 0
+ 6679 00cc A6E7     		b	.L22
+ 6680              	.L17:
+ 6681 00ce A5E7     		b	.L22
+ 6682              	.L25:
+ 6683              		.align	2
+ 6684              	.L24:
+ 6685 00d0 00000000 		.word	g_ulBase
+ 6686 00d4 30000000 		.word	.LC1
+ 6687 00d8 04000000 		.word	bLastWasCR.4224
+ 6688 00dc 34000000 		.word	.LC2
+ 6689              		.cfi_endproc
+ 6690              	.LFE3:
+ 6692              		.section	.text.UARTgetc,"ax",%progbits
+ 6693              		.align	2
+ 6694              		.global	UARTgetc
+ 6695              		.thumb
+ 6696              		.thumb_func
+ 6698              	UARTgetc:
+ 6699              	.LFB4:
+ 802:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 803:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 804:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 805:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! Read a single character from the UART, blocking if necessary.
+ 806:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 807:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! This function will receive a single character from the UART and store it at
+ 808:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! the supplied address.
+ 809:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 810:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! In both buffered and unbuffered modes, this function will block until a
+ 811:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! character is received.  If non-blocking operation is required in buffered
+ 812:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! mode, a call to UARTRxAvail() may be made to determine whether any
+ 813:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! characters are currently available for reading.
+ 814:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 815:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \return Returns the character read.
+ 816:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 817:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 818:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** unsigned char
+ 819:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** UARTgetc(void)
+ 820:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** {
+ 6700              		.loc 1 820 0
+ 6701              		.cfi_startproc
+ 6702              		@ args = 0, pretend = 0, frame = 0
+ 6703              		@ frame_needed = 1, uses_anonymous_args = 0
+ 6704 0000 80B5     		push	{r7, lr}
+ 6705              	.LCFI12:
+ 6706              		.cfi_def_cfa_offset 8
+ 6707 0002 00AF     		add	r7, sp, #0
+ 6708              		.cfi_offset 14, -4
+ 6709              		.cfi_offset 7, -8
+ 6710              	.LCFI13:
+ 6711              		.cfi_def_cfa_register 7
+ 821:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #ifdef UART_BUFFERED
+ 822:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     unsigned char cChar;
+ 823:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 824:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 825:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Wait for a character to be received.
+ 826:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 827:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     while(RX_BUFFER_EMPTY)
+ 828:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     {
+ 829:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 830:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // Block waiting for a character to be received (if the buffer is
+ 831:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // currently empty).
+ 832:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 833:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     }
+ 834:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 835:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 836:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Read a character from the buffer.
+ 837:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 838:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     cChar = g_pcUARTRxBuffer[g_ulUARTRxReadIndex];
+ 839:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ADVANCE_RX_BUFFER_INDEX(g_ulUARTRxReadIndex);
+ 840:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 841:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 842:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Return the character to the caller.
+ 843:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 844:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     return(cChar);
+ 845:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #else
+ 846:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 847:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Block until a character is received by the UART then return it to
+ 848:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // the caller.
+ 849:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 850:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     return(MAP_UARTCharGet(g_ulBase));
+ 6712              		.loc 1 850 0
+ 6713 0004 044B     		ldr	r3, .L27
+ 6714 0006 1B68     		ldr	r3, [r3, #0]
+ 6715 0008 1846     		mov	r0, r3
+ 6716 000a FFF7FEFF 		bl	UARTCharGet
+ 6717 000e 0346     		mov	r3, r0
+ 6718 0010 DBB2     		uxtb	r3, r3
+ 851:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** #endif
+ 852:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** }
+ 6719              		.loc 1 852 0
+ 6720 0012 1846     		mov	r0, r3
+ 6721 0014 80BD     		pop	{r7, pc}
+ 6722              	.L28:
+ 6723 0016 00BF     		.align	2
+ 6724              	.L27:
+ 6725 0018 00000000 		.word	g_ulBase
+ 6726              		.cfi_endproc
+ 6727              	.LFE4:
+ 6729              		.section	.rodata
+ 6730 0037 00       		.align	2
+ 6731              	.LC3:
+ 6732 0038 2000     		.ascii	" \000"
+ 6733 003a 0000     		.align	2
+ 6734              	.LC4:
+ 6735 003c 4552524F 		.ascii	"ERROR\000"
+ 6735      5200
+ 6736 0042 0000     		.section	.text.UARTprintf,"ax",%progbits
+ 6737              		.align	2
+ 6738              		.global	UARTprintf
+ 6739              		.thumb
+ 6740              		.thumb_func
+ 6742              	UARTprintf:
+ 6743              	.LFB5:
+ 853:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 854:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 855:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 856:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! A simple UART based printf function supporting \%c, \%d, \%p, \%s, \%u,
+ 857:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \%x, and \%X.
+ 858:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 859:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param pcString is the format string.
+ 860:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \param ... are the optional arguments, which depend on the contents of the
+ 861:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! format string.
+ 862:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 863:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! This function is very similar to the C library <tt>fprintf()</tt> function.
+ 864:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! All of its output will be sent to the UART.  Only the following formatting
+ 865:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! characters are supported:
+ 866:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 867:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! - \%c to print a character
+ 868:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! - \%d to print a decimal value
+ 869:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! - \%s to print a string
+ 870:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! - \%u to print an unsigned decimal value
+ 871:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! - \%x to print a hexadecimal value using lower case letters
+ 872:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! - \%X to print a hexadecimal value using lower case letters (not upper case
+ 873:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! letters as would typically be used)
+ 874:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! - \%p to print a pointer as a hexadecimal value
+ 875:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! - \%\% to print out a \% character
+ 876:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 877:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! For \%s, \%d, \%u, \%p, \%x, and \%X, an optional number may reside
+ 878:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! between the \% and the format character, which specifies the minimum number
+ 879:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! of characters to use for that value; if preceded by a 0 then the extra
+ 880:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! characters will be filled with zeros instead of spaces.  For example,
+ 881:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! ``\%8d'' will use eight characters to print the decimal value with spaces
+ 882:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! added to reach eight; ``\%08d'' will use eight characters as well but will
+ 883:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! add zeroes instead of spaces.
+ 884:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 885:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! The type of the arguments after \e pcString must match the requirements of
+ 886:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! the format string.  For example, if an integer was passed where a string
+ 887:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! was expected, an error of some kind will most likely occur.
+ 888:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //!
+ 889:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //! \return None.
+ 890:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //
+ 891:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** //*****************************************************************************
+ 892:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** void
+ 893:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** UARTprintf(const char *pcString, ...)
+ 894:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** {
+ 6744              		.loc 1 894 0
+ 6745              		.cfi_startproc
+ 6746              		@ args = 4, pretend = 16, frame = 56
+ 6747              		@ frame_needed = 1, uses_anonymous_args = 1
+ 6748 0000 0FB4     		push	{r0, r1, r2, r3}
+ 6749              	.LCFI14:
+ 6750              		.cfi_def_cfa_offset 16
+ 6751 0002 80B5     		push	{r7, lr}
+ 6752              	.LCFI15:
+ 6753              		.cfi_def_cfa_offset 24
+ 6754 0004 8EB0     		sub	sp, sp, #56
+ 6755              	.LCFI16:
+ 6756              		.cfi_def_cfa_offset 80
+ 6757 0006 00AF     		add	r7, sp, #0
+ 6758              		.cfi_offset 14, -20
+ 6759              		.cfi_offset 7, -24
+ 6760              		.cfi_offset 3, -4
+ 6761              		.cfi_offset 2, -8
+ 6762              		.cfi_offset 1, -12
+ 6763              		.cfi_offset 0, -16
+ 6764              	.LCFI17:
+ 6765              		.cfi_def_cfa_register 7
+ 895:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     unsigned long ulIdx, ulValue, ulPos, ulCount, ulBase, ulNeg;
+ 896:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     char *pcStr, pcBuf[16], cFill;
+ 897:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     va_list vaArgP;
+ 898:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 899:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 900:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Check the arguments.
+ 901:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 902:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     ASSERT(pcString != 0);
+ 903:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 904:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 905:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Start the varargs processing.
+ 906:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 907:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     va_start(vaArgP, pcString);
+ 6766              		.loc 1 907 0
+ 6767 0008 07F14403 		add	r3, r7, #68
+ 6768 000c 7B60     		str	r3, [r7, #4]
+ 908:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 909:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 910:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // Loop while there are more characters in the string.
+ 911:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+ 912:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     while(*pcString)
+ 6769              		.loc 1 912 0
+ 6770 000e 1AE2     		b	.L30
+ 6771              	.L64:
+ 913:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     {
+ 914:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 915:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // Find the first non-% character, or the end of the string.
+ 916:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 917:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         for(ulIdx = 0; (pcString[ulIdx] != '%') && (pcString[ulIdx] != '\0');
+ 6772              		.loc 1 917 0
+ 6773 0010 4FF00003 		mov	r3, #0
+ 6774 0014 7B63     		str	r3, [r7, #52]
+ 6775 0016 03E0     		b	.L31
+ 6776              	.L33:
+ 918:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             ulIdx++)
+ 6777              		.loc 1 918 0
+ 6778 0018 7B6B     		ldr	r3, [r7, #52]
+ 6779 001a 03F10103 		add	r3, r3, #1
+ 6780 001e 7B63     		str	r3, [r7, #52]
+ 6781              	.L31:
+ 917:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         for(ulIdx = 0; (pcString[ulIdx] != '%') && (pcString[ulIdx] != '\0');
+ 6782              		.loc 1 917 0 discriminator 1
+ 6783 0020 3A6C     		ldr	r2, [r7, #64]
+ 6784 0022 7B6B     		ldr	r3, [r7, #52]
+ 6785 0024 D318     		adds	r3, r2, r3
+ 6786 0026 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 6787 0028 252B     		cmp	r3, #37
+ 6788 002a 05D0     		beq	.L32
+ 917:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         for(ulIdx = 0; (pcString[ulIdx] != '%') && (pcString[ulIdx] != '\0');
+ 6789              		.loc 1 917 0 is_stmt 0 discriminator 2
+ 6790 002c 3A6C     		ldr	r2, [r7, #64]
+ 6791 002e 7B6B     		ldr	r3, [r7, #52]
+ 6792 0030 D318     		adds	r3, r2, r3
+ 6793 0032 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 6794 0034 002B     		cmp	r3, #0
+ 6795 0036 EFD1     		bne	.L33
+ 6796              	.L32:
+ 919:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         {
+ 920:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         }
+ 921:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 922:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 923:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // Write this portion of the string.
+ 924:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 925:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         UARTwrite(pcString, ulIdx);
+ 6797              		.loc 1 925 0 is_stmt 1
+ 6798 0038 386C     		ldr	r0, [r7, #64]
+ 6799 003a 796B     		ldr	r1, [r7, #52]
+ 6800 003c FFF7FEFF 		bl	UARTwrite
+ 926:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 927:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 928:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // Skip the portion of the string that was written.
+ 929:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 930:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         pcString += ulIdx;
+ 6801              		.loc 1 930 0
+ 6802 0040 3A6C     		ldr	r2, [r7, #64]
+ 6803 0042 7B6B     		ldr	r3, [r7, #52]
+ 6804 0044 D318     		adds	r3, r2, r3
+ 6805 0046 3B64     		str	r3, [r7, #64]
+ 931:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 932:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 933:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         // See if the next character is a %.
+ 934:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         //
+ 935:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         if(*pcString == '%')
+ 6806              		.loc 1 935 0
+ 6807 0048 3B6C     		ldr	r3, [r7, #64]
+ 6808 004a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 6809 004c 252B     		cmp	r3, #37
+ 6810 004e 40F0FA81 		bne	.L30
+ 936:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         {
+ 937:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 938:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // Skip the %.
+ 939:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 940:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             pcString++;
+ 6811              		.loc 1 940 0
+ 6812 0052 3B6C     		ldr	r3, [r7, #64]
+ 6813 0054 03F10103 		add	r3, r3, #1
+ 6814 0058 3B64     		str	r3, [r7, #64]
+ 941:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 942:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 943:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // Set the digit count to zero, and the fill character to space
+ 944:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // (i.e. to the defaults).
+ 945:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 946:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             ulCount = 0;
+ 6815              		.loc 1 946 0
+ 6816 005a 4FF00003 		mov	r3, #0
+ 6817 005e FB62     		str	r3, [r7, #44]
+ 947:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             cFill = ' ';
+ 6818              		.loc 1 947 0
+ 6819 0060 4FF02003 		mov	r3, #32
+ 6820 0064 87F82330 		strb	r3, [r7, #35]
+ 6821              	.L34:
+ 948:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 949:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 950:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // It may be necessary to get back here to process more characters.
+ 951:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // Goto's aren't pretty, but effective.  I feel extremely dirty for
+ 952:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // using not one but two of the beasts.
+ 953:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 954:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** again:
+ 955:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 956:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 957:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             // Determine how to handle the next character.
+ 958:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             //
+ 959:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             switch(*pcString++)
+ 6822              		.loc 1 959 0
+ 6823 0068 3B6C     		ldr	r3, [r7, #64]
+ 6824 006a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 6825 006c 3A6C     		ldr	r2, [r7, #64]
+ 6826 006e 02F10102 		add	r2, r2, #1
+ 6827 0072 3A64     		str	r2, [r7, #64]
+ 6828 0074 A3F12503 		sub	r3, r3, #37
+ 6829 0078 532B     		cmp	r3, #83
+ 6830 007a 00F2DD81 		bhi	.L35
+ 6831 007e 01A2     		adr	r2, .L43
+ 6832 0080 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 6833              		.align	2
+ 6834              	.L43:
+ 6835 0084 27040000 		.word	.L36+1
+ 6836 0088 39040000 		.word	.L35+1
+ 6837 008c 39040000 		.word	.L35+1
+ 6838 0090 39040000 		.word	.L35+1
+ 6839 0094 39040000 		.word	.L35+1
+ 6840 0098 39040000 		.word	.L35+1
+ 6841 009c 39040000 		.word	.L35+1
+ 6842 00a0 39040000 		.word	.L35+1
+ 6843 00a4 39040000 		.word	.L35+1
+ 6844 00a8 39040000 		.word	.L35+1
+ 6845 00ac 39040000 		.word	.L35+1
+ 6846 00b0 D5010000 		.word	.L37+1
+ 6847 00b4 D5010000 		.word	.L37+1
+ 6848 00b8 D5010000 		.word	.L37+1
+ 6849 00bc D5010000 		.word	.L37+1
+ 6850 00c0 D5010000 		.word	.L37+1
+ 6851 00c4 D5010000 		.word	.L37+1
+ 6852 00c8 D5010000 		.word	.L37+1
+ 6853 00cc D5010000 		.word	.L37+1
+ 6854 00d0 D5010000 		.word	.L37+1
+ 6855 00d4 D5010000 		.word	.L37+1
+ 6856 00d8 39040000 		.word	.L35+1
+ 6857 00dc 39040000 		.word	.L35+1
+ 6858 00e0 39040000 		.word	.L35+1
+ 6859 00e4 39040000 		.word	.L35+1
+ 6860 00e8 39040000 		.word	.L35+1
+ 6861 00ec 39040000 		.word	.L35+1
+ 6862 00f0 39040000 		.word	.L35+1
+ 6863 00f4 39040000 		.word	.L35+1
+ 6864 00f8 39040000 		.word	.L35+1
+ 6865 00fc 39040000 		.word	.L35+1
+ 6866 0100 39040000 		.word	.L35+1
+ 6867 0104 39040000 		.word	.L35+1
+ 6868 0108 39040000 		.word	.L35+1
+ 6869 010c 39040000 		.word	.L35+1
+ 6870 0110 39040000 		.word	.L35+1
+ 6871 0114 39040000 		.word	.L35+1
+ 6872 0118 39040000 		.word	.L35+1
+ 6873 011c 39040000 		.word	.L35+1
+ 6874 0120 39040000 		.word	.L35+1
+ 6875 0124 39040000 		.word	.L35+1
+ 6876 0128 39040000 		.word	.L35+1
+ 6877 012c 39040000 		.word	.L35+1
+ 6878 0130 39040000 		.word	.L35+1
+ 6879 0134 39040000 		.word	.L35+1
+ 6880 0138 39040000 		.word	.L35+1
+ 6881 013c 39040000 		.word	.L35+1
+ 6882 0140 39040000 		.word	.L35+1
+ 6883 0144 39040000 		.word	.L35+1
+ 6884 0148 39040000 		.word	.L35+1
+ 6885 014c 39040000 		.word	.L35+1
+ 6886 0150 EF020000 		.word	.L38+1
+ 6887 0154 39040000 		.word	.L35+1
+ 6888 0158 39040000 		.word	.L35+1
+ 6889 015c 39040000 		.word	.L35+1
+ 6890 0160 39040000 		.word	.L35+1
+ 6891 0164 39040000 		.word	.L35+1
+ 6892 0168 39040000 		.word	.L35+1
+ 6893 016c 39040000 		.word	.L35+1
+ 6894 0170 39040000 		.word	.L35+1
+ 6895 0174 39040000 		.word	.L35+1
+ 6896 0178 39040000 		.word	.L35+1
+ 6897 017c 15020000 		.word	.L39+1
+ 6898 0180 31020000 		.word	.L40+1
+ 6899 0184 39040000 		.word	.L35+1
+ 6900 0188 39040000 		.word	.L35+1
+ 6901 018c 39040000 		.word	.L35+1
+ 6902 0190 39040000 		.word	.L35+1
+ 6903 0194 39040000 		.word	.L35+1
+ 6904 0198 39040000 		.word	.L35+1
+ 6905 019c 39040000 		.word	.L35+1
+ 6906 01a0 39040000 		.word	.L35+1
+ 6907 01a4 39040000 		.word	.L35+1
+ 6908 01a8 39040000 		.word	.L35+1
+ 6909 01ac 39040000 		.word	.L35+1
+ 6910 01b0 EF020000 		.word	.L38+1
+ 6911 01b4 39040000 		.word	.L35+1
+ 6912 01b8 39040000 		.word	.L35+1
+ 6913 01bc 67020000 		.word	.L41+1
+ 6914 01c0 39040000 		.word	.L35+1
+ 6915 01c4 CF020000 		.word	.L42+1
+ 6916 01c8 39040000 		.word	.L35+1
+ 6917 01cc 39040000 		.word	.L35+1
+ 6918 01d0 EF020000 		.word	.L38+1
+ 6919              	.L37:
+ 960:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             {
+ 961:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 962:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Handle the digit characters.
+ 963:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 964:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case '0':
+ 965:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case '1':
+ 966:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case '2':
+ 967:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case '3':
+ 968:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case '4':
+ 969:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case '5':
+ 970:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case '6':
+ 971:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case '7':
+ 972:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case '8':
+ 973:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case '9':
+ 974:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 {
+ 975:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+ 976:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // If this is a zero, and it is the first digit, then the
+ 977:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // fill character is a zero instead of a space.
+ 978:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+ 979:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     if((pcString[-1] == '0') && (ulCount == 0))
+ 6920              		.loc 1 979 0
+ 6921 01d4 3B6C     		ldr	r3, [r7, #64]
+ 6922 01d6 03F1FF33 		add	r3, r3, #-1
+ 6923 01da 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 6924 01dc 302B     		cmp	r3, #48
+ 6925 01de 06D1     		bne	.L44
+ 6926              		.loc 1 979 0 is_stmt 0 discriminator 1
+ 6927 01e0 FB6A     		ldr	r3, [r7, #44]
+ 6928 01e2 002B     		cmp	r3, #0
+ 6929 01e4 03D1     		bne	.L44
+ 980:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     {
+ 981:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         cFill = '0';
+ 6930              		.loc 1 981 0 is_stmt 1
+ 6931 01e6 4FF03003 		mov	r3, #48
+ 6932 01ea 87F82330 		strb	r3, [r7, #35]
+ 6933              	.L44:
+ 982:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     }
+ 983:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 984:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+ 985:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Update the digit count.
+ 986:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+ 987:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulCount *= 10;
+ 6934              		.loc 1 987 0
+ 6935 01ee FA6A     		ldr	r2, [r7, #44]
+ 6936 01f0 1346     		mov	r3, r2
+ 6937 01f2 4FEA8303 		lsl	r3, r3, #2
+ 6938 01f6 9B18     		adds	r3, r3, r2
+ 6939 01f8 4FEA4303 		lsl	r3, r3, #1
+ 6940 01fc FB62     		str	r3, [r7, #44]
+ 988:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulCount += pcString[-1] - '0';
+ 6941              		.loc 1 988 0
+ 6942 01fe 3B6C     		ldr	r3, [r7, #64]
+ 6943 0200 03F1FF33 		add	r3, r3, #-1
+ 6944 0204 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 6945 0206 1A46     		mov	r2, r3
+ 6946 0208 FB6A     		ldr	r3, [r7, #44]
+ 6947 020a D318     		adds	r3, r2, r3
+ 6948 020c A3F13003 		sub	r3, r3, #48
+ 6949 0210 FB62     		str	r3, [r7, #44]
+ 989:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 990:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+ 991:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Get the next character.
+ 992:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+ 993:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     goto again;
+ 6950              		.loc 1 993 0
+ 6951 0212 29E7     		b	.L34
+ 6952              	.L39:
+ 994:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 }
+ 995:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+ 996:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 997:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Handle the %c command.
+ 998:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+ 999:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case 'c':
+1000:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 {
+1001:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1002:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Get the value from the varargs.
+1003:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1004:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulValue = va_arg(vaArgP, unsigned long);
+ 6953              		.loc 1 1004 0
+ 6954 0214 7B68     		ldr	r3, [r7, #4]
+ 6955 0216 03F10402 		add	r2, r3, #4
+ 6956 021a 7A60     		str	r2, [r7, #4]
+ 6957 021c 1B68     		ldr	r3, [r3, #0]
+ 6958 021e BB61     		str	r3, [r7, #24]
+1005:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1006:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1007:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Print out the character.
+1008:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1009:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     UARTwrite((char *)&ulValue, 1);
+ 6959              		.loc 1 1009 0
+ 6960 0220 07F11803 		add	r3, r7, #24
+ 6961 0224 1846     		mov	r0, r3
+ 6962 0226 4FF00101 		mov	r1, #1
+ 6963 022a FFF7FEFF 		bl	UARTwrite
+1010:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1011:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1012:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // This command has been handled.
+1013:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1014:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     break;
+ 6964              		.loc 1 1014 0
+ 6965 022e 0AE1     		b	.L30
+ 6966              	.L40:
+1015:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 }
+1016:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1017:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+1018:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Handle the %d command.
+1019:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+1020:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case 'd':
+1021:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 {
+1022:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1023:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Get the value from the varargs.
+1024:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1025:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulValue = va_arg(vaArgP, unsigned long);
+ 6967              		.loc 1 1025 0
+ 6968 0230 7B68     		ldr	r3, [r7, #4]
+ 6969 0232 03F10402 		add	r2, r3, #4
+ 6970 0236 7A60     		str	r2, [r7, #4]
+ 6971 0238 1B68     		ldr	r3, [r3, #0]
+ 6972 023a BB61     		str	r3, [r7, #24]
+1026:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1027:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1028:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Reset the buffer position.
+1029:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1030:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulPos = 0;
+ 6973              		.loc 1 1030 0
+ 6974 023c 4FF00003 		mov	r3, #0
+ 6975 0240 3B63     		str	r3, [r7, #48]
+1031:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1032:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1033:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // If the value is negative, make it positive and indicate
+1034:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // that a minus sign is needed.
+1035:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1036:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     if((long)ulValue < 0)
+ 6976              		.loc 1 1036 0
+ 6977 0242 BB69     		ldr	r3, [r7, #24]
+ 6978 0244 002B     		cmp	r3, #0
+ 6979 0246 07DA     		bge	.L45
+1037:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     {
+1038:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         //
+1039:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         // Make the value positive.
+1040:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         //
+1041:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         ulValue = -(long)ulValue;
+ 6980              		.loc 1 1041 0
+ 6981 0248 BB69     		ldr	r3, [r7, #24]
+ 6982 024a C3F10003 		rsb	r3, r3, #0
+ 6983 024e BB61     		str	r3, [r7, #24]
+1042:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1043:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         //
+1044:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         // Indicate that the value is negative.
+1045:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         //
+1046:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         ulNeg = 1;
+ 6984              		.loc 1 1046 0
+ 6985 0250 4FF00103 		mov	r3, #1
+ 6986 0254 7B62     		str	r3, [r7, #36]
+ 6987 0256 02E0     		b	.L46
+ 6988              	.L45:
+1047:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     }
+1048:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     else
+1049:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     {
+1050:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         //
+1051:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         // Indicate that the value is positive so that a minus
+1052:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         // sign isn't inserted.
+1053:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         //
+1054:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         ulNeg = 0;
+ 6989              		.loc 1 1054 0
+ 6990 0258 4FF00003 		mov	r3, #0
+ 6991 025c 7B62     		str	r3, [r7, #36]
+ 6992              	.L46:
+1055:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     }
+1056:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1057:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1058:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Set the base to 10.
+1059:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1060:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulBase = 10;
+ 6993              		.loc 1 1060 0
+ 6994 025e 4FF00A03 		mov	r3, #10
+ 6995 0262 BB62     		str	r3, [r7, #40]
+1061:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1062:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1063:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Convert the value to ASCII.
+1064:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1065:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     goto convert;
+ 6996              		.loc 1 1065 0
+ 6997 0264 52E0     		b	.L47
+ 6998              	.L41:
+1066:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 }
+1067:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1068:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+1069:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Handle the %s command.
+1070:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+1071:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case 's':
+1072:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 {
+1073:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1074:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Get the string pointer from the varargs.
+1075:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1076:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     pcStr = va_arg(vaArgP, char *);
+ 6999              		.loc 1 1076 0
+ 7000 0266 7B68     		ldr	r3, [r7, #4]
+ 7001 0268 03F10402 		add	r2, r3, #4
+ 7002 026c 7A60     		str	r2, [r7, #4]
+ 7003 026e 1B68     		ldr	r3, [r3, #0]
+ 7004 0270 FB61     		str	r3, [r7, #28]
+1077:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1078:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1079:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Determine the length of the string.
+1080:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1081:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     for(ulIdx = 0; pcStr[ulIdx] != '\0'; ulIdx++)
+ 7005              		.loc 1 1081 0
+ 7006 0272 4FF00003 		mov	r3, #0
+ 7007 0276 7B63     		str	r3, [r7, #52]
+ 7008 0278 03E0     		b	.L48
+ 7009              	.L49:
+ 7010              		.loc 1 1081 0 is_stmt 0 discriminator 2
+ 7011 027a 7B6B     		ldr	r3, [r7, #52]
+ 7012 027c 03F10103 		add	r3, r3, #1
+ 7013 0280 7B63     		str	r3, [r7, #52]
+ 7014              	.L48:
+ 7015              		.loc 1 1081 0 discriminator 1
+ 7016 0282 FA69     		ldr	r2, [r7, #28]
+ 7017 0284 7B6B     		ldr	r3, [r7, #52]
+ 7018 0286 D318     		adds	r3, r2, r3
+ 7019 0288 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 7020 028a 002B     		cmp	r3, #0
+ 7021 028c F5D1     		bne	.L49
+1082:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     {
+1083:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     }
+1084:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1085:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1086:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Write the string.
+1087:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1088:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     UARTwrite(pcStr, ulIdx);
+ 7022              		.loc 1 1088 0 is_stmt 1
+ 7023 028e F869     		ldr	r0, [r7, #28]
+ 7024 0290 796B     		ldr	r1, [r7, #52]
+ 7025 0292 FFF7FEFF 		bl	UARTwrite
+1089:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1090:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1091:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Write any required padding spaces
+1092:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1093:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     if(ulCount > ulIdx)
+ 7026              		.loc 1 1093 0
+ 7027 0296 FA6A     		ldr	r2, [r7, #44]
+ 7028 0298 7B6B     		ldr	r3, [r7, #52]
+ 7029 029a 9A42     		cmp	r2, r3
+ 7030 029c 40F2D280 		bls	.L65
+1094:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     {
+1095:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         ulCount -= ulIdx;
+ 7031              		.loc 1 1095 0
+ 7032 02a0 FA6A     		ldr	r2, [r7, #44]
+ 7033 02a2 7B6B     		ldr	r3, [r7, #52]
+ 7034 02a4 D31A     		subs	r3, r2, r3
+ 7035 02a6 FB62     		str	r3, [r7, #44]
+1096:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         while(ulCount--)
+ 7036              		.loc 1 1096 0
+ 7037 02a8 04E0     		b	.L51
+ 7038              	.L52:
+1097:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         {
+1098:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                             UARTwrite(" ", 1);
+ 7039              		.loc 1 1098 0
+ 7040 02aa 6D48     		ldr	r0, .L66
+ 7041 02ac 4FF00101 		mov	r1, #1
+ 7042 02b0 FFF7FEFF 		bl	UARTwrite
+ 7043              	.L51:
+1096:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         while(ulCount--)
+ 7044              		.loc 1 1096 0 discriminator 1
+ 7045 02b4 FB6A     		ldr	r3, [r7, #44]
+ 7046 02b6 002B     		cmp	r3, #0
+ 7047 02b8 0CBF     		ite	eq
+ 7048 02ba 0023     		moveq	r3, #0
+ 7049 02bc 0123     		movne	r3, #1
+ 7050 02be DBB2     		uxtb	r3, r3
+ 7051 02c0 FA6A     		ldr	r2, [r7, #44]
+ 7052 02c2 02F1FF32 		add	r2, r2, #-1
+ 7053 02c6 FA62     		str	r2, [r7, #44]
+ 7054 02c8 002B     		cmp	r3, #0
+ 7055 02ca EED1     		bne	.L52
+1099:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         }
+1100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     }
+1101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // This command has been handled.
+1103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     break;
+ 7056              		.loc 1 1104 0
+ 7057 02cc BBE0     		b	.L30
+ 7058              	.L42:
+1105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 }
+1106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+1108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Handle the %u command.
+1109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+1110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case 'u':
+1111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 {
+1112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Get the value from the varargs.
+1114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulValue = va_arg(vaArgP, unsigned long);
+ 7059              		.loc 1 1115 0
+ 7060 02ce 7B68     		ldr	r3, [r7, #4]
+ 7061 02d0 03F10402 		add	r2, r3, #4
+ 7062 02d4 7A60     		str	r2, [r7, #4]
+ 7063 02d6 1B68     		ldr	r3, [r3, #0]
+ 7064 02d8 BB61     		str	r3, [r7, #24]
+1116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Reset the buffer position.
+1119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulPos = 0;
+ 7065              		.loc 1 1120 0
+ 7066 02da 4FF00003 		mov	r3, #0
+ 7067 02de 3B63     		str	r3, [r7, #48]
+1121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Set the base to 10.
+1124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulBase = 10;
+ 7068              		.loc 1 1125 0
+ 7069 02e0 4FF00A03 		mov	r3, #10
+ 7070 02e4 BB62     		str	r3, [r7, #40]
+1126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Indicate that the value is positive so that a minus sign
+1129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // isn't inserted.
+1130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulNeg = 0;
+ 7071              		.loc 1 1131 0
+ 7072 02e6 4FF00003 		mov	r3, #0
+ 7073 02ea 7B62     		str	r3, [r7, #36]
+1132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Convert the value to ASCII.
+1135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     goto convert;
+ 7074              		.loc 1 1136 0
+ 7075 02ec 0EE0     		b	.L47
+ 7076              	.L38:
+1137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 }
+1138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+1140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Handle the %x and %X commands.  Note that they are treated
+1141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // identically; i.e. %X will use lower case letters for a-f
+1142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // instead of the upper case letters is should use.  We also
+1143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // alias %p to %x.
+1144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+1145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case 'x':
+1146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case 'X':
+1147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case 'p':
+1148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 {
+1149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Get the value from the varargs.
+1151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulValue = va_arg(vaArgP, unsigned long);
+ 7077              		.loc 1 1152 0
+ 7078 02ee 7B68     		ldr	r3, [r7, #4]
+ 7079 02f0 03F10402 		add	r2, r3, #4
+ 7080 02f4 7A60     		str	r2, [r7, #4]
+ 7081 02f6 1B68     		ldr	r3, [r3, #0]
+ 7082 02f8 BB61     		str	r3, [r7, #24]
+1153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Reset the buffer position.
+1156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulPos = 0;
+ 7083              		.loc 1 1157 0
+ 7084 02fa 4FF00003 		mov	r3, #0
+ 7085 02fe 3B63     		str	r3, [r7, #48]
+1158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Set the base to 16.
+1161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulBase = 16;
+ 7086              		.loc 1 1162 0
+ 7087 0300 4FF01003 		mov	r3, #16
+ 7088 0304 BB62     		str	r3, [r7, #40]
+1163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Indicate that the value is positive so that a minus sign
+1166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // isn't inserted.
+1167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     ulNeg = 0;
+ 7089              		.loc 1 1168 0
+ 7090 0306 4FF00003 		mov	r3, #0
+ 7091 030a 7B62     		str	r3, [r7, #36]
+ 7092              	.L47:
+1169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Determine the number of digits in the string version of
+1172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // the value.
+1173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** convert:
+1175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     for(ulIdx = 1;
+ 7093              		.loc 1 1175 0
+ 7094 030c 4FF00103 		mov	r3, #1
+ 7095 0310 7B63     		str	r3, [r7, #52]
+ 7096 0312 08E0     		b	.L53
+ 7097              	.L55:
+1176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         (((ulIdx * ulBase) <= ulValue) &&
+1177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                          (((ulIdx * ulBase) / ulBase) == ulIdx));
+1178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         ulIdx *= ulBase, ulCount--)
+ 7098              		.loc 1 1178 0
+ 7099 0314 7B6B     		ldr	r3, [r7, #52]
+ 7100 0316 BA6A     		ldr	r2, [r7, #40]
+ 7101 0318 02FB03F3 		mul	r3, r2, r3
+ 7102 031c 7B63     		str	r3, [r7, #52]
+ 7103 031e FB6A     		ldr	r3, [r7, #44]
+ 7104 0320 03F1FF33 		add	r3, r3, #-1
+ 7105 0324 FB62     		str	r3, [r7, #44]
+ 7106              	.L53:
+1176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         (((ulIdx * ulBase) <= ulValue) &&
+ 7107              		.loc 1 1176 0 discriminator 1
+ 7108 0326 7B6B     		ldr	r3, [r7, #52]
+ 7109 0328 BA6A     		ldr	r2, [r7, #40]
+ 7110 032a 02FB03F2 		mul	r2, r2, r3
+ 7111 032e BB69     		ldr	r3, [r7, #24]
+1175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     for(ulIdx = 1;
+ 7112              		.loc 1 1175 0 discriminator 1
+ 7113 0330 9A42     		cmp	r2, r3
+ 7114 0332 09D8     		bhi	.L54
+1177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                          (((ulIdx * ulBase) / ulBase) == ulIdx));
+ 7115              		.loc 1 1177 0
+ 7116 0334 7B6B     		ldr	r3, [r7, #52]
+ 7117 0336 BA6A     		ldr	r2, [r7, #40]
+ 7118 0338 02FB03F2 		mul	r2, r2, r3
+ 7119 033c BB6A     		ldr	r3, [r7, #40]
+ 7120 033e B2FBF3F2 		udiv	r2, r2, r3
+1176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         (((ulIdx * ulBase) <= ulValue) &&
+ 7121              		.loc 1 1176 0
+ 7122 0342 7B6B     		ldr	r3, [r7, #52]
+ 7123 0344 9A42     		cmp	r2, r3
+ 7124 0346 E5D0     		beq	.L55
+ 7125              	.L54:
+1179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     {
+1180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     }
+1181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // If the value is negative, reduce the count of padding
+1184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // characters needed.
+1185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     if(ulNeg)
+ 7126              		.loc 1 1186 0
+ 7127 0348 7B6A     		ldr	r3, [r7, #36]
+ 7128 034a 002B     		cmp	r3, #0
+ 7129 034c 03D0     		beq	.L56
+1187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     {
+1188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         ulCount--;
+ 7130              		.loc 1 1188 0
+ 7131 034e FB6A     		ldr	r3, [r7, #44]
+ 7132 0350 03F1FF33 		add	r3, r3, #-1
+ 7133 0354 FB62     		str	r3, [r7, #44]
+ 7134              	.L56:
+1189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     }
+1190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // If the value is negative and the value is padded with
+1193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // zeros, then place the minus sign before the padding.
+1194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     if(ulNeg && (cFill == '0'))
+ 7135              		.loc 1 1195 0
+ 7136 0356 7B6A     		ldr	r3, [r7, #36]
+ 7137 0358 002B     		cmp	r3, #0
+ 7138 035a 11D0     		beq	.L57
+ 7139              		.loc 1 1195 0 is_stmt 0 discriminator 1
+ 7140 035c 97F82330 		ldrb	r3, [r7, #35]	@ zero_extendqisi2
+ 7141 0360 302B     		cmp	r3, #48
+ 7142 0362 0DD1     		bne	.L57
+1196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     {
+1197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         //
+1198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         // Place the minus sign in the output buffer.
+1199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         //
+1200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         pcBuf[ulPos++] = '-';
+ 7143              		.loc 1 1200 0 is_stmt 1
+ 7144 0364 07F10802 		add	r2, r7, #8
+ 7145 0368 3B6B     		ldr	r3, [r7, #48]
+ 7146 036a D318     		adds	r3, r2, r3
+ 7147 036c 4FF02D02 		mov	r2, #45
+ 7148 0370 1A70     		strb	r2, [r3, #0]
+ 7149 0372 3B6B     		ldr	r3, [r7, #48]
+ 7150 0374 03F10103 		add	r3, r3, #1
+ 7151 0378 3B63     		str	r3, [r7, #48]
+1201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         //
+1203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         // The minus sign has been placed, so turn off the
+1204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         // negative flag.
+1205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         //
+1206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         ulNeg = 0;
+ 7152              		.loc 1 1206 0
+ 7153 037a 4FF00003 		mov	r3, #0
+ 7154 037e 7B62     		str	r3, [r7, #36]
+ 7155              	.L57:
+1207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     }
+1208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Provide additional padding at the beginning of the
+1211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // string conversion if needed.
+1212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     if((ulCount > 1) && (ulCount < 16))
+ 7156              		.loc 1 1213 0
+ 7157 0380 FB6A     		ldr	r3, [r7, #44]
+ 7158 0382 012B     		cmp	r3, #1
+ 7159 0384 19D9     		bls	.L58
+ 7160              		.loc 1 1213 0 is_stmt 0 discriminator 1
+ 7161 0386 FB6A     		ldr	r3, [r7, #44]
+ 7162 0388 0F2B     		cmp	r3, #15
+ 7163 038a 16D8     		bhi	.L58
+1214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     {
+1215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         for(ulCount--; ulCount; ulCount--)
+ 7164              		.loc 1 1215 0 is_stmt 1
+ 7165 038c FB6A     		ldr	r3, [r7, #44]
+ 7166 038e 03F1FF33 		add	r3, r3, #-1
+ 7167 0392 FB62     		str	r3, [r7, #44]
+ 7168 0394 0EE0     		b	.L59
+ 7169              	.L60:
+1216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         {
+1217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                             pcBuf[ulPos++] = cFill;
+ 7170              		.loc 1 1217 0 discriminator 2
+ 7171 0396 07F10802 		add	r2, r7, #8
+ 7172 039a 3B6B     		ldr	r3, [r7, #48]
+ 7173 039c D318     		adds	r3, r2, r3
+ 7174 039e 97F82320 		ldrb	r2, [r7, #35]
+ 7175 03a2 1A70     		strb	r2, [r3, #0]
+ 7176 03a4 3B6B     		ldr	r3, [r7, #48]
+ 7177 03a6 03F10103 		add	r3, r3, #1
+ 7178 03aa 3B63     		str	r3, [r7, #48]
+1215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         for(ulCount--; ulCount; ulCount--)
+ 7179              		.loc 1 1215 0 discriminator 2
+ 7180 03ac FB6A     		ldr	r3, [r7, #44]
+ 7181 03ae 03F1FF33 		add	r3, r3, #-1
+ 7182 03b2 FB62     		str	r3, [r7, #44]
+ 7183              	.L59:
+1215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         for(ulCount--; ulCount; ulCount--)
+ 7184              		.loc 1 1215 0 is_stmt 0 discriminator 1
+ 7185 03b4 FB6A     		ldr	r3, [r7, #44]
+ 7186 03b6 002B     		cmp	r3, #0
+ 7187 03b8 EDD1     		bne	.L60
+ 7188              	.L58:
+1218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         }
+1219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     }
+1220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // If the value is negative, then place the minus sign
+1223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // before the number.
+1224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     if(ulNeg)
+ 7189              		.loc 1 1225 0 is_stmt 1
+ 7190 03ba 7B6A     		ldr	r3, [r7, #36]
+ 7191 03bc 002B     		cmp	r3, #0
+ 7192 03be 28D0     		beq	.L62
+1226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     {
+1227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         //
+1228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         // Place the minus sign in the output buffer.
+1229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         //
+1230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         pcBuf[ulPos++] = '-';
+ 7193              		.loc 1 1230 0
+ 7194 03c0 07F10802 		add	r2, r7, #8
+ 7195 03c4 3B6B     		ldr	r3, [r7, #48]
+ 7196 03c6 D318     		adds	r3, r2, r3
+ 7197 03c8 4FF02D02 		mov	r2, #45
+ 7198 03cc 1A70     		strb	r2, [r3, #0]
+ 7199 03ce 3B6B     		ldr	r3, [r7, #48]
+ 7200 03d0 03F10103 		add	r3, r3, #1
+ 7201 03d4 3B63     		str	r3, [r7, #48]
+1231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     }
+1232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Convert the value into a string.
+1235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     for(; ulIdx; ulIdx /= ulBase)
+ 7202              		.loc 1 1236 0
+ 7203 03d6 1CE0     		b	.L62
+ 7204              	.L63:
+1237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     {
+1238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                         pcBuf[ulPos++] = g_pcHex[(ulValue / ulIdx) % ulBase];
+ 7205              		.loc 1 1238 0 discriminator 2
+ 7206 03d8 224B     		ldr	r3, .L66+4
+ 7207 03da 1A68     		ldr	r2, [r3, #0]
+ 7208 03dc B969     		ldr	r1, [r7, #24]
+ 7209 03de 7B6B     		ldr	r3, [r7, #52]
+ 7210 03e0 B1FBF3F3 		udiv	r3, r1, r3
+ 7211 03e4 B96A     		ldr	r1, [r7, #40]
+ 7212 03e6 B3FBF1F1 		udiv	r1, r3, r1
+ 7213 03ea B86A     		ldr	r0, [r7, #40]
+ 7214 03ec 00FB01F1 		mul	r1, r0, r1
+ 7215 03f0 5B1A     		subs	r3, r3, r1
+ 7216 03f2 D318     		adds	r3, r2, r3
+ 7217 03f4 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 7218 03f6 07F10801 		add	r1, r7, #8
+ 7219 03fa 3B6B     		ldr	r3, [r7, #48]
+ 7220 03fc CB18     		adds	r3, r1, r3
+ 7221 03fe 1A70     		strb	r2, [r3, #0]
+ 7222 0400 3B6B     		ldr	r3, [r7, #48]
+ 7223 0402 03F10103 		add	r3, r3, #1
+ 7224 0406 3B63     		str	r3, [r7, #48]
+1236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     for(; ulIdx; ulIdx /= ulBase)
+ 7225              		.loc 1 1236 0 discriminator 2
+ 7226 0408 7A6B     		ldr	r2, [r7, #52]
+ 7227 040a BB6A     		ldr	r3, [r7, #40]
+ 7228 040c B2FBF3F3 		udiv	r3, r2, r3
+ 7229 0410 7B63     		str	r3, [r7, #52]
+ 7230              	.L62:
+1236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     for(; ulIdx; ulIdx /= ulBase)
+ 7231              		.loc 1 1236 0 is_stmt 0 discriminator 1
+ 7232 0412 7B6B     		ldr	r3, [r7, #52]
+ 7233 0414 002B     		cmp	r3, #0
+ 7234 0416 DFD1     		bne	.L63
+1239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     }
+1240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Write the string.
+1243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     UARTwrite(pcBuf, ulPos);
+ 7235              		.loc 1 1244 0 is_stmt 1
+ 7236 0418 07F10803 		add	r3, r7, #8
+ 7237 041c 1846     		mov	r0, r3
+ 7238 041e 396B     		ldr	r1, [r7, #48]
+ 7239 0420 FFF7FEFF 		bl	UARTwrite
+1245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // This command has been handled.
+1248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     break;
+ 7240              		.loc 1 1249 0
+ 7241 0424 0FE0     		b	.L30
+ 7242              	.L36:
+1250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 }
+1251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+1253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Handle the %% command.
+1254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+1255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 case '%':
+1256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 {
+1257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Simply write a single %.
+1259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     UARTwrite(pcString - 1, 1);
+ 7243              		.loc 1 1260 0
+ 7244 0426 3B6C     		ldr	r3, [r7, #64]
+ 7245 0428 03F1FF33 		add	r3, r3, #-1
+ 7246 042c 1846     		mov	r0, r3
+ 7247 042e 4FF00101 		mov	r1, #1
+ 7248 0432 FFF7FEFF 		bl	UARTwrite
+1261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // This command has been handled.
+1264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     break;
+ 7249              		.loc 1 1265 0
+ 7250 0436 06E0     		b	.L30
+ 7251              	.L35:
+1266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 }
+1267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+1269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 // Handle all other commands.
+1270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 //
+1271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 default:
+1272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 {
+1273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // Indicate an error.
+1275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     UARTwrite("ERROR", 5);
+ 7252              		.loc 1 1276 0
+ 7253 0438 0B48     		ldr	r0, .L66+8
+ 7254 043a 4FF00501 		mov	r1, #5
+ 7255 043e FFF7FEFF 		bl	UARTwrite
+1277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     // This command has been handled.
+1280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     //
+1281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     break;
+ 7256              		.loc 1 1281 0
+ 7257 0442 00E0     		b	.L30
+ 7258              	.L65:
+1104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                     break;
+ 7259              		.loc 1 1104 0
+ 7260 0444 00BF     		nop
+ 7261              	.L30:
+ 912:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     while(*pcString)
+ 7262              		.loc 1 912 0 discriminator 1
+ 7263 0446 3B6C     		ldr	r3, [r7, #64]
+ 7264 0448 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 7265 044a 002B     		cmp	r3, #0
+ 7266 044c 7FF4E0AD 		bne	.L64
+1282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****                 }
+1283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****             }
+1284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****         }
+1285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     }
+1286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** 
+1287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+1288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     // End the varargs processing.
+1289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     //
+1290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c ****     va_end(vaArgP);
+1291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/uartstdio.c **** }
+ 7267              		.loc 1 1291 0
+ 7268 0450 07F13807 		add	r7, r7, #56
+ 7269 0454 BD46     		mov	sp, r7
+ 7270 0456 BDE88040 		pop	{r7, lr}
+ 7271 045a 04B0     		add	sp, sp, #16
+ 7272 045c 7047     		bx	lr
+ 7273              	.L67:
+ 7274 045e 00BF     		.align	2
+ 7275              	.L66:
+ 7276 0460 38000000 		.word	.LC3
+ 7277 0464 14000000 		.word	g_pcHex
+ 7278 0468 3C000000 		.word	.LC4
+ 7279              		.cfi_endproc
+ 7280              	.LFE5:
+ 7282              		.bss
+ 7283              	bLastWasCR.4224:
+ 7284 0004 00       		.space	1
+ 7285 0005 000000   		.text
+ 7286              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 uartstdio.c
+     /tmp/ccf3YKJN.s:6310   .bss:00000000 $d
+     /tmp/ccf3YKJN.s:6311   .bss:00000000 g_ulBase
+     /tmp/ccf3YKJN.s:6314   .rodata:00000000 $d
+     /tmp/ccf3YKJN.s:6320   .rodata:00000014 g_pcHex
+     /tmp/ccf3YKJN.s:6325   .rodata:00000018 g_ulUARTBase
+     /tmp/ccf3YKJN.s:6332   .rodata:00000024 g_ulUARTPeriph
+     /tmp/ccf3YKJN.s:6337   .text.UARTStdioInit:00000000 $t
+     /tmp/ccf3YKJN.s:6342   .text.UARTStdioInit:00000000 UARTStdioInit
+     /tmp/ccf3YKJN.s:6377   .text.UARTStdioInitExpClk:00000000 UARTStdioInitExpClk
+     /tmp/ccf3YKJN.s:6372   .text.UARTStdioInitExpClk:00000000 $t
+     /tmp/ccf3YKJN.s:6446   .text.UARTStdioInitExpClk:00000068 $d
+     /tmp/ccf3YKJN.s:6453   .text.UARTwrite:00000000 $t
+     /tmp/ccf3YKJN.s:6458   .text.UARTwrite:00000000 UARTwrite
+     /tmp/ccf3YKJN.s:6526   .text.UARTwrite:0000005c $d
+     /tmp/ccf3YKJN.s:6538   .text.UARTgets:00000000 $t
+     /tmp/ccf3YKJN.s:6543   .text.UARTgets:00000000 UARTgets
+     /tmp/ccf3YKJN.s:6685   .text.UARTgets:000000d0 $d
+     /tmp/ccf3YKJN.s:7283   .bss:00000004 bLastWasCR.4224
+     /tmp/ccf3YKJN.s:6693   .text.UARTgetc:00000000 $t
+     /tmp/ccf3YKJN.s:6698   .text.UARTgetc:00000000 UARTgetc
+     /tmp/ccf3YKJN.s:6725   .text.UARTgetc:00000018 $d
+     /tmp/ccf3YKJN.s:6737   .text.UARTprintf:00000000 $t
+     /tmp/ccf3YKJN.s:6742   .text.UARTprintf:00000000 UARTprintf
+     /tmp/ccf3YKJN.s:6835   .text.UARTprintf:00000084 $d
+     /tmp/ccf3YKJN.s:6921   .text.UARTprintf:000001d4 $t
+     /tmp/ccf3YKJN.s:7276   .text.UARTprintf:00000460 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+SysCtlPeripheralPresent
+SysCtlPeripheralEnable
+SysCtlClockGet
+UARTConfigSetExpClk
+UARTEnable
+UARTCharPut
+UARTCharGet

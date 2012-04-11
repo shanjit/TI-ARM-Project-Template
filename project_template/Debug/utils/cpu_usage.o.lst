@@ -1,0 +1,413 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"cpu_usage.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c"
+ 5165              		.align	2
+ 5168              	g_pulCPUUsageTimerPeriph:
+ 5169 0000 01001010 		.word	269484033
+ 5170 0004 02001010 		.word	269484034
+ 5171 0008 04001010 		.word	269484036
+ 5172 000c 08001010 		.word	269484040
+ 5173              		.align	2
+ 5176              	g_pulCPUUsageTimerBase:
+ 5177 0010 00000340 		.word	1073938432
+ 5178 0014 00100340 		.word	1073942528
+ 5179 0018 00200340 		.word	1073946624
+ 5180 001c 00300340 		.word	1073950720
+ 5181              		.bss
+ 5182              		.align	2
+ 5183              	g_ulCPUUsageTimer:
+ 5184 0000 00000000 		.space	4
+ 5185              		.align	2
+ 5186              	g_ulCPUUsageTicks:
+ 5187 0004 00000000 		.space	4
+ 5188              		.align	2
+ 5189              	g_ulCPUUsagePrevious:
+ 5190 0008 00000000 		.space	4
+ 5191              		.section	.text.CPUUsageTick,"ax",%progbits
+ 5192              		.align	2
+ 5193              		.global	CPUUsageTick
+ 5194              		.thumb
+ 5195              		.thumb_func
+ 5197              	CPUUsageTick:
+ 5198              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // cpu_usage.c - Routines to determine the CPU utilization.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // Copyright (c) 2007-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // This is part of revision 8264 of the Stellaris Firmware Development Package.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** #include "inc/hw_memmap.h"
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** #include "inc/hw_types.h"
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** #include "driverlib/debug.h"
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** #include "driverlib/rom.h"
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** #include "driverlib/rom_map.h"
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** #include "driverlib/sysctl.h"
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** #include "driverlib/timer.h"
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** #include "utils/cpu_usage.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! \addtogroup cpu_usage_api
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! @{
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // The peripheral identifier for the timer modules that could be used for
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // tracking CPU utilization.
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** static unsigned long g_pulCPUUsageTimerPeriph[4] =
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** {
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     SYSCTL_PERIPH_TIMER0, SYSCTL_PERIPH_TIMER1, SYSCTL_PERIPH_TIMER2,
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     SYSCTL_PERIPH_TIMER3
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** };
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // The base address of the timer modules that could be used for tracking CPU
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // utilization.
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** static unsigned long g_pulCPUUsageTimerBase[4] =
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** {
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     TIMER0_BASE, TIMER1_BASE, TIMER2_BASE, TIMER3_BASE
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** };
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // The index of the timer module that will be used for tracking CPU
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // utilization.
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** static unsigned long g_ulCPUUsageTimer;
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // The number of processor clock ticks per timing period.
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** static unsigned long g_ulCPUUsageTicks;
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // The value of timer two on the previous timing period.  This is used to
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // determine the number of clock ticks counted by the timer during the timing
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** // period.
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** static unsigned long g_ulCPUUsagePrevious;
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! Updates the CPU usage for the new timing period.
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //!
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! This function, when called at the end of a timing period, will update the
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! CPU usage.
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //!
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! \return Returns the CPU usage percentage as a 16.16 fixed-point value.
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** unsigned long
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** CPUUsageTick(void)
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** {
+ 5199              		.loc 1 100 0
+ 5200              		.cfi_startproc
+ 5201              		@ args = 0, pretend = 0, frame = 8
+ 5202              		@ frame_needed = 1, uses_anonymous_args = 0
+ 5203 0000 80B5     		push	{r7, lr}
+ 5204              	.LCFI0:
+ 5205              		.cfi_def_cfa_offset 8
+ 5206 0002 82B0     		sub	sp, sp, #8
+ 5207              	.LCFI1:
+ 5208              		.cfi_def_cfa_offset 16
+ 5209 0004 00AF     		add	r7, sp, #0
+ 5210              		.cfi_offset 14, -4
+ 5211              		.cfi_offset 7, -8
+ 5212              	.LCFI2:
+ 5213              		.cfi_def_cfa_register 7
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     unsigned long ulValue, ulUsage;
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // Get the current value of the timer.
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     ulValue = MAP_TimerValueGet(g_pulCPUUsageTimerBase[g_ulCPUUsageTimer],
+ 5214              		.loc 1 106 0
+ 5215 0006 114B     		ldr	r3, .L2
+ 5216 0008 1A68     		ldr	r2, [r3, #0]
+ 5217 000a 114B     		ldr	r3, .L2+4
+ 5218 000c 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 5219 0010 1846     		mov	r0, r3
+ 5220 0012 4FF0FF01 		mov	r1, #255
+ 5221 0016 FFF7FEFF 		bl	TimerValueGet
+ 5222 001a 7860     		str	r0, [r7, #4]
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****                                 TIMER_A);
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // Based on the number of clock ticks accumulated by the timer during the
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // previous timing period, compute the CPU usage as a 16.16 fixed-point
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // value.
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     ulUsage = ((((g_ulCPUUsagePrevious - ulValue) * 6400) /
+ 5223              		.loc 1 114 0
+ 5224 001c 0D4B     		ldr	r3, .L2+8
+ 5225 001e 1A68     		ldr	r2, [r3, #0]
+ 5226 0020 7B68     		ldr	r3, [r7, #4]
+ 5227 0022 D31A     		subs	r3, r2, r3
+ 5228 0024 4FF4C852 		mov	r2, #6400
+ 5229 0028 02FB03F2 		mul	r2, r2, r3
+ 5230 002c 0A4B     		ldr	r3, .L2+12
+ 5231 002e 1B68     		ldr	r3, [r3, #0]
+ 5232 0030 B2FBF3F3 		udiv	r3, r2, r3
+ 5233 0034 4FEA8323 		lsl	r3, r3, #10
+ 5234 0038 3B60     		str	r3, [r7, #0]
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****                 g_ulCPUUsageTicks) * 1024);
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // Save the previous value of the timer.
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     g_ulCPUUsagePrevious = ulValue;
+ 5235              		.loc 1 120 0
+ 5236 003a 064B     		ldr	r3, .L2+8
+ 5237 003c 7A68     		ldr	r2, [r7, #4]
+ 5238 003e 1A60     		str	r2, [r3, #0]
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // Return the new CPU usage value.
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     return(ulUsage);
+ 5239              		.loc 1 125 0
+ 5240 0040 3B68     		ldr	r3, [r7, #0]
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** }
+ 5241              		.loc 1 126 0
+ 5242 0042 1846     		mov	r0, r3
+ 5243 0044 07F10807 		add	r7, r7, #8
+ 5244 0048 BD46     		mov	sp, r7
+ 5245 004a 80BD     		pop	{r7, pc}
+ 5246              	.L3:
+ 5247              		.align	2
+ 5248              	.L2:
+ 5249 004c 00000000 		.word	g_ulCPUUsageTimer
+ 5250 0050 10000000 		.word	g_pulCPUUsageTimerBase
+ 5251 0054 08000000 		.word	g_ulCPUUsagePrevious
+ 5252 0058 04000000 		.word	g_ulCPUUsageTicks
+ 5253              		.cfi_endproc
+ 5254              	.LFE0:
+ 5256              		.section	.text.CPUUsageInit,"ax",%progbits
+ 5257              		.align	2
+ 5258              		.global	CPUUsageInit
+ 5259              		.thumb
+ 5260              		.thumb_func
+ 5262              	CPUUsageInit:
+ 5263              	.LFB1:
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! Initializes the CPU usage measurement module.
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //!
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! \param ulClockRate is the rate of the clock supplied to the timer module.
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! \param ulRate is the number of times per second that CPUUsageTick() is
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! called.
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! \param ulTimer is the index of the timer module to use.
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //!
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! This function prepares the CPU usage measurement module for measuring the
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! CPU usage of the application.
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //!
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //! \return None.
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** //*****************************************************************************
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** void
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** CPUUsageInit(unsigned long ulClockRate, unsigned long ulRate,
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****              unsigned long ulTimer)
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** {
+ 5264              		.loc 1 146 0
+ 5265              		.cfi_startproc
+ 5266              		@ args = 0, pretend = 0, frame = 16
+ 5267              		@ frame_needed = 1, uses_anonymous_args = 0
+ 5268 0000 80B5     		push	{r7, lr}
+ 5269              	.LCFI3:
+ 5270              		.cfi_def_cfa_offset 8
+ 5271 0002 84B0     		sub	sp, sp, #16
+ 5272              	.LCFI4:
+ 5273              		.cfi_def_cfa_offset 24
+ 5274 0004 00AF     		add	r7, sp, #0
+ 5275              		.cfi_offset 14, -4
+ 5276              		.cfi_offset 7, -8
+ 5277              	.LCFI5:
+ 5278              		.cfi_def_cfa_register 7
+ 5279 0006 F860     		str	r0, [r7, #12]
+ 5280 0008 B960     		str	r1, [r7, #8]
+ 5281 000a 7A60     		str	r2, [r7, #4]
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // Check the arguments.
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     ASSERT(ulClockRate > ulRate);
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     ASSERT(ulTimer < 4);
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // Save the timer index.
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     g_ulCPUUsageTimer = ulTimer;
+ 5282              		.loc 1 156 0
+ 5283 000c 1F4B     		ldr	r3, .L5
+ 5284 000e 7A68     		ldr	r2, [r7, #4]
+ 5285 0010 1A60     		str	r2, [r3, #0]
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // Determine the number of system clocks per measurement period.
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     g_ulCPUUsageTicks = ulClockRate / ulRate;
+ 5286              		.loc 1 161 0
+ 5287 0012 FA68     		ldr	r2, [r7, #12]
+ 5288 0014 BB68     		ldr	r3, [r7, #8]
+ 5289 0016 B2FBF3F2 		udiv	r2, r2, r3
+ 5290 001a 1D4B     		ldr	r3, .L5+4
+ 5291 001c 1A60     		str	r2, [r3, #0]
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // Set the previous value of the timer to the initial timer value.
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     g_ulCPUUsagePrevious = 0xffffffff;
+ 5292              		.loc 1 166 0
+ 5293 001e 1D4B     		ldr	r3, .L5+8
+ 5294 0020 4FF0FF32 		mov	r2, #-1
+ 5295 0024 1A60     		str	r2, [r3, #0]
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // Enable peripheral clock gating.
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     MAP_SysCtlPeripheralClockGating(true);
+ 5296              		.loc 1 171 0
+ 5297 0026 4FF00100 		mov	r0, #1
+ 5298 002a FFF7FEFF 		bl	SysCtlPeripheralClockGating
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // Enable the third timer while the processor is in run mode, but disable
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // it in sleep mode.  It will therefore count system clocks when the
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // processor is running but not when it is sleeping.
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     MAP_SysCtlPeripheralEnable(g_pulCPUUsageTimerPeriph[ulTimer]);
+ 5299              		.loc 1 178 0
+ 5300 002e 1A4B     		ldr	r3, .L5+12
+ 5301 0030 7A68     		ldr	r2, [r7, #4]
+ 5302 0032 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 5303 0036 1846     		mov	r0, r3
+ 5304 0038 FFF7FEFF 		bl	SysCtlPeripheralEnable
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     MAP_SysCtlPeripheralSleepDisable(g_pulCPUUsageTimerPeriph[ulTimer]);
+ 5305              		.loc 1 179 0
+ 5306 003c 164B     		ldr	r3, .L5+12
+ 5307 003e 7A68     		ldr	r2, [r7, #4]
+ 5308 0040 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 5309 0044 1846     		mov	r0, r3
+ 5310 0046 FFF7FEFF 		bl	SysCtlPeripheralSleepDisable
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // Configure the third timer for 32-bit periodic operation.
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     MAP_TimerConfigure(g_pulCPUUsageTimerBase[ulTimer], TIMER_CFG_PERIODIC);
+ 5311              		.loc 1 184 0
+ 5312 004a 144B     		ldr	r3, .L5+16
+ 5313 004c 7A68     		ldr	r2, [r7, #4]
+ 5314 004e 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 5315 0052 1846     		mov	r0, r3
+ 5316 0054 4FF02201 		mov	r1, #34
+ 5317 0058 FFF7FEFF 		bl	TimerConfigure
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // Set the load value for the third timer to the maximum value.
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     MAP_TimerLoadSet(g_pulCPUUsageTimerBase[ulTimer], TIMER_A, 0xffffffff);
+ 5318              		.loc 1 189 0
+ 5319 005c 0F4B     		ldr	r3, .L5+16
+ 5320 005e 7A68     		ldr	r2, [r7, #4]
+ 5321 0060 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 5322 0064 1846     		mov	r0, r3
+ 5323 0066 4FF0FF01 		mov	r1, #255
+ 5324 006a 4FF0FF32 		mov	r2, #-1
+ 5325 006e FFF7FEFF 		bl	TimerLoadSet
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** 
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // Enable the third timer.  It will now count the number of system clocks
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     // during which the processor is executing code.
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     //
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c ****     MAP_TimerEnable(g_pulCPUUsageTimerBase[ulTimer], TIMER_A);
+ 5326              		.loc 1 195 0
+ 5327 0072 0A4B     		ldr	r3, .L5+16
+ 5328 0074 7A68     		ldr	r2, [r7, #4]
+ 5329 0076 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 5330 007a 1846     		mov	r0, r3
+ 5331 007c 4FF0FF01 		mov	r1, #255
+ 5332 0080 FFF7FEFF 		bl	TimerEnable
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cpu_usage.c **** }
+ 5333              		.loc 1 196 0
+ 5334 0084 07F11007 		add	r7, r7, #16
+ 5335 0088 BD46     		mov	sp, r7
+ 5336 008a 80BD     		pop	{r7, pc}
+ 5337              	.L6:
+ 5338              		.align	2
+ 5339              	.L5:
+ 5340 008c 00000000 		.word	g_ulCPUUsageTimer
+ 5341 0090 04000000 		.word	g_ulCPUUsageTicks
+ 5342 0094 08000000 		.word	g_ulCPUUsagePrevious
+ 5343 0098 00000000 		.word	g_pulCPUUsageTimerPeriph
+ 5344 009c 10000000 		.word	g_pulCPUUsageTimerBase
+ 5345              		.cfi_endproc
+ 5346              	.LFE1:
+ 5348              		.text
+ 5349              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 cpu_usage.c
+     /tmp/ccuz5Ogj.s:5165   .data:00000000 $d
+     /tmp/ccuz5Ogj.s:5168   .data:00000000 g_pulCPUUsageTimerPeriph
+     /tmp/ccuz5Ogj.s:5176   .data:00000010 g_pulCPUUsageTimerBase
+     /tmp/ccuz5Ogj.s:5182   .bss:00000000 $d
+     /tmp/ccuz5Ogj.s:5183   .bss:00000000 g_ulCPUUsageTimer
+     /tmp/ccuz5Ogj.s:5186   .bss:00000004 g_ulCPUUsageTicks
+     /tmp/ccuz5Ogj.s:5189   .bss:00000008 g_ulCPUUsagePrevious
+     /tmp/ccuz5Ogj.s:5192   .text.CPUUsageTick:00000000 $t
+     /tmp/ccuz5Ogj.s:5197   .text.CPUUsageTick:00000000 CPUUsageTick
+     /tmp/ccuz5Ogj.s:5249   .text.CPUUsageTick:0000004c $d
+     /tmp/ccuz5Ogj.s:5257   .text.CPUUsageInit:00000000 $t
+     /tmp/ccuz5Ogj.s:5262   .text.CPUUsageInit:00000000 CPUUsageInit
+     /tmp/ccuz5Ogj.s:5340   .text.CPUUsageInit:0000008c $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+TimerValueGet
+SysCtlPeripheralClockGating
+SysCtlPeripheralEnable
+SysCtlPeripheralSleepDisable
+TimerConfigure
+TimerLoadSet
+TimerEnable

@@ -1,0 +1,2491 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"eeprom.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c"
+ 9296              		.align	2
+ 9297              		.thumb
+ 9298              		.thumb_func
+ 9300              	EEPROMSetSectorMask:
+ 9301              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // eeprom.c - Driver for programming the on-chip EEPROM.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // Copyright (c) 2010-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #include "inc/hw_eeprom.h"
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #include "inc/hw_flash.h"
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #include "inc/hw_ints.h"
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #include "inc/hw_sysctl.h"
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #include "inc/hw_types.h"
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #include "driverlib/debug.h"
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #include "driverlib/flash.h"
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #include "driverlib/interrupt.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #include "driverlib/sysctl.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #include "driverlib/eeprom.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \addtogroup eeprom_api
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! @{
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // Useful macros to extract the number of EEPROM blocks available on the target
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // device and the total EEPROM storage in bytes from the EESIZE register.
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #define BLOCKS_FROM_EESIZE(x) (((x) & EEPROM_EESIZE_BLKCNT_M) >>               \
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****                               EEPROM_EESIZE_BLKCNT_S)
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #define SIZE_FROM_EESIZE(x)   ((((x) & EEPROM_EESIZE_WORDCNT_M) >>             \
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****                               EEPROM_EESIZE_WORDCNT_S) * 4)
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // Useful macro to extract the offset from a linear address.
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #define OFFSET_FROM_ADDR(x) (((x) >> 2) & 0x0F)
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // The key value required to initiate a mass erase.
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** #define EEPROM_MASS_ERASE_KEY ((unsigned long)0xE37B << EEPROM_EEDBGME_KEY_S)
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // This function implements a workaround for a bug in Blizzard rev A silicon.
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // It ensures that only the 1KB flash sector containing a given EEPROM address
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // is erased if an erase/copy operation is required as a result of a following
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // EEPROM write.
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** static void
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMSetSectorMask(unsigned long ulAddress)
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 9302              		.loc 1 78 0
+ 9303              		.cfi_startproc
+ 9304              		@ args = 0, pretend = 0, frame = 16
+ 9305              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9306 0000 80B5     		push	{r7, lr}
+ 9307              	.LCFI0:
+ 9308              		.cfi_def_cfa_offset 8
+ 9309 0002 84B0     		sub	sp, sp, #16
+ 9310              	.LCFI1:
+ 9311              		.cfi_def_cfa_offset 24
+ 9312 0004 00AF     		add	r7, sp, #0
+ 9313              		.cfi_offset 14, -4
+ 9314              		.cfi_offset 7, -8
+ 9315              	.LCFI2:
+ 9316              		.cfi_def_cfa_register 7
+ 9317 0006 7860     		str	r0, [r7, #4]
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     unsigned long ulMask;
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Determine which page contains the passed EEPROM address.  The 2KB EEPROM
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // is implemented in 16KB of flash with each 1KB sector of flash holding
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // values for 32 consecutive EEPROM words (or 128 bytes).
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ulMask = ~(1 << (ulAddress >> 7));
+ 9318              		.loc 1 86 0
+ 9319 0008 7B68     		ldr	r3, [r7, #4]
+ 9320 000a 4FEAD313 		lsr	r3, r3, #7
+ 9321 000e 4FF00102 		mov	r2, #1
+ 9322 0012 02FA03F3 		lsl	r3, r2, r3
+ 9323 0016 6FEA0303 		mvn	r3, r3
+ 9324 001a FB60     		str	r3, [r7, #12]
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     SysCtlDelay(10);
+ 9325              		.loc 1 88 0
+ 9326 001c 4FF00A00 		mov	r0, #10
+ 9327 0020 FFF7FEFF 		bl	SysCtlDelay
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(0x400FD0FC) = 3;
+ 9328              		.loc 1 89 0
+ 9329 0024 0D4B     		ldr	r3, .L2
+ 9330 0026 4FF00302 		mov	r2, #3
+ 9331 002a 1A60     		str	r2, [r3, #0]
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     SysCtlDelay(10);
+ 9332              		.loc 1 90 0
+ 9333 002c 4FF00A00 		mov	r0, #10
+ 9334 0030 FFF7FEFF 		bl	SysCtlDelay
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(0x400AE2C0) = ulMask;
+ 9335              		.loc 1 91 0
+ 9336 0034 0A4B     		ldr	r3, .L2+4
+ 9337 0036 FA68     		ldr	r2, [r7, #12]
+ 9338 0038 1A60     		str	r2, [r3, #0]
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     SysCtlDelay(10);
+ 9339              		.loc 1 92 0
+ 9340 003a 4FF00A00 		mov	r0, #10
+ 9341 003e FFF7FEFF 		bl	SysCtlDelay
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(0x400FD0FC) = 0;
+ 9342              		.loc 1 93 0
+ 9343 0042 064B     		ldr	r3, .L2
+ 9344 0044 4FF00002 		mov	r2, #0
+ 9345 0048 1A60     		str	r2, [r3, #0]
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     SysCtlDelay(10);
+ 9346              		.loc 1 94 0
+ 9347 004a 4FF00A00 		mov	r0, #10
+ 9348 004e FFF7FEFF 		bl	SysCtlDelay
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 9349              		.loc 1 95 0
+ 9350 0052 07F11007 		add	r7, r7, #16
+ 9351 0056 BD46     		mov	sp, r7
+ 9352 0058 80BD     		pop	{r7, pc}
+ 9353              	.L3:
+ 9354 005a 00BF     		.align	2
+ 9355              	.L2:
+ 9356 005c FCD00F40 		.word	1074778364
+ 9357 0060 C0E20A40 		.word	1074455232
+ 9358              		.cfi_endproc
+ 9359              	.LFE0:
+ 9361              		.section	.text.EEPROMClearSectorMask,"ax",%progbits
+ 9362              		.align	2
+ 9363              		.thumb
+ 9364              		.thumb_func
+ 9366              	EEPROMClearSectorMask:
+ 9367              	.LFB1:
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // Clear the FSM sector erase mask to ensure that any following main array flash
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // erase operations operate as expected.
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** static void
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMClearSectorMask(void)
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 9368              		.loc 1 105 0
+ 9369              		.cfi_startproc
+ 9370              		@ args = 0, pretend = 0, frame = 0
+ 9371              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9372 0000 80B5     		push	{r7, lr}
+ 9373              	.LCFI3:
+ 9374              		.cfi_def_cfa_offset 8
+ 9375 0002 00AF     		add	r7, sp, #0
+ 9376              		.cfi_offset 14, -4
+ 9377              		.cfi_offset 7, -8
+ 9378              	.LCFI4:
+ 9379              		.cfi_def_cfa_register 7
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     SysCtlDelay(10);
+ 9380              		.loc 1 106 0
+ 9381 0004 4FF00A00 		mov	r0, #10
+ 9382 0008 FFF7FEFF 		bl	SysCtlDelay
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(0x400FD0FC) = 3;
+ 9383              		.loc 1 107 0
+ 9384 000c 0C4B     		ldr	r3, .L5
+ 9385 000e 4FF00302 		mov	r2, #3
+ 9386 0012 1A60     		str	r2, [r3, #0]
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     SysCtlDelay(10);
+ 9387              		.loc 1 108 0
+ 9388 0014 4FF00A00 		mov	r0, #10
+ 9389 0018 FFF7FEFF 		bl	SysCtlDelay
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(0x400AE2C0) = 0;
+ 9390              		.loc 1 109 0
+ 9391 001c 094B     		ldr	r3, .L5+4
+ 9392 001e 4FF00002 		mov	r2, #0
+ 9393 0022 1A60     		str	r2, [r3, #0]
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     SysCtlDelay(10);
+ 9394              		.loc 1 110 0
+ 9395 0024 4FF00A00 		mov	r0, #10
+ 9396 0028 FFF7FEFF 		bl	SysCtlDelay
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(0x400FD0FC) = 0;
+ 9397              		.loc 1 111 0
+ 9398 002c 044B     		ldr	r3, .L5
+ 9399 002e 4FF00002 		mov	r2, #0
+ 9400 0032 1A60     		str	r2, [r3, #0]
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     SysCtlDelay(10);
+ 9401              		.loc 1 112 0
+ 9402 0034 4FF00A00 		mov	r0, #10
+ 9403 0038 FFF7FEFF 		bl	SysCtlDelay
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 9404              		.loc 1 113 0
+ 9405 003c 80BD     		pop	{r7, pc}
+ 9406              	.L6:
+ 9407 003e 00BF     		.align	2
+ 9408              	.L5:
+ 9409 0040 FCD00F40 		.word	1074778364
+ 9410 0044 C0E20A40 		.word	1074455232
+ 9411              		.cfi_endproc
+ 9412              	.LFE1:
+ 9414              		.section	.text.EEPROMWaitForDone,"ax",%progbits
+ 9415              		.align	2
+ 9416              		.thumb
+ 9417              		.thumb_func
+ 9419              	EEPROMWaitForDone:
+ 9420              	.LFB2:
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** // Block until the EEPROM peripheral is not busy.
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** static void
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMWaitForDone(void)
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 9421              		.loc 1 122 0
+ 9422              		.cfi_startproc
+ 9423              		@ args = 0, pretend = 0, frame = 0
+ 9424              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9425              		@ link register save eliminated.
+ 9426 0000 80B4     		push	{r7}
+ 9427              	.LCFI5:
+ 9428              		.cfi_def_cfa_offset 4
+ 9429 0002 00AF     		add	r7, sp, #0
+ 9430              		.cfi_offset 7, -4
+ 9431              	.LCFI6:
+ 9432              		.cfi_def_cfa_register 7
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Is the EEPROM still busy?
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     while(HWREG(EEPROM_EEDONE) & EEPROM_EEDONE_WORKING)
+ 9433              		.loc 1 126 0
+ 9434 0004 00BF     		nop
+ 9435              	.L8:
+ 9436              		.loc 1 126 0 is_stmt 0 discriminator 1
+ 9437 0006 054B     		ldr	r3, .L9
+ 9438 0008 1B68     		ldr	r3, [r3, #0]
+ 9439 000a 03F00103 		and	r3, r3, #1
+ 9440 000e DBB2     		uxtb	r3, r3
+ 9441 0010 002B     		cmp	r3, #0
+ 9442 0012 F8D1     		bne	.L8
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Spin while EEPROM is busy.
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 9443              		.loc 1 132 0 is_stmt 1
+ 9444 0014 BD46     		mov	sp, r7
+ 9445 0016 80BC     		pop	{r7}
+ 9446 0018 7047     		bx	lr
+ 9447              	.L10:
+ 9448 001a 00BF     		.align	2
+ 9449              	.L9:
+ 9450 001c 18F00A40 		.word	1074458648
+ 9451              		.cfi_endproc
+ 9452              	.LFE2:
+ 9454              		.section	.text.EEPROMInit,"ax",%progbits
+ 9455              		.align	2
+ 9456              		.global	EEPROMInit
+ 9457              		.thumb
+ 9458              		.thumb_func
+ 9460              	EEPROMInit:
+ 9461              	.LFB3:
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Performs any necessary recovery in case of power failures during write.
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function must be called after SysCtlPeripheralEnable() and before
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! the EEPROM is accessed to check for errors resulting from power failure
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! during a previous write operation.  The function detects these errors
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! and performs as much recovery as possible before returning information to
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! the caller on whether or not a previous data write was lost and must
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! be retried.
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! In cases where \b EEPROM_INIT_RETRY is returned, the application is
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! responsible for determining which data write may have been lost and
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! rewriting this data.  If \b EEPROM_INIT_ERROR is returned, the EEPROM was
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! unable to recover its state.  This condition may or may not be resolved on
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! future resets depending upon the cause of the fault. For example, if the
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! supply voltage is unstable, retrying the operation once the voltage is 
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! stabilized may clear the error.
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Failure to call this function after a reset may lead to permanent data loss
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! if the EEPROM is later written!
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return Returns \b EEPROM_INIT_OK if no errors were detected,
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_INIT_RETRY if a previous write operation may have been
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! interrupted by a power or reset event or \b EEPROM_INIT_ERROR if the EEPROM
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! peripheral cannot currently recover from an interrupted write or erase
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! operation.
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** unsigned long
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMInit(void)
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 9462              		.loc 1 165 0
+ 9463              		.cfi_startproc
+ 9464              		@ args = 0, pretend = 0, frame = 8
+ 9465              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9466 0000 80B5     		push	{r7, lr}
+ 9467              	.LCFI7:
+ 9468              		.cfi_def_cfa_offset 8
+ 9469 0002 82B0     		sub	sp, sp, #8
+ 9470              	.LCFI8:
+ 9471              		.cfi_def_cfa_offset 16
+ 9472 0004 00AF     		add	r7, sp, #0
+ 9473              		.cfi_offset 14, -4
+ 9474              		.cfi_offset 7, -8
+ 9475              	.LCFI9:
+ 9476              		.cfi_def_cfa_register 7
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     unsigned long ulStatus;
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Insert a small delay (6 cycles + call overhead) to guard against the
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // possibility that this function is called immediately after the EEPROM
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // peripheral is enabled.  Without this delay, there is a slight chance
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // that the first EEPROM register read will fault if you are using a
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // compiler with a ridiculously good optimizer!
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     SysCtlDelay(2);
+ 9477              		.loc 1 175 0
+ 9478 0006 4FF00200 		mov	r0, #2
+ 9479 000a FFF7FEFF 		bl	SysCtlDelay
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Make sure the EEPROM has finished its reset processing.
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     EEPROMWaitForDone();
+ 9480              		.loc 1 180 0
+ 9481 000e FFF7FEFF 		bl	EEPROMWaitForDone
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Read the EESUPP register to see if any errors have been reported.
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ulStatus = HWREG(EEPROM_EESUPP);
+ 9482              		.loc 1 185 0
+ 9483 0012 134B     		ldr	r3, .L15
+ 9484 0014 1B68     		ldr	r3, [r3, #0]
+ 9485 0016 7B60     		str	r3, [r7, #4]
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Did an error of some sort occur during a previous attempt to write to
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // the EEPROM?
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     if(ulStatus & (EEPROM_EESUPP_PRETRY | EEPROM_EESUPP_ERETRY))
+ 9486              		.loc 1 191 0
+ 9487 0018 7B68     		ldr	r3, [r7, #4]
+ 9488 001a 03F00C03 		and	r3, r3, #12
+ 9489 001e 002B     		cmp	r3, #0
+ 9490 0020 16D0     		beq	.L12
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Perform a second reset to allow the EEPROM a chance to correct
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // the errors.
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         SysCtlPeripheralReset(SYSCTL_PERIPH_EEPROM0);
+ 9491              		.loc 1 197 0
+ 9492 0022 1048     		ldr	r0, .L15+4
+ 9493 0024 FFF7FEFF 		bl	SysCtlPeripheralReset
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Wait for the EEPROM to complete it's reset processing once again.
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         SysCtlDelay(2);
+ 9494              		.loc 1 202 0
+ 9495 0028 4FF00200 		mov	r0, #2
+ 9496 002c FFF7FEFF 		bl	SysCtlDelay
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         EEPROMWaitForDone();
+ 9497              		.loc 1 203 0
+ 9498 0030 FFF7FEFF 		bl	EEPROMWaitForDone
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Read EESUPP once again to determine if the error conditions are
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // cleared.
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         ulStatus = HWREG(EEPROM_EESUPP);
+ 9499              		.loc 1 209 0
+ 9500 0034 0A4B     		ldr	r3, .L15
+ 9501 0036 1B68     		ldr	r3, [r3, #0]
+ 9502 0038 7B60     		str	r3, [r7, #4]
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         if(ulStatus & (EEPROM_EESUPP_PRETRY | EEPROM_EESUPP_ERETRY))
+ 9503              		.loc 1 210 0
+ 9504 003a 7B68     		ldr	r3, [r7, #4]
+ 9505 003c 03F00C03 		and	r3, r3, #12
+ 9506 0040 002B     		cmp	r3, #0
+ 9507 0042 02D0     		beq	.L13
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         {
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             return(EEPROM_INIT_ERROR);
+ 9508              		.loc 1 212 0
+ 9509 0044 4FF00203 		mov	r3, #2
+ 9510 0048 04E0     		b	.L14
+ 9511              	.L13:
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         }
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         else
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         {
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             return(EEPROM_INIT_RETRY);
+ 9512              		.loc 1 216 0
+ 9513 004a 4FF00103 		mov	r3, #1
+ 9514 004e 01E0     		b	.L14
+ 9515              	.L12:
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         }
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // The EEPROM does not indicate that any error occurred.
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     return(EEPROM_INIT_OK);
+ 9516              		.loc 1 223 0
+ 9517 0050 4FF00003 		mov	r3, #0
+ 9518              	.L14:
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 9519              		.loc 1 224 0
+ 9520 0054 1846     		mov	r0, r3
+ 9521 0056 07F10807 		add	r7, r7, #8
+ 9522 005a BD46     		mov	sp, r7
+ 9523 005c 80BD     		pop	{r7, pc}
+ 9524              	.L16:
+ 9525 005e 00BF     		.align	2
+ 9526              	.L15:
+ 9527 0060 1CF00A40 		.word	1074458652
+ 9528 0064 005800F0 		.word	-268412928
+ 9529              		.cfi_endproc
+ 9530              	.LFE3:
+ 9532              		.section	.text.EEPROMSizeGet,"ax",%progbits
+ 9533              		.align	2
+ 9534              		.global	EEPROMSizeGet
+ 9535              		.thumb
+ 9536              		.thumb_func
+ 9538              	EEPROMSizeGet:
+ 9539              	.LFB4:
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Determines the size of the EEPROM.
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function returns the size of the EEPROM in bytes.
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return Returns the total number of bytes in the EEPROM.
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** unsigned long
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMSizeGet(void)
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 9540              		.loc 1 237 0
+ 9541              		.cfi_startproc
+ 9542              		@ args = 0, pretend = 0, frame = 0
+ 9543              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9544              		@ link register save eliminated.
+ 9545 0000 80B4     		push	{r7}
+ 9546              	.LCFI10:
+ 9547              		.cfi_def_cfa_offset 4
+ 9548 0002 00AF     		add	r7, sp, #0
+ 9549              		.cfi_offset 7, -4
+ 9550              	.LCFI11:
+ 9551              		.cfi_def_cfa_register 7
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Return the size of the EEPROM in bytes.
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     return(SIZE_FROM_EESIZE(HWREG(EEPROM_EESIZE)));
+ 9552              		.loc 1 241 0
+ 9553 0004 054B     		ldr	r3, .L18
+ 9554 0006 1B68     		ldr	r3, [r3, #0]
+ 9555 0008 4FEA0343 		lsl	r3, r3, #16
+ 9556 000c 4FEA1343 		lsr	r3, r3, #16
+ 9557 0010 4FEA8303 		lsl	r3, r3, #2
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 9558              		.loc 1 242 0
+ 9559 0014 1846     		mov	r0, r3
+ 9560 0016 BD46     		mov	sp, r7
+ 9561 0018 80BC     		pop	{r7}
+ 9562 001a 7047     		bx	lr
+ 9563              	.L19:
+ 9564              		.align	2
+ 9565              	.L18:
+ 9566 001c 00F00A40 		.word	1074458624
+ 9567              		.cfi_endproc
+ 9568              	.LFE4:
+ 9570              		.section	.text.EEPROMBlockCountGet,"ax",%progbits
+ 9571              		.align	2
+ 9572              		.global	EEPROMBlockCountGet
+ 9573              		.thumb
+ 9574              		.thumb_func
+ 9576              	EEPROMBlockCountGet:
+ 9577              	.LFB5:
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Determines the number of blocks in the EEPROM.
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function may be called to determine the number of blocks in the
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! EEPROM.  Each block is the same size and the number of bytes of storage
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! contained in a block may be determined by dividing the size of the device,
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! obtained via a call to the EEPROMSizeGet() function, by the number of
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! blocks returned by this function.
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return Returns the total number of bytes in the device EEPROM.
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** unsigned long
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMBlockCountGet(void)
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 9578              		.loc 1 259 0
+ 9579              		.cfi_startproc
+ 9580              		@ args = 0, pretend = 0, frame = 0
+ 9581              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9582              		@ link register save eliminated.
+ 9583 0000 80B4     		push	{r7}
+ 9584              	.LCFI12:
+ 9585              		.cfi_def_cfa_offset 4
+ 9586 0002 00AF     		add	r7, sp, #0
+ 9587              		.cfi_offset 7, -4
+ 9588              	.LCFI13:
+ 9589              		.cfi_def_cfa_register 7
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Extract the number of blocks and return it to the caller.
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     return(BLOCKS_FROM_EESIZE(HWREG(EEPROM_EESIZE)));
+ 9590              		.loc 1 263 0
+ 9591 0004 054B     		ldr	r3, .L21
+ 9592 0006 1A68     		ldr	r2, [r3, #0]
+ 9593 0008 054B     		ldr	r3, .L21+4
+ 9594 000a 02EA0303 		and	r3, r2, r3
+ 9595 000e 4FEA1343 		lsr	r3, r3, #16
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 9596              		.loc 1 264 0
+ 9597 0012 1846     		mov	r0, r3
+ 9598 0014 BD46     		mov	sp, r7
+ 9599 0016 80BC     		pop	{r7}
+ 9600 0018 7047     		bx	lr
+ 9601              	.L22:
+ 9602 001a 00BF     		.align	2
+ 9603              	.L21:
+ 9604 001c 00F00A40 		.word	1074458624
+ 9605 0020 0000FF07 		.word	134152192
+ 9606              		.cfi_endproc
+ 9607              	.LFE5:
+ 9609              		.section	.text.EEPROMRead,"ax",%progbits
+ 9610              		.align	2
+ 9611              		.global	EEPROMRead
+ 9612              		.thumb
+ 9613              		.thumb_func
+ 9615              	EEPROMRead:
+ 9616              	.LFB6:
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Reads data from the EEPROM.
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param pulData is a pointer to storage for the data read from the EEPROM.
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This pointer must point to at least \e ulCount bytes of available memory.
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulAddress is the byte address within the EEPROM from which data is
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! to be read.  This value must be a multiple of 4.
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulCount is the number of bytes of data to read from the EEPROM.
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This value must be a multiple of 4.
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function may be called to read a number of words of data from a
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! word-aligned address within the EEPROM.  Data read is copied into the
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! buffer pointed to by the \e pulData parameter.
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return None.
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** void
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMRead(unsigned long *pulData, unsigned long ulAddress,
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****            unsigned long ulCount)
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 9617              		.loc 1 287 0
+ 9618              		.cfi_startproc
+ 9619              		@ args = 0, pretend = 0, frame = 16
+ 9620              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9621              		@ link register save eliminated.
+ 9622 0000 80B4     		push	{r7}
+ 9623              	.LCFI14:
+ 9624              		.cfi_def_cfa_offset 4
+ 9625 0002 85B0     		sub	sp, sp, #20
+ 9626              	.LCFI15:
+ 9627              		.cfi_def_cfa_offset 24
+ 9628 0004 00AF     		add	r7, sp, #0
+ 9629              		.cfi_offset 7, -4
+ 9630              	.LCFI16:
+ 9631              		.cfi_def_cfa_register 7
+ 9632 0006 F860     		str	r0, [r7, #12]
+ 9633 0008 B960     		str	r1, [r7, #8]
+ 9634 000a 7A60     		str	r2, [r7, #4]
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Check parameters in a debug build.
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(pulData);
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(ulAddress < SIZE_FROM_EESIZE(HWREG(EEPROM_EESIZE)));
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT((ulAddress + ulCount) <= SIZE_FROM_EESIZE(HWREG(EEPROM_EESIZE)));
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT((ulAddress & 3) == 0);
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT((ulCount & 3) == 0);
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Set the block and offset appropriately to read the first word.
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEBLOCK) = EEPROMBlockFromAddr(ulAddress);
+ 9635              		.loc 1 300 0
+ 9636 000c 174B     		ldr	r3, .L26
+ 9637 000e BA68     		ldr	r2, [r7, #8]
+ 9638 0010 4FEA9212 		lsr	r2, r2, #6
+ 9639 0014 1A60     		str	r2, [r3, #0]
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEOFFSET) = OFFSET_FROM_ADDR(ulAddress);
+ 9640              		.loc 1 301 0
+ 9641 0016 164B     		ldr	r3, .L26+4
+ 9642 0018 BA68     		ldr	r2, [r7, #8]
+ 9643 001a 4FEA9202 		lsr	r2, r2, #2
+ 9644 001e 02F00F02 		and	r2, r2, #15
+ 9645 0022 1A60     		str	r2, [r3, #0]
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Convert the byte count to a word count.
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ulCount /= 4;
+ 9646              		.loc 1 306 0
+ 9647 0024 7B68     		ldr	r3, [r7, #4]
+ 9648 0026 4FEA9303 		lsr	r3, r3, #2
+ 9649 002a 7B60     		str	r3, [r7, #4]
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Read each word in turn.
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     while(ulCount)
+ 9650              		.loc 1 311 0
+ 9651 002c 15E0     		b	.L24
+ 9652              	.L25:
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Read the next word through the autoincrementing register.
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         *pulData = HWREG(EEPROM_EERDWRINC);
+ 9653              		.loc 1 316 0
+ 9654 002e 114B     		ldr	r3, .L26+8
+ 9655 0030 1A68     		ldr	r2, [r3, #0]
+ 9656 0032 FB68     		ldr	r3, [r7, #12]
+ 9657 0034 1A60     		str	r2, [r3, #0]
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Move on to the next word.
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         pulData++;
+ 9658              		.loc 1 321 0
+ 9659 0036 FB68     		ldr	r3, [r7, #12]
+ 9660 0038 03F10403 		add	r3, r3, #4
+ 9661 003c FB60     		str	r3, [r7, #12]
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         ulCount--;
+ 9662              		.loc 1 322 0
+ 9663 003e 7B68     		ldr	r3, [r7, #4]
+ 9664 0040 03F1FF33 		add	r3, r3, #-1
+ 9665 0044 7B60     		str	r3, [r7, #4]
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Do we need to move to the next block?  This is the case if the
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // offset register has just wrapped back to 0.
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         if(HWREG(EEPROM_EEOFFSET) == 0)
+ 9666              		.loc 1 328 0
+ 9667 0046 0A4B     		ldr	r3, .L26+4
+ 9668 0048 1B68     		ldr	r3, [r3, #0]
+ 9669 004a 002B     		cmp	r3, #0
+ 9670 004c 05D1     		bne	.L24
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         {
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             HWREG(EEPROM_EEBLOCK) += 1;
+ 9671              		.loc 1 330 0
+ 9672 004e 074B     		ldr	r3, .L26
+ 9673 0050 064A     		ldr	r2, .L26
+ 9674 0052 1268     		ldr	r2, [r2, #0]
+ 9675 0054 02F10102 		add	r2, r2, #1
+ 9676 0058 1A60     		str	r2, [r3, #0]
+ 9677              	.L24:
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     while(ulCount)
+ 9678              		.loc 1 311 0 discriminator 1
+ 9679 005a 7B68     		ldr	r3, [r7, #4]
+ 9680 005c 002B     		cmp	r3, #0
+ 9681 005e E6D1     		bne	.L25
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         }
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 9682              		.loc 1 333 0
+ 9683 0060 07F11407 		add	r7, r7, #20
+ 9684 0064 BD46     		mov	sp, r7
+ 9685 0066 80BC     		pop	{r7}
+ 9686 0068 7047     		bx	lr
+ 9687              	.L27:
+ 9688 006a 00BF     		.align	2
+ 9689              	.L26:
+ 9690 006c 04F00A40 		.word	1074458628
+ 9691 0070 08F00A40 		.word	1074458632
+ 9692 0074 14F00A40 		.word	1074458644
+ 9693              		.cfi_endproc
+ 9694              	.LFE6:
+ 9696              		.section	.text.EEPROMProgram,"ax",%progbits
+ 9697              		.align	2
+ 9698              		.global	EEPROMProgram
+ 9699              		.thumb
+ 9700              		.thumb_func
+ 9702              	EEPROMProgram:
+ 9703              	.LFB7:
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Writes data to the EEPROM.
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param pulData points to the first word of data to write to the EEPROM.
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulAddress defines the byte address within the EEPROM that the data
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! is to be written to.  This value must be a multiple of 4.
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulCount defines the number of bytes of data that is to be written.
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This value must be a multiple of 4.
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function may be called to write data into the EEPROM at a given
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! word-aligned address.  The call is synchronous and returns only after
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! all data has been written or an error occurs.
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return Returns 0 on success or non-zero values on failure.  Failure codes
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! are logical OR combinations of \b EEPROM_RC_INVPL, \b EEPROM_RC_WRBUSY,
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_RC_NOPERM, \b EEPROM_RC_WKCOPY, \b EEPROM_RC_WKERASE, and
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_RC_WORKING.
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** unsigned long
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMProgram(unsigned long *pulData, unsigned long ulAddress,
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****               unsigned long ulCount)
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 9704              		.loc 1 358 0
+ 9705              		.cfi_startproc
+ 9706              		@ args = 0, pretend = 0, frame = 24
+ 9707              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9708 0000 80B5     		push	{r7, lr}
+ 9709              	.LCFI17:
+ 9710              		.cfi_def_cfa_offset 8
+ 9711 0002 86B0     		sub	sp, sp, #24
+ 9712              	.LCFI18:
+ 9713              		.cfi_def_cfa_offset 32
+ 9714 0004 00AF     		add	r7, sp, #0
+ 9715              		.cfi_offset 14, -4
+ 9716              		.cfi_offset 7, -8
+ 9717              	.LCFI19:
+ 9718              		.cfi_def_cfa_register 7
+ 9719 0006 F860     		str	r0, [r7, #12]
+ 9720 0008 B960     		str	r1, [r7, #8]
+ 9721 000a 7A60     		str	r2, [r7, #4]
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     unsigned long ulStatus;
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Check parameters in a debug build.
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(pulData);
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(ulAddress < SIZE_FROM_EESIZE(HWREG(EEPROM_EESIZE)));
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT((ulAddress + ulCount) <= SIZE_FROM_EESIZE(HWREG(EEPROM_EESIZE)));
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT((ulAddress & 3) == 0);
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT((ulCount & 3) == 0);
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // This is a workaround for a silicon problem on Blizzard rev A.
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     if(CLASS_IS_BLIZZARD && REVISION_IS_A0)
+ 9722              		.loc 1 373 0
+ 9723 000c 3B4B     		ldr	r3, .L37
+ 9724 000e 1A68     		ldr	r2, [r3, #0]
+ 9725 0010 3B4B     		ldr	r3, .L37+4
+ 9726 0012 02EA0303 		and	r3, r2, r3
+ 9727 0016 3B4A     		ldr	r2, .L37+8
+ 9728 0018 9342     		cmp	r3, r2
+ 9729 001a 0AD1     		bne	.L29
+ 9730              		.loc 1 373 0 is_stmt 0 discriminator 1
+ 9731 001c 374B     		ldr	r3, .L37
+ 9732 001e 1B68     		ldr	r3, [r3, #0]
+ 9733 0020 4FEA0343 		lsl	r3, r3, #16
+ 9734 0024 4FEA1343 		lsr	r3, r3, #16
+ 9735 0028 002B     		cmp	r3, #0
+ 9736 002a 02D1     		bne	.L29
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         EEPROMSetSectorMask(ulAddress);
+ 9737              		.loc 1 375 0 is_stmt 1
+ 9738 002c B868     		ldr	r0, [r7, #8]
+ 9739 002e FFF7FEFF 		bl	EEPROMSetSectorMask
+ 9740              	.L29:
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Set the block and offset appropriately to program the first word.
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEBLOCK) = EEPROMBlockFromAddr(ulAddress);
+ 9741              		.loc 1 381 0
+ 9742 0032 354B     		ldr	r3, .L37+12
+ 9743 0034 BA68     		ldr	r2, [r7, #8]
+ 9744 0036 4FEA9212 		lsr	r2, r2, #6
+ 9745 003a 1A60     		str	r2, [r3, #0]
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEOFFSET) = OFFSET_FROM_ADDR(ulAddress);
+ 9746              		.loc 1 382 0
+ 9747 003c 334B     		ldr	r3, .L37+16
+ 9748 003e BA68     		ldr	r2, [r7, #8]
+ 9749 0040 4FEA9202 		lsr	r2, r2, #2
+ 9750 0044 02F00F02 		and	r2, r2, #15
+ 9751 0048 1A60     		str	r2, [r3, #0]
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Convert the byte count to a word count.
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ulCount /= 4;
+ 9752              		.loc 1 387 0
+ 9753 004a 7B68     		ldr	r3, [r7, #4]
+ 9754 004c 4FEA9303 		lsr	r3, r3, #2
+ 9755 0050 7B60     		str	r3, [r7, #4]
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Write each word in turn.
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     while(ulCount)
+ 9756              		.loc 1 392 0
+ 9757 0052 37E0     		b	.L30
+ 9758              	.L35:
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Write the next word through the autoincrementing register.
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         HWREG(EEPROM_EERDWRINC) = *pulData;
+ 9759              		.loc 1 397 0
+ 9760 0054 2E4B     		ldr	r3, .L37+20
+ 9761 0056 FA68     		ldr	r2, [r7, #12]
+ 9762 0058 1268     		ldr	r2, [r2, #0]
+ 9763 005a 1A60     		str	r2, [r3, #0]
+ 9764              	.L31:
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Wait for the write to complete.
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         do
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         {
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             //
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             // Read the status.
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             //
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             ulStatus = HWREG(EEPROM_EEDONE);
+ 9765              		.loc 1 407 0 discriminator 1
+ 9766 005c 2D4B     		ldr	r3, .L37+24
+ 9767 005e 1B68     		ldr	r3, [r3, #0]
+ 9768 0060 7B61     		str	r3, [r7, #20]
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         }
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         while(ulStatus & EEPROM_EEDONE_WORKING);
+ 9769              		.loc 1 409 0 discriminator 1
+ 9770 0062 7B69     		ldr	r3, [r7, #20]
+ 9771 0064 03F00103 		and	r3, r3, #1
+ 9772 0068 DBB2     		uxtb	r3, r3
+ 9773 006a 002B     		cmp	r3, #0
+ 9774 006c F6D1     		bne	.L31
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Make sure we completed the write without errors.  Note that we
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // must check this per-word because write permission can be set per
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // block resulting in only a section of the write not being performed.
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         if(ulStatus & (EEPROM_EEDONE_NOPERM | EEPROM_EEDONE_INVPL))
+ 9775              		.loc 1 416 0
+ 9776 006e 7B69     		ldr	r3, [r7, #20]
+ 9777 0070 03F48873 		and	r3, r3, #272
+ 9778 0074 002B     		cmp	r3, #0
+ 9779 0076 13D0     		beq	.L32
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         {
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             //
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             // An error was reported that would prevent the values from
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             // being written correctly.
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             //
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             if(CLASS_IS_BLIZZARD && REVISION_IS_A0)
+ 9780              		.loc 1 422 0
+ 9781 0078 204B     		ldr	r3, .L37
+ 9782 007a 1A68     		ldr	r2, [r3, #0]
+ 9783 007c 204B     		ldr	r3, .L37+4
+ 9784 007e 02EA0303 		and	r3, r2, r3
+ 9785 0082 204A     		ldr	r2, .L37+8
+ 9786 0084 9342     		cmp	r3, r2
+ 9787 0086 09D1     		bne	.L33
+ 9788              		.loc 1 422 0 is_stmt 0 discriminator 1
+ 9789 0088 1C4B     		ldr	r3, .L37
+ 9790 008a 1B68     		ldr	r3, [r3, #0]
+ 9791 008c 4FEA0343 		lsl	r3, r3, #16
+ 9792 0090 4FEA1343 		lsr	r3, r3, #16
+ 9793 0094 002B     		cmp	r3, #0
+ 9794 0096 01D1     		bne	.L33
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             {
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****                 EEPROMClearSectorMask();
+ 9795              		.loc 1 424 0 is_stmt 1
+ 9796 0098 FFF7FEFF 		bl	EEPROMClearSectorMask
+ 9797              	.L33:
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             }
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             return(ulStatus);
+ 9798              		.loc 1 426 0
+ 9799 009c 7B69     		ldr	r3, [r7, #20]
+ 9800 009e 28E0     		b	.L34
+ 9801              	.L32:
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         }
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Move on to the next word.
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         pulData++;
+ 9802              		.loc 1 432 0
+ 9803 00a0 FB68     		ldr	r3, [r7, #12]
+ 9804 00a2 03F10403 		add	r3, r3, #4
+ 9805 00a6 FB60     		str	r3, [r7, #12]
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         ulCount--;
+ 9806              		.loc 1 433 0
+ 9807 00a8 7B68     		ldr	r3, [r7, #4]
+ 9808 00aa 03F1FF33 		add	r3, r3, #-1
+ 9809 00ae 7B60     		str	r3, [r7, #4]
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Do we need to move to the next block?  This is the case if the
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // offset register has just wrapped back to 0.
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         if(HWREG(EEPROM_EEOFFSET) == 0)
+ 9810              		.loc 1 439 0
+ 9811 00b0 164B     		ldr	r3, .L37+16
+ 9812 00b2 1B68     		ldr	r3, [r3, #0]
+ 9813 00b4 002B     		cmp	r3, #0
+ 9814 00b6 05D1     		bne	.L30
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         {
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             HWREG(EEPROM_EEBLOCK) += 1;
+ 9815              		.loc 1 441 0
+ 9816 00b8 134B     		ldr	r3, .L37+12
+ 9817 00ba 134A     		ldr	r2, .L37+12
+ 9818 00bc 1268     		ldr	r2, [r2, #0]
+ 9819 00be 02F10102 		add	r2, r2, #1
+ 9820 00c2 1A60     		str	r2, [r3, #0]
+ 9821              	.L30:
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     while(ulCount)
+ 9822              		.loc 1 392 0 discriminator 1
+ 9823 00c4 7B68     		ldr	r3, [r7, #4]
+ 9824 00c6 002B     		cmp	r3, #0
+ 9825 00c8 C4D1     		bne	.L35
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         }
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Clear the sector protection bits to prevent possible problems when
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // programming the main flash array later.
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     if(CLASS_IS_BLIZZARD && REVISION_IS_A0)
+ 9826              		.loc 1 449 0
+ 9827 00ca 0C4B     		ldr	r3, .L37
+ 9828 00cc 1A68     		ldr	r2, [r3, #0]
+ 9829 00ce 0C4B     		ldr	r3, .L37+4
+ 9830 00d0 02EA0303 		and	r3, r2, r3
+ 9831 00d4 0B4A     		ldr	r2, .L37+8
+ 9832 00d6 9342     		cmp	r3, r2
+ 9833 00d8 09D1     		bne	.L36
+ 9834              		.loc 1 449 0 is_stmt 0 discriminator 1
+ 9835 00da 084B     		ldr	r3, .L37
+ 9836 00dc 1B68     		ldr	r3, [r3, #0]
+ 9837 00de 4FEA0343 		lsl	r3, r3, #16
+ 9838 00e2 4FEA1343 		lsr	r3, r3, #16
+ 9839 00e6 002B     		cmp	r3, #0
+ 9840 00e8 01D1     		bne	.L36
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         EEPROMClearSectorMask();
+ 9841              		.loc 1 451 0 is_stmt 1
+ 9842 00ea FFF7FEFF 		bl	EEPROMClearSectorMask
+ 9843              	.L36:
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Return the current status to the caller.
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     return(HWREG(EEPROM_EEDONE));
+ 9844              		.loc 1 457 0
+ 9845 00ee 094B     		ldr	r3, .L37+24
+ 9846 00f0 1B68     		ldr	r3, [r3, #0]
+ 9847              	.L34:
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 9848              		.loc 1 458 0
+ 9849 00f2 1846     		mov	r0, r3
+ 9850 00f4 07F11807 		add	r7, r7, #24
+ 9851 00f8 BD46     		mov	sp, r7
+ 9852 00fa 80BD     		pop	{r7, pc}
+ 9853              	.L38:
+ 9854              		.align	2
+ 9855              	.L37:
+ 9856 00fc 00E00F40 		.word	1074782208
+ 9857 0100 0000FF70 		.word	1895759872
+ 9858 0104 00000510 		.word	268763136
+ 9859 0108 04F00A40 		.word	1074458628
+ 9860 010c 08F00A40 		.word	1074458632
+ 9861 0110 14F00A40 		.word	1074458644
+ 9862 0114 18F00A40 		.word	1074458648
+ 9863              		.cfi_endproc
+ 9864              	.LFE7:
+ 9866              		.section	.text.EEPROMProgramNonBlocking,"ax",%progbits
+ 9867              		.align	2
+ 9868              		.global	EEPROMProgramNonBlocking
+ 9869              		.thumb
+ 9870              		.thumb_func
+ 9872              	EEPROMProgramNonBlocking:
+ 9873              	.LFB8:
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Writes a word to the EEPROM.
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulData is the word to write to the EEPROM.
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulAddress defines the byte address within the EEPROM to which the
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! data is to be written.  This value must be a multiple of 4.
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function is intended to allow EEPROM programming under interrupt
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! control. It may be called to start the process of writing a single word of
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! data into the EEPROM at a given word-aligned address.  The call is
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! asynchronous and returna immediately without waiting for the write to
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! complete.  Completion of the operation is signaled by means of an
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! interrupt from the EEPROM module.  The EEPROM peripheral shares a single
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! interrupt vector with the flash memory subsystem, \e INT_FLASH.
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return Returns status and error information in the form of a logical OR
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! combinations of \b EEPROM_RC_INVPL, \b EEPROM_RC_WRBUSY,
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_RC_NOPERM, \b EEPROM_RC_WKCOPY, \b EEPROM_RC_WKERASE and
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_RC_WORKING.  Flags \b EEPROM_RC_WKCOPY, \b EEPROM_RC_WKERASE, and
+ 480:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_RC_WORKING are expected in normal operation and do not indicate
+ 481:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! an error.
+ 482:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 484:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** unsigned long
+ 485:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMProgramNonBlocking(unsigned long ulData, unsigned long ulAddress)
+ 486:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 9874              		.loc 1 486 0
+ 9875              		.cfi_startproc
+ 9876              		@ args = 0, pretend = 0, frame = 8
+ 9877              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9878 0000 80B5     		push	{r7, lr}
+ 9879              	.LCFI20:
+ 9880              		.cfi_def_cfa_offset 8
+ 9881 0002 82B0     		sub	sp, sp, #8
+ 9882              	.LCFI21:
+ 9883              		.cfi_def_cfa_offset 16
+ 9884 0004 00AF     		add	r7, sp, #0
+ 9885              		.cfi_offset 14, -4
+ 9886              		.cfi_offset 7, -8
+ 9887              	.LCFI22:
+ 9888              		.cfi_def_cfa_register 7
+ 9889 0006 7860     		str	r0, [r7, #4]
+ 9890 0008 3960     		str	r1, [r7, #0]
+ 487:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 488:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Check parameters in a debug build.
+ 489:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 490:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(ulAddress < SIZE_FROM_EESIZE(HWREG(EEPROM_EESIZE)));
+ 491:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT((ulAddress & 3) == 0);
+ 492:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 493:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 494:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // This is a workaround for a silicon problem on Blizzard rev A.
+ 495:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 496:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     if(CLASS_IS_BLIZZARD && REVISION_IS_A0)
+ 9891              		.loc 1 496 0
+ 9892 000a 144B     		ldr	r3, .L41
+ 9893 000c 1A68     		ldr	r2, [r3, #0]
+ 9894 000e 144B     		ldr	r3, .L41+4
+ 9895 0010 02EA0303 		and	r3, r2, r3
+ 9896 0014 134A     		ldr	r2, .L41+8
+ 9897 0016 9342     		cmp	r3, r2
+ 9898 0018 0AD1     		bne	.L40
+ 9899              		.loc 1 496 0 is_stmt 0 discriminator 1
+ 9900 001a 104B     		ldr	r3, .L41
+ 9901 001c 1B68     		ldr	r3, [r3, #0]
+ 9902 001e 4FEA0343 		lsl	r3, r3, #16
+ 9903 0022 4FEA1343 		lsr	r3, r3, #16
+ 9904 0026 002B     		cmp	r3, #0
+ 9905 0028 02D1     		bne	.L40
+ 497:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+ 498:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         EEPROMSetSectorMask(ulAddress);
+ 9906              		.loc 1 498 0 is_stmt 1
+ 9907 002a 3868     		ldr	r0, [r7, #0]
+ 9908 002c FFF7FEFF 		bl	EEPROMSetSectorMask
+ 9909              	.L40:
+ 499:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+ 500:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 501:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 502:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Set the block and offset appropriately to program the desired word.
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 504:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEBLOCK) = EEPROMBlockFromAddr(ulAddress);
+ 9910              		.loc 1 504 0
+ 9911 0030 0D4B     		ldr	r3, .L41+12
+ 9912 0032 3A68     		ldr	r2, [r7, #0]
+ 9913 0034 4FEA9212 		lsr	r2, r2, #6
+ 9914 0038 1A60     		str	r2, [r3, #0]
+ 505:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEOFFSET) = OFFSET_FROM_ADDR(ulAddress);
+ 9915              		.loc 1 505 0
+ 9916 003a 0C4B     		ldr	r3, .L41+16
+ 9917 003c 3A68     		ldr	r2, [r7, #0]
+ 9918 003e 4FEA9202 		lsr	r2, r2, #2
+ 9919 0042 02F00F02 		and	r2, r2, #15
+ 9920 0046 1A60     		str	r2, [r3, #0]
+ 506:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 507:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 508:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Write the new word using the auto-incrementing register just in case
+ 509:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // the caller wants to write follow-on words using direct register access
+ 510:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 511:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EERDWRINC) = ulData;
+ 9921              		.loc 1 511 0
+ 9922 0048 094B     		ldr	r3, .L41+20
+ 9923 004a 7A68     		ldr	r2, [r7, #4]
+ 9924 004c 1A60     		str	r2, [r3, #0]
+ 512:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 513:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 514:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Return the current status to the caller.
+ 515:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 516:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     return(HWREG(EEPROM_EEDONE));
+ 9925              		.loc 1 516 0
+ 9926 004e 094B     		ldr	r3, .L41+24
+ 9927 0050 1B68     		ldr	r3, [r3, #0]
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 9928              		.loc 1 517 0
+ 9929 0052 1846     		mov	r0, r3
+ 9930 0054 07F10807 		add	r7, r7, #8
+ 9931 0058 BD46     		mov	sp, r7
+ 9932 005a 80BD     		pop	{r7, pc}
+ 9933              	.L42:
+ 9934              		.align	2
+ 9935              	.L41:
+ 9936 005c 00E00F40 		.word	1074782208
+ 9937 0060 0000FF70 		.word	1895759872
+ 9938 0064 00000510 		.word	268763136
+ 9939 0068 04F00A40 		.word	1074458628
+ 9940 006c 08F00A40 		.word	1074458632
+ 9941 0070 14F00A40 		.word	1074458644
+ 9942 0074 18F00A40 		.word	1074458648
+ 9943              		.cfi_endproc
+ 9944              	.LFE8:
+ 9946              		.section	.text.EEPROMMassErase,"ax",%progbits
+ 9947              		.align	2
+ 9948              		.global	EEPROMMassErase
+ 9949              		.thumb
+ 9950              		.thumb_func
+ 9952              	EEPROMMassErase:
+ 9953              	.LFB9:
+ 518:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 519:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 520:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 521:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Erases the EEPROM and returns it to the factory default condition.
+ 522:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 523:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function completely erases the EEPROM and removes any and
+ 524:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! all access protection on its blocks, leaving the device in the factory
+ 525:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! default condition.  After this operation, all EEPROM words contain the
+ 526:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! value 0xFFFFFFFF and all blocks are accessible for both read and write
+ 527:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! operations in all CPU modes.  No passwords are active.
+ 528:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 529:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! The function is synchronous and does not return until the erase operation
+ 530:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! has completed.
+ 531:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 532:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return Returns 0 on success or non-zero values on failure.  Failure codes
+ 533:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! are logical OR combinations of \b EEPROM_RC_INVPL, \b EEPROM_RC_WRBUSY,
+ 534:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_RC_NOPERM, \b EEPROM_RC_WKCOPY, \b EEPROM_RC_WKERASE, and
+ 535:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_RC_WORKING.
+ 536:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 537:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 538:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** unsigned long
+ 539:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMMassErase(void)
+ 540:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 9954              		.loc 1 540 0
+ 9955              		.cfi_startproc
+ 9956              		@ args = 0, pretend = 0, frame = 0
+ 9957              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9958 0000 80B5     		push	{r7, lr}
+ 9959              	.LCFI23:
+ 9960              		.cfi_def_cfa_offset 8
+ 9961 0002 00AF     		add	r7, sp, #0
+ 9962              		.cfi_offset 14, -4
+ 9963              		.cfi_offset 7, -8
+ 9964              	.LCFI24:
+ 9965              		.cfi_def_cfa_register 7
+ 541:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 542:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // This is a workaround for a silicon problem on Blizzard rev A.
+ 543:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 544:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     if(CLASS_IS_BLIZZARD && REVISION_IS_A0)
+ 9966              		.loc 1 544 0
+ 9967 0004 114B     		ldr	r3, .L45
+ 9968 0006 1A68     		ldr	r2, [r3, #0]
+ 9969 0008 114B     		ldr	r3, .L45+4
+ 9970 000a 02EA0303 		and	r3, r2, r3
+ 9971 000e 114A     		ldr	r2, .L45+8
+ 9972 0010 9342     		cmp	r3, r2
+ 9973 0012 09D1     		bne	.L44
+ 9974              		.loc 1 544 0 is_stmt 0 discriminator 1
+ 9975 0014 0D4B     		ldr	r3, .L45
+ 9976 0016 1B68     		ldr	r3, [r3, #0]
+ 9977 0018 4FEA0343 		lsl	r3, r3, #16
+ 9978 001c 4FEA1343 		lsr	r3, r3, #16
+ 9979 0020 002B     		cmp	r3, #0
+ 9980 0022 01D1     		bne	.L44
+ 545:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+ 546:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         EEPROMClearSectorMask();
+ 9981              		.loc 1 546 0 is_stmt 1
+ 9982 0024 FFF7FEFF 		bl	EEPROMClearSectorMask
+ 9983              	.L44:
+ 547:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 549:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 550:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Start the mass erase processing
+ 551:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 552:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEDBGME) = EEPROM_MASS_ERASE_KEY | EEPROM_EEDBGME_ME;
+ 9984              		.loc 1 552 0
+ 9985 0028 0B4B     		ldr	r3, .L45+12
+ 9986 002a 0C4A     		ldr	r2, .L45+16
+ 9987 002c 1A60     		str	r2, [r3, #0]
+ 553:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 554:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 555:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Wait for completion.
+ 556:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 557:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     EEPROMWaitForDone();
+ 9988              		.loc 1 557 0
+ 9989 002e FFF7FEFF 		bl	EEPROMWaitForDone
+ 558:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 559:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 560:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Reset the peripheral.  This is required so that all protection
+ 561:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // mechanisms and passwords are reset now that the EEPROM data has been
+ 562:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // scrubbed.
+ 563:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 564:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     SysCtlPeripheralReset(SYSCTL_PERIPH_EEPROM0);
+ 9990              		.loc 1 564 0
+ 9991 0032 0B48     		ldr	r0, .L45+20
+ 9992 0034 FFF7FEFF 		bl	SysCtlPeripheralReset
+ 565:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 566:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 567:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Wait for completion again.
+ 568:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 569:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     SysCtlDelay(2);
+ 9993              		.loc 1 569 0
+ 9994 0038 4FF00200 		mov	r0, #2
+ 9995 003c FFF7FEFF 		bl	SysCtlDelay
+ 570:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     EEPROMWaitForDone();
+ 9996              		.loc 1 570 0
+ 9997 0040 FFF7FEFF 		bl	EEPROMWaitForDone
+ 571:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 572:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 573:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Pass any error codes back to the caller.
+ 574:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 575:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     return(HWREG(EEPROM_EEDONE));
+ 9998              		.loc 1 575 0
+ 9999 0044 074B     		ldr	r3, .L45+24
+ 10000 0046 1B68     		ldr	r3, [r3, #0]
+ 576:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 10001              		.loc 1 576 0
+ 10002 0048 1846     		mov	r0, r3
+ 10003 004a 80BD     		pop	{r7, pc}
+ 10004              	.L46:
+ 10005              		.align	2
+ 10006              	.L45:
+ 10007 004c 00E00F40 		.word	1074782208
+ 10008 0050 0000FF70 		.word	1895759872
+ 10009 0054 00000510 		.word	268763136
+ 10010 0058 80F00A40 		.word	1074458752
+ 10011 005c 01007BE3 		.word	-478478335
+ 10012 0060 005800F0 		.word	-268412928
+ 10013 0064 18F00A40 		.word	1074458648
+ 10014              		.cfi_endproc
+ 10015              	.LFE9:
+ 10017              		.section	.text.EEPROMBlockProtectGet,"ax",%progbits
+ 10018              		.align	2
+ 10019              		.global	EEPROMBlockProtectGet
+ 10020              		.thumb
+ 10021              		.thumb_func
+ 10023              	EEPROMBlockProtectGet:
+ 10024              	.LFB10:
+ 577:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 578:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 579:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Returns the current protection level for an EEPROM block.
+ 581:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 582:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulBlock is the block number for which the protection level is to be
+ 583:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! queried.
+ 584:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 585:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function returns the current protection settings for a given
+ 586:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! EEPROM block.  If block 0 is currently locked, it must be unlocked prior
+ 587:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! to calling this function to query the protection setting for other blocks.
+ 588:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 589:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return Returns one of \b EEPROM_PROT_RW_LRO_URW, \b EEPROM_PROT_NA_LNA_URW
+ 590:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! or \b EEPROM_PROT_RO_LNA_URO optionally OR-ed with
+ 591:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_PROT_SUPERVISOR_ONLY.
+ 592:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 593:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 594:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** unsigned long
+ 595:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMBlockProtectGet(unsigned long ulBlock)
+ 596:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 10025              		.loc 1 596 0
+ 10026              		.cfi_startproc
+ 10027              		@ args = 0, pretend = 0, frame = 8
+ 10028              		@ frame_needed = 1, uses_anonymous_args = 0
+ 10029              		@ link register save eliminated.
+ 10030 0000 80B4     		push	{r7}
+ 10031              	.LCFI25:
+ 10032              		.cfi_def_cfa_offset 4
+ 10033 0002 83B0     		sub	sp, sp, #12
+ 10034              	.LCFI26:
+ 10035              		.cfi_def_cfa_offset 16
+ 10036 0004 00AF     		add	r7, sp, #0
+ 10037              		.cfi_offset 7, -4
+ 10038              	.LCFI27:
+ 10039              		.cfi_def_cfa_register 7
+ 10040 0006 7860     		str	r0, [r7, #4]
+ 597:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 598:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Parameter validity check.
+ 599:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 600:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(ulBlock < BLOCKS_FROM_EESIZE(HWREG(EEPROM_EESIZE)));
+ 601:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 602:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 603:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Set the current block.
+ 604:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 605:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEBLOCK) = ulBlock;
+ 10041              		.loc 1 605 0
+ 10042 0008 054B     		ldr	r3, .L48
+ 10043 000a 7A68     		ldr	r2, [r7, #4]
+ 10044 000c 1A60     		str	r2, [r3, #0]
+ 606:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 607:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 608:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Return the protection flags for this block.
+ 609:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 610:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     return(HWREG(EEPROM_EEPROT));
+ 10045              		.loc 1 610 0
+ 10046 000e 054B     		ldr	r3, .L48+4
+ 10047 0010 1B68     		ldr	r3, [r3, #0]
+ 611:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 10048              		.loc 1 611 0
+ 10049 0012 1846     		mov	r0, r3
+ 10050 0014 07F10C07 		add	r7, r7, #12
+ 10051 0018 BD46     		mov	sp, r7
+ 10052 001a 80BC     		pop	{r7}
+ 10053 001c 7047     		bx	lr
+ 10054              	.L49:
+ 10055 001e 00BF     		.align	2
+ 10056              	.L48:
+ 10057 0020 04F00A40 		.word	1074458628
+ 10058 0024 30F00A40 		.word	1074458672
+ 10059              		.cfi_endproc
+ 10060              	.LFE10:
+ 10062              		.section	.text.EEPROMBlockProtectSet,"ax",%progbits
+ 10063              		.align	2
+ 10064              		.global	EEPROMBlockProtectSet
+ 10065              		.thumb
+ 10066              		.thumb_func
+ 10068              	EEPROMBlockProtectSet:
+ 10069              	.LFB11:
+ 612:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 613:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 614:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 615:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Set the current protection options for an EEPROM block.
+ 616:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 617:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulBlock is the block number for which the protection options are to
+ 618:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! be set.
+ 619:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulProtect consists of one of the values \b EEPROM_PROT_RW_LRO_URW,
+ 620:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_PROT_NA_LNA_URW or \b EEPROM_PROT_RO_LNA_URO optionally ORed with
+ 621:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_PROT_SUPERVISOR_ONLY.
+ 622:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 623:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function sets the protection settings for a given EEPROM block
+ 624:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! assuming no protection settings have previously been written.  Note that
+ 625:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! protection settings applied to block 0 have special meaning and control
+ 626:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! access to the EEPROM peripheral as a whole.  Protection settings applied to
+ 627:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! blocks numbered 1 and above are layered above any protection set on block 0
+ 628:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! such that the effective protection on each block is the logical OR of the
+ 629:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! protection flags set for block 0 and for the target block.  This protocol 
+ 630:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! allows global protection options to be set for the whole device via block 
+ 631:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! 0 and more restrictive protection settings to be set on a block-by-block 
+ 632:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! basis.
+ 633:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 634:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! The protection flags indicate access permissions as follow:
+ 635:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 636:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_PROT_SUPERVISOR_ONLY restricts access to the block to threads
+ 637:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! running in supervisor mode.  If clear, both user and supervisor threads
+ 638:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! can access the block.
+ 639:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 640:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_PROT_RW_LRO_URW provides read/write access to the block if no
+ 641:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! password is set or if a password is set and the block is unlocked.  If the
+ 642:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! block is locked, only read access is permitted.
+ 643:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 644:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_PROT_NA_LNA_URW provides neither read nor write access unless
+ 645:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! a password is set and the block is unlocked.  If the block is unlocked,
+ 646:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! both read and write access are permitted.
+ 647:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 648:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_PROT_RO_LNA_URO provides read access to the block if no password
+ 649:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! is set or if a password is set and the block is unlocked.  If the block is
+ 650:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! password protected and locked, neither read nor write access is permitted.
+ 651:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 652:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return Returns a logical OR combination of \b EEPROM_RC_INVPL,
+ 653:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_RC_WRBUSY, \b EEPROM_RC_NOPERM, \b EEPROM_RC_WKCOPY,
+ 654:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_RC_WKERASE, and \b EEPROM_RC_WORKING to indicate status and error
+ 655:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! conditions.
+ 656:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 657:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 658:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** unsigned long
+ 659:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMBlockProtectSet(unsigned long ulBlock, unsigned long ulProtect)
+ 660:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 10070              		.loc 1 660 0
+ 10071              		.cfi_startproc
+ 10072              		@ args = 0, pretend = 0, frame = 8
+ 10073              		@ frame_needed = 1, uses_anonymous_args = 0
+ 10074              		@ link register save eliminated.
+ 10075 0000 80B4     		push	{r7}
+ 10076              	.LCFI28:
+ 10077              		.cfi_def_cfa_offset 4
+ 10078 0002 83B0     		sub	sp, sp, #12
+ 10079              	.LCFI29:
+ 10080              		.cfi_def_cfa_offset 16
+ 10081 0004 00AF     		add	r7, sp, #0
+ 10082              		.cfi_offset 7, -4
+ 10083              	.LCFI30:
+ 10084              		.cfi_def_cfa_register 7
+ 10085 0006 7860     		str	r0, [r7, #4]
+ 10086 0008 3960     		str	r1, [r7, #0]
+ 661:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 662:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Parameter validity check.
+ 663:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 664:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(ulBlock < BLOCKS_FROM_EESIZE(HWREG(EEPROM_EESIZE)));
+ 665:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 666:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 667:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Set the current block.
+ 668:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 669:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEBLOCK) = ulBlock;
+ 10087              		.loc 1 669 0
+ 10088 000a 0B4B     		ldr	r3, .L52
+ 10089 000c 7A68     		ldr	r2, [r7, #4]
+ 10090 000e 1A60     		str	r2, [r3, #0]
+ 670:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 671:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 672:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Set the protection options for this block.
+ 673:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 674:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEPROT) = ulProtect;
+ 10091              		.loc 1 674 0
+ 10092 0010 0A4B     		ldr	r3, .L52+4
+ 10093 0012 3A68     		ldr	r2, [r7, #0]
+ 10094 0014 1A60     		str	r2, [r3, #0]
+ 675:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 676:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 677:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Wait for the write to complete.
+ 678:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 679:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     while(HWREG(EEPROM_EEDONE) & EEPROM_EEDONE_WORKING)
+ 10095              		.loc 1 679 0
+ 10096 0016 00BF     		nop
+ 10097              	.L51:
+ 10098              		.loc 1 679 0 is_stmt 0 discriminator 1
+ 10099 0018 094B     		ldr	r3, .L52+8
+ 10100 001a 1B68     		ldr	r3, [r3, #0]
+ 10101 001c 03F00103 		and	r3, r3, #1
+ 10102 0020 DBB2     		uxtb	r3, r3
+ 10103 0022 002B     		cmp	r3, #0
+ 10104 0024 F8D1     		bne	.L51
+ 680:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+ 681:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 682:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Still working.
+ 683:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 684:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+ 685:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 686:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 687:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Pass any error codes back to the caller.
+ 688:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 689:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     return(HWREG(EEPROM_EEDONE));
+ 10105              		.loc 1 689 0 is_stmt 1
+ 10106 0026 064B     		ldr	r3, .L52+8
+ 10107 0028 1B68     		ldr	r3, [r3, #0]
+ 690:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 10108              		.loc 1 690 0
+ 10109 002a 1846     		mov	r0, r3
+ 10110 002c 07F10C07 		add	r7, r7, #12
+ 10111 0030 BD46     		mov	sp, r7
+ 10112 0032 80BC     		pop	{r7}
+ 10113 0034 7047     		bx	lr
+ 10114              	.L53:
+ 10115 0036 00BF     		.align	2
+ 10116              	.L52:
+ 10117 0038 04F00A40 		.word	1074458628
+ 10118 003c 30F00A40 		.word	1074458672
+ 10119 0040 18F00A40 		.word	1074458648
+ 10120              		.cfi_endproc
+ 10121              	.LFE11:
+ 10123              		.section	.text.EEPROMBlockPasswordSet,"ax",%progbits
+ 10124              		.align	2
+ 10125              		.global	EEPROMBlockPasswordSet
+ 10126              		.thumb
+ 10127              		.thumb_func
+ 10129              	EEPROMBlockPasswordSet:
+ 10130              	.LFB12:
+ 691:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 692:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 693:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 694:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Sets the password used to protect an EEPROM block.
+ 695:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 696:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulBlock is the EEPROM block number for which the password is to be
+ 697:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! set.
+ 698:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param pulPassword points to an array of unsigned long values comprising
+ 699:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! the password to set.  Each element may be any 32-bit value other than
+ 700:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! 0xFFFFFFFF. This array must contain the number of elements given by the
+ 701:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b ulCount parameter.
+ 702:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulCount provides the number of unsigned longs in the \b ulPassword.
+ 703:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Valid values are 1, 2 and 3.
+ 704:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 705:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function allows the password used to unlock an EEPROM block to be
+ 706:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! set.  Valid passwords may be either 32, 64 or 96 bits comprising words
+ 707:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! with any value other than 0xFFFFFFFF. The password may only be set once.
+ 708:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Any further attempts to set the password result in an error.  Once the
+ 709:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! password is set, the block remains unlocked until EEPROMBlockLock() is
+ 710:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! called for that block or block 0, or a reset occurs.
+ 711:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 712:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! If a password is set on block 0, this affects locking of the peripheral as
+ 713:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! a whole. When block 0 is locked, all other EEPROM blocks are inaccessible
+ 714:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! until block 0 is unlocked.  Once block 0 is unlocked, other blocks
+ 715:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! become accessible according to any passwords set on those blocks and the
+ 716:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! protection set for that block via a call to EEPROMBlockProtectSet().
+ 717:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 718:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return Returns a logical OR combination of \b EEPROM_RC_INVPL,
+ 719:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_RC_WRBUSY, \b EEPROM_RC_NOPERM, \b EEPROM_RC_WKCOPY,
+ 720:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_RC_WKERASE, and \b EEPROM_RC_WORKING to indicate status and error
+ 721:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! conditions.
+ 722:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 723:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 724:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** unsigned long
+ 725:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMBlockPasswordSet(unsigned long ulBlock, unsigned long *pulPassword,
+ 726:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****                        unsigned long ulCount)
+ 727:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 10131              		.loc 1 727 0
+ 10132              		.cfi_startproc
+ 10133              		@ args = 0, pretend = 0, frame = 24
+ 10134              		@ frame_needed = 1, uses_anonymous_args = 0
+ 10135              		@ link register save eliminated.
+ 10136 0000 80B4     		push	{r7}
+ 10137              	.LCFI31:
+ 10138              		.cfi_def_cfa_offset 4
+ 10139 0002 87B0     		sub	sp, sp, #28
+ 10140              	.LCFI32:
+ 10141              		.cfi_def_cfa_offset 32
+ 10142 0004 00AF     		add	r7, sp, #0
+ 10143              		.cfi_offset 7, -4
+ 10144              	.LCFI33:
+ 10145              		.cfi_def_cfa_register 7
+ 10146 0006 F860     		str	r0, [r7, #12]
+ 10147 0008 B960     		str	r1, [r7, #8]
+ 10148 000a 7A60     		str	r2, [r7, #4]
+ 728:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     unsigned long ulReg;
+ 729:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 730:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 731:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Check parameters in a debug build.
+ 732:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 733:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(pulPassword);
+ 734:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(ulBlock < BLOCKS_FROM_EESIZE(HWREG(EEPROM_EESIZE)));
+ 735:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(ulCount <= 3);
+ 736:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 737:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 738:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Set the block number whose password we are about to write.
+ 739:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 740:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEBLOCK) = ulBlock;
+ 10149              		.loc 1 740 0
+ 10150 000c 144B     		ldr	r3, .L58
+ 10151 000e FA68     		ldr	r2, [r7, #12]
+ 10152 0010 1A60     		str	r2, [r3, #0]
+ 741:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 742:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 743:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Start with the first password word.
+ 744:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 745:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ulReg = EEPROM_EEPASS0;
+ 10153              		.loc 1 745 0
+ 10154 0012 144B     		ldr	r3, .L58+4
+ 10155 0014 7B61     		str	r3, [r7, #20]
+ 746:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 747:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 748:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Write the password.
+ 749:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 750:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     while(ulCount)
+ 10156              		.loc 1 750 0
+ 10157 0016 17E0     		b	.L55
+ 10158              	.L57:
+ 751:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+ 752:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 753:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Start the process of writing the password.
+ 754:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 755:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         HWREG(ulReg) = *pulPassword;
+ 10159              		.loc 1 755 0
+ 10160 0018 7B69     		ldr	r3, [r7, #20]
+ 10161 001a BA68     		ldr	r2, [r7, #8]
+ 10162 001c 1268     		ldr	r2, [r2, #0]
+ 10163 001e 1A60     		str	r2, [r3, #0]
+ 756:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 757:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 758:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Update values in preparation for writing the next word.
+ 759:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 760:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         pulPassword++;
+ 10164              		.loc 1 760 0
+ 10165 0020 BB68     		ldr	r3, [r7, #8]
+ 10166 0022 03F10403 		add	r3, r3, #4
+ 10167 0026 BB60     		str	r3, [r7, #8]
+ 761:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         ulReg += 4;
+ 10168              		.loc 1 761 0
+ 10169 0028 7B69     		ldr	r3, [r7, #20]
+ 10170 002a 03F10403 		add	r3, r3, #4
+ 10171 002e 7B61     		str	r3, [r7, #20]
+ 762:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         ulCount--;
+ 10172              		.loc 1 762 0
+ 10173 0030 7B68     		ldr	r3, [r7, #4]
+ 10174 0032 03F1FF33 		add	r3, r3, #-1
+ 10175 0036 7B60     		str	r3, [r7, #4]
+ 763:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 764:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 765:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // Wait for the last word write to complete or an error to be reported.
+ 766:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+ 767:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         while(HWREG(EEPROM_EEDONE) & EEPROM_EEDONE_WORKING)
+ 10176              		.loc 1 767 0
+ 10177 0038 00BF     		nop
+ 10178              	.L56:
+ 10179              		.loc 1 767 0 is_stmt 0 discriminator 1
+ 10180 003a 0B4B     		ldr	r3, .L58+8
+ 10181 003c 1B68     		ldr	r3, [r3, #0]
+ 10182 003e 03F00103 		and	r3, r3, #1
+ 10183 0042 DBB2     		uxtb	r3, r3
+ 10184 0044 002B     		cmp	r3, #0
+ 10185 0046 F8D1     		bne	.L56
+ 10186              	.L55:
+ 750:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     while(ulCount)
+ 10187              		.loc 1 750 0 is_stmt 1 discriminator 1
+ 10188 0048 7B68     		ldr	r3, [r7, #4]
+ 10189 004a 002B     		cmp	r3, #0
+ 10190 004c E4D1     		bne	.L57
+ 768:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         {
+ 769:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             //
+ 770:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             // Still working.
+ 771:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****             //
+ 772:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         }
+ 773:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+ 774:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 775:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 776:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Return the final write status.
+ 777:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 778:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     return(HWREG(EEPROM_EEDONE));
+ 10191              		.loc 1 778 0
+ 10192 004e 064B     		ldr	r3, .L58+8
+ 10193 0050 1B68     		ldr	r3, [r3, #0]
+ 779:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 10194              		.loc 1 779 0
+ 10195 0052 1846     		mov	r0, r3
+ 10196 0054 07F11C07 		add	r7, r7, #28
+ 10197 0058 BD46     		mov	sp, r7
+ 10198 005a 80BC     		pop	{r7}
+ 10199 005c 7047     		bx	lr
+ 10200              	.L59:
+ 10201 005e 00BF     		.align	2
+ 10202              	.L58:
+ 10203 0060 04F00A40 		.word	1074458628
+ 10204 0064 34F00A40 		.word	1074458676
+ 10205 0068 18F00A40 		.word	1074458648
+ 10206              		.cfi_endproc
+ 10207              	.LFE12:
+ 10209              		.section	.text.EEPROMBlockLock,"ax",%progbits
+ 10210              		.align	2
+ 10211              		.global	EEPROMBlockLock
+ 10212              		.thumb
+ 10213              		.thumb_func
+ 10215              	EEPROMBlockLock:
+ 10216              	.LFB13:
+ 780:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 781:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 782:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 783:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Locks a password-protected EEPROM block.
+ 784:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 785:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulBlock is the EEPROM block number which is to be locked.
+ 786:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 787:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function locks an EEPROM block that has previously been protected by
+ 788:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! writing a password.  Access to the block once it is locked is determined
+ 789:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! by the protection settings applied via a previous call to the
+ 790:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! EEPROMBlockProtectSet() function.  If no password has previously been set
+ 791:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! for the block, this function has no effect.
+ 792:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 793:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Locking block 0 has the effect of making all other blocks in the EEPROM
+ 794:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! inaccessible.
+ 795:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 796:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return Returns the lock state for the block on exit, 1 if unlocked (as
+ 797:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! would be the case if no password was set) or 0 if locked.
+ 798:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 799:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 800:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** unsigned long
+ 801:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMBlockLock(unsigned long ulBlock)
+ 802:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 10217              		.loc 1 802 0
+ 10218              		.cfi_startproc
+ 10219              		@ args = 0, pretend = 0, frame = 8
+ 10220              		@ frame_needed = 1, uses_anonymous_args = 0
+ 10221              		@ link register save eliminated.
+ 10222 0000 80B4     		push	{r7}
+ 10223              	.LCFI34:
+ 10224              		.cfi_def_cfa_offset 4
+ 10225 0002 83B0     		sub	sp, sp, #12
+ 10226              	.LCFI35:
+ 10227              		.cfi_def_cfa_offset 16
+ 10228 0004 00AF     		add	r7, sp, #0
+ 10229              		.cfi_offset 7, -4
+ 10230              	.LCFI36:
+ 10231              		.cfi_def_cfa_register 7
+ 10232 0006 7860     		str	r0, [r7, #4]
+ 803:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 804:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Check parameters in a debug build.
+ 805:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 806:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(ulBlock < BLOCKS_FROM_EESIZE(HWREG(EEPROM_EESIZE)));
+ 807:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 808:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 809:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Select the block we are going to lock.
+ 810:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 811:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEBLOCK) = ulBlock;
+ 10233              		.loc 1 811 0
+ 10234 0008 074B     		ldr	r3, .L61
+ 10235 000a 7A68     		ldr	r2, [r7, #4]
+ 10236 000c 1A60     		str	r2, [r3, #0]
+ 812:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 813:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 814:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Lock the block.
+ 815:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 816:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEUNLOCK) = 0xFFFFFFFF;
+ 10237              		.loc 1 816 0
+ 10238 000e 074B     		ldr	r3, .L61+4
+ 10239 0010 4FF0FF32 		mov	r2, #-1
+ 10240 0014 1A60     		str	r2, [r3, #0]
+ 817:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 818:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 819:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Return the current lock state.
+ 820:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 821:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     return(HWREG(EEPROM_EEUNLOCK));
+ 10241              		.loc 1 821 0
+ 10242 0016 054B     		ldr	r3, .L61+4
+ 10243 0018 1B68     		ldr	r3, [r3, #0]
+ 822:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 10244              		.loc 1 822 0
+ 10245 001a 1846     		mov	r0, r3
+ 10246 001c 07F10C07 		add	r7, r7, #12
+ 10247 0020 BD46     		mov	sp, r7
+ 10248 0022 80BC     		pop	{r7}
+ 10249 0024 7047     		bx	lr
+ 10250              	.L62:
+ 10251 0026 00BF     		.align	2
+ 10252              	.L61:
+ 10253 0028 04F00A40 		.word	1074458628
+ 10254 002c 20F00A40 		.word	1074458656
+ 10255              		.cfi_endproc
+ 10256              	.LFE13:
+ 10258              		.section	.text.EEPROMBlockUnlock,"ax",%progbits
+ 10259              		.align	2
+ 10260              		.global	EEPROMBlockUnlock
+ 10261              		.thumb
+ 10262              		.thumb_func
+ 10264              	EEPROMBlockUnlock:
+ 10265              	.LFB14:
+ 823:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 824:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 825:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 826:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Unlocks a password-protected EEPROM block.
+ 827:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 828:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulBlock is the EEPROM block number which is to be unlocked.
+ 829:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param pulPassword points to an array of unsigned long values containing
+ 830:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! the password for the blockt.  Each element must match the password
+ 831:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! originally set via a call to EEPROMBlockPasswordSet().
+ 832:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulCount provides the number of unsigned longs in the \b pulPassword
+ 833:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! array and must match the value originally passed to
+ 834:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! EEPROMBlockPasswordSet().  Valid values are 1, 2 and 3.
+ 835:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 836:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function unlocks an EEPROM block that has previously been protected by
+ 837:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! writing a password.  Access to the block once it is unlocked is determined
+ 838:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! by the protection settings applied via a previous call to the
+ 839:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! EEPROMBlockProtectSet() function.
+ 840:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 841:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! To successfully unlock an EEPROM block, the password provided must match
+ 842:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! the password provided on the original call to EEPROMBlockPasswordSet().  If
+ 843:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! an incorrect password is provided, the block remains locked.
+ 844:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 845:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Unlocking block 0 has the effect of making all other blocks in the device
+ 846:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! accessible according to their own access protection settings.  When block
+ 847:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! 0 is locked, all other EEPROM blocks are inaccessible.
+ 848:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 849:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return Returns the lock state for the block on exit, 1 if unlocked or 0 if
+ 850:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! locked.
+ 851:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 852:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 853:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** unsigned long
+ 854:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMBlockUnlock(unsigned long ulBlock, unsigned long *pulPassword,
+ 855:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****                   unsigned long ulCount)
+ 856:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 10266              		.loc 1 856 0
+ 10267              		.cfi_startproc
+ 10268              		@ args = 0, pretend = 0, frame = 16
+ 10269              		@ frame_needed = 1, uses_anonymous_args = 0
+ 10270              		@ link register save eliminated.
+ 10271 0000 80B4     		push	{r7}
+ 10272              	.LCFI37:
+ 10273              		.cfi_def_cfa_offset 4
+ 10274 0002 85B0     		sub	sp, sp, #20
+ 10275              	.LCFI38:
+ 10276              		.cfi_def_cfa_offset 24
+ 10277 0004 00AF     		add	r7, sp, #0
+ 10278              		.cfi_offset 7, -4
+ 10279              	.LCFI39:
+ 10280              		.cfi_def_cfa_register 7
+ 10281 0006 F860     		str	r0, [r7, #12]
+ 10282 0008 B960     		str	r1, [r7, #8]
+ 10283 000a 7A60     		str	r2, [r7, #4]
+ 857:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 858:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Check parameters in a debug build.
+ 859:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 860:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(pulPassword);
+ 861:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(ulBlock < BLOCKS_FROM_EESIZE(HWREG(EEPROM_EESIZE)));
+ 862:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(ulCount <= 3);
+ 863:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 864:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 865:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Set the block that we are trying to unlock.
+ 866:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 867:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEBLOCK) = ulBlock;
+ 10284              		.loc 1 867 0
+ 10285 000c 134B     		ldr	r3, .L66
+ 10286 000e FA68     		ldr	r2, [r7, #12]
+ 10287 0010 1A60     		str	r2, [r3, #0]
+ 868:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 869:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 870:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Write the unlock register with 0xFFFFFFFF to reset the unlock
+ 871:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // sequence just in case a short password was previously used to try to
+ 872:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // unlock the block.
+ 873:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 874:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEUNLOCK) = 0xFFFFFFFF;
+ 10288              		.loc 1 874 0
+ 10289 0012 134B     		ldr	r3, .L66+4
+ 10290 0014 4FF0FF32 		mov	r2, #-1
+ 10291 0018 1A60     		str	r2, [r3, #0]
+ 875:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 876:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 877:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // We need to write the password words in the opposite order when unlocking
+ 878:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // compared to locking so start at the end of the array.
+ 879:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 880:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     pulPassword += (ulCount - 1);
+ 10292              		.loc 1 880 0
+ 10293 001a 7B68     		ldr	r3, [r7, #4]
+ 10294 001c 03F1FF33 		add	r3, r3, #-1
+ 10295 0020 4FEA8303 		lsl	r3, r3, #2
+ 10296 0024 BA68     		ldr	r2, [r7, #8]
+ 10297 0026 D318     		adds	r3, r2, r3
+ 10298 0028 BB60     		str	r3, [r7, #8]
+ 881:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 882:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 883:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Write the supplied password to unlock the block.
+ 884:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 885:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     while(ulCount)
+ 10299              		.loc 1 885 0
+ 10300 002a 0BE0     		b	.L64
+ 10301              	.L65:
+ 886:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+ 887:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         HWREG(EEPROM_EEUNLOCK) = *pulPassword--;
+ 10302              		.loc 1 887 0
+ 10303 002c 0C4B     		ldr	r3, .L66+4
+ 10304 002e BA68     		ldr	r2, [r7, #8]
+ 10305 0030 1268     		ldr	r2, [r2, #0]
+ 10306 0032 1A60     		str	r2, [r3, #0]
+ 10307 0034 BB68     		ldr	r3, [r7, #8]
+ 10308 0036 A3F10403 		sub	r3, r3, #4
+ 10309 003a BB60     		str	r3, [r7, #8]
+ 888:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         ulCount--;
+ 10310              		.loc 1 888 0
+ 10311 003c 7B68     		ldr	r3, [r7, #4]
+ 10312 003e 03F1FF33 		add	r3, r3, #-1
+ 10313 0042 7B60     		str	r3, [r7, #4]
+ 10314              	.L64:
+ 885:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     while(ulCount)
+ 10315              		.loc 1 885 0 discriminator 1
+ 10316 0044 7B68     		ldr	r3, [r7, #4]
+ 10317 0046 002B     		cmp	r3, #0
+ 10318 0048 F0D1     		bne	.L65
+ 889:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+ 890:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 891:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 892:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Let the caller know if their password worked.
+ 893:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 894:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     return(HWREG(EEPROM_EEUNLOCK));
+ 10319              		.loc 1 894 0
+ 10320 004a 054B     		ldr	r3, .L66+4
+ 10321 004c 1B68     		ldr	r3, [r3, #0]
+ 895:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 10322              		.loc 1 895 0
+ 10323 004e 1846     		mov	r0, r3
+ 10324 0050 07F11407 		add	r7, r7, #20
+ 10325 0054 BD46     		mov	sp, r7
+ 10326 0056 80BC     		pop	{r7}
+ 10327 0058 7047     		bx	lr
+ 10328              	.L67:
+ 10329 005a 00BF     		.align	2
+ 10330              	.L66:
+ 10331 005c 04F00A40 		.word	1074458628
+ 10332 0060 20F00A40 		.word	1074458656
+ 10333              		.cfi_endproc
+ 10334              	.LFE14:
+ 10336              		.section	.text.EEPROMBlockHide,"ax",%progbits
+ 10337              		.align	2
+ 10338              		.global	EEPROMBlockHide
+ 10339              		.thumb
+ 10340              		.thumb_func
+ 10342              	EEPROMBlockHide:
+ 10343              	.LFB15:
+ 896:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 897:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 898:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 899:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Hides an EEPROM block until the next reset.
+ 900:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 901:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulBlock is the EEPROM block number which is to be hidden.
+ 902:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 903:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function hides an EEPROM block other than block 0.  Once hidden, a
+ 904:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! block is completely inaccessible until the next reset.  This mechanism
+ 905:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! allows initialization code to have access to data which is to be hidden
+ 906:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! from the rest of the application.  Unlike applications using passwords, an
+ 907:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! application making using of block hiding need not contain any embedded
+ 908:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! passwords which could be found through disassembly.
+ 909:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 910:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return None.
+ 911:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 912:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 913:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** void
+ 914:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMBlockHide(unsigned long ulBlock)
+ 915:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 10344              		.loc 1 915 0
+ 10345              		.cfi_startproc
+ 10346              		@ args = 0, pretend = 0, frame = 8
+ 10347              		@ frame_needed = 1, uses_anonymous_args = 0
+ 10348              		@ link register save eliminated.
+ 10349 0000 80B4     		push	{r7}
+ 10350              	.LCFI40:
+ 10351              		.cfi_def_cfa_offset 4
+ 10352 0002 83B0     		sub	sp, sp, #12
+ 10353              	.LCFI41:
+ 10354              		.cfi_def_cfa_offset 16
+ 10355 0004 00AF     		add	r7, sp, #0
+ 10356              		.cfi_offset 7, -4
+ 10357              	.LCFI42:
+ 10358              		.cfi_def_cfa_register 7
+ 10359 0006 7860     		str	r0, [r7, #4]
+ 916:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 917:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Check parameters in a debug build.
+ 918:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 919:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(!ulBlock);
+ 920:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(ulBlock < BLOCKS_FROM_EESIZE(HWREG(EEPROM_EESIZE)));
+ 921:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 922:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 923:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Hide the requested block.
+ 924:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 925:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEHIDE) = (1 << ulBlock);
+ 10360              		.loc 1 925 0
+ 10361 0008 054B     		ldr	r3, .L69
+ 10362 000a 7A68     		ldr	r2, [r7, #4]
+ 10363 000c 4FF00101 		mov	r1, #1
+ 10364 0010 01FA02F2 		lsl	r2, r1, r2
+ 10365 0014 1A60     		str	r2, [r3, #0]
+ 926:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 10366              		.loc 1 926 0
+ 10367 0016 07F10C07 		add	r7, r7, #12
+ 10368 001a BD46     		mov	sp, r7
+ 10369 001c 80BC     		pop	{r7}
+ 10370 001e 7047     		bx	lr
+ 10371              	.L70:
+ 10372              		.align	2
+ 10373              	.L69:
+ 10374 0020 50F00A40 		.word	1074458704
+ 10375              		.cfi_endproc
+ 10376              	.LFE15:
+ 10378              		.section	.text.EEPROMIntEnable,"ax",%progbits
+ 10379              		.align	2
+ 10380              		.global	EEPROMIntEnable
+ 10381              		.thumb
+ 10382              		.thumb_func
+ 10384              	EEPROMIntEnable:
+ 10385              	.LFB16:
+ 927:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 928:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 929:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 930:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Enables the EEPROM interrupt.
+ 931:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 932:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulIntFlags indicates which EEPROM interrupt source to enable.  This
+ 933:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! must be \b EEPROM_INT_PROGRAM currently.
+ 934:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 935:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function enables the EEPROM interrupt.  When enabled, an interrupt
+ 936:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! is generated when any EEPROM write or erase operation completes.  The
+ 937:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! EEPROM peripheral shares a single interrupt vector with the flash memory
+ 938:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! subsystem, \b INT_FLASH.  This function is provided as a convenience but
+ 939:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! the EEPROM interrupt can also be enabled using a call to FlashIntEnable()
+ 940:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! passing FLASH_INT_EEPROM in the \b ulIntFlags parameter.
+ 941:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 942:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return None.
+ 943:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 944:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 945:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** void
+ 946:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMIntEnable(unsigned long ulIntFlags)
+ 947:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 10386              		.loc 1 947 0
+ 10387              		.cfi_startproc
+ 10388              		@ args = 0, pretend = 0, frame = 8
+ 10389              		@ frame_needed = 1, uses_anonymous_args = 0
+ 10390              		@ link register save eliminated.
+ 10391 0000 80B4     		push	{r7}
+ 10392              	.LCFI43:
+ 10393              		.cfi_def_cfa_offset 4
+ 10394 0002 83B0     		sub	sp, sp, #12
+ 10395              	.LCFI44:
+ 10396              		.cfi_def_cfa_offset 16
+ 10397 0004 00AF     		add	r7, sp, #0
+ 10398              		.cfi_offset 7, -4
+ 10399              	.LCFI45:
+ 10400              		.cfi_def_cfa_register 7
+ 10401 0006 7860     		str	r0, [r7, #4]
+ 948:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 949:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Look for valid interrupt sources.
+ 950:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 951:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(ulIntFlags == EEPROM_INT_PROGRAM);
+ 952:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 953:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 954:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Enable interrupts from the EEPROM module.
+ 955:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 956:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEINT) |= EEPROM_EEINT_INT;
+ 10402              		.loc 1 956 0
+ 10403 0008 084B     		ldr	r3, .L72
+ 10404 000a 084A     		ldr	r2, .L72
+ 10405 000c 1268     		ldr	r2, [r2, #0]
+ 10406 000e 42F00102 		orr	r2, r2, #1
+ 10407 0012 1A60     		str	r2, [r3, #0]
+ 957:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 958:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 959:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Enable the EEPROM interrupt in the flash controller module.
+ 960:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 961:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(FLASH_FCIM) |= FLASH_FCRIS_ERIS;
+ 10408              		.loc 1 961 0
+ 10409 0014 064B     		ldr	r3, .L72+4
+ 10410 0016 064A     		ldr	r2, .L72+4
+ 10411 0018 1268     		ldr	r2, [r2, #0]
+ 10412 001a 42F00402 		orr	r2, r2, #4
+ 10413 001e 1A60     		str	r2, [r3, #0]
+ 962:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 10414              		.loc 1 962 0
+ 10415 0020 07F10C07 		add	r7, r7, #12
+ 10416 0024 BD46     		mov	sp, r7
+ 10417 0026 80BC     		pop	{r7}
+ 10418 0028 7047     		bx	lr
+ 10419              	.L73:
+ 10420 002a 00BF     		.align	2
+ 10421              	.L72:
+ 10422 002c 40F00A40 		.word	1074458688
+ 10423 0030 10D00F40 		.word	1074778128
+ 10424              		.cfi_endproc
+ 10425              	.LFE16:
+ 10427              		.section	.text.EEPROMIntDisable,"ax",%progbits
+ 10428              		.align	2
+ 10429              		.global	EEPROMIntDisable
+ 10430              		.thumb
+ 10431              		.thumb_func
+ 10433              	EEPROMIntDisable:
+ 10434              	.LFB17:
+ 963:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 964:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 965:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+ 966:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Disables the EEPROM interrupt.
+ 967:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 968:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulIntFlags indicates which EEPROM interrupt source to disable.  This
+ 969:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! must be \b EEPROM_INT_PROGRAM currently.
+ 970:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 971:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function disables the EEPROM interrupt and prevents calls to the
+ 972:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! interrupt vector when any EEPROM write or erase operation completes.  The
+ 973:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! EEPROM peripheral shares a single interrupt vector with the flash memory
+ 974:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! subsystem, \e INT_FLASH.    This function is provided as a convenience but
+ 975:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! the EEPROM interrupt can also be disabled using a call to FlashIntDisable()
+ 976:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! passing FLASH_INT_EEPROM in the \b ulIntFlags parameter.
+ 977:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 978:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return None.
+ 979:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+ 980:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+ 981:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** void
+ 982:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMIntDisable(unsigned long ulIntFlags)
+ 983:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 10435              		.loc 1 983 0
+ 10436              		.cfi_startproc
+ 10437              		@ args = 0, pretend = 0, frame = 8
+ 10438              		@ frame_needed = 1, uses_anonymous_args = 0
+ 10439              		@ link register save eliminated.
+ 10440 0000 80B4     		push	{r7}
+ 10441              	.LCFI46:
+ 10442              		.cfi_def_cfa_offset 4
+ 10443 0002 83B0     		sub	sp, sp, #12
+ 10444              	.LCFI47:
+ 10445              		.cfi_def_cfa_offset 16
+ 10446 0004 00AF     		add	r7, sp, #0
+ 10447              		.cfi_offset 7, -4
+ 10448              	.LCFI48:
+ 10449              		.cfi_def_cfa_register 7
+ 10450 0006 7860     		str	r0, [r7, #4]
+ 984:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 985:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Look for valid interrupt sources.
+ 986:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 987:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     ASSERT(ulIntFlags == EEPROM_INT_PROGRAM);
+ 988:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 989:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 990:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Disable the EEPROM interrupt in the flash controller module.
+ 991:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 992:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(FLASH_FCIM) &= ~FLASH_FCIM_EMASK;
+ 10451              		.loc 1 992 0
+ 10452 0008 084B     		ldr	r3, .L75
+ 10453 000a 084A     		ldr	r2, .L75
+ 10454 000c 1268     		ldr	r2, [r2, #0]
+ 10455 000e 22F00402 		bic	r2, r2, #4
+ 10456 0012 1A60     		str	r2, [r3, #0]
+ 993:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+ 994:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 995:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Disable interrupts from the EEPROM module.
+ 996:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+ 997:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(EEPROM_EEINT) &= ~EEPROM_EEINT_INT;
+ 10457              		.loc 1 997 0
+ 10458 0014 064B     		ldr	r3, .L75+4
+ 10459 0016 064A     		ldr	r2, .L75+4
+ 10460 0018 1268     		ldr	r2, [r2, #0]
+ 10461 001a 22F00102 		bic	r2, r2, #1
+ 10462 001e 1A60     		str	r2, [r3, #0]
+ 998:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 10463              		.loc 1 998 0
+ 10464 0020 07F10C07 		add	r7, r7, #12
+ 10465 0024 BD46     		mov	sp, r7
+ 10466 0026 80BC     		pop	{r7}
+ 10467 0028 7047     		bx	lr
+ 10468              	.L76:
+ 10469 002a 00BF     		.align	2
+ 10470              	.L75:
+ 10471 002c 10D00F40 		.word	1074778128
+ 10472 0030 40F00A40 		.word	1074458688
+ 10473              		.cfi_endproc
+ 10474              	.LFE17:
+ 10476              		.section	.text.EEPROMIntStatus,"ax",%progbits
+ 10477              		.align	2
+ 10478              		.global	EEPROMIntStatus
+ 10479              		.thumb
+ 10480              		.thumb_func
+ 10482              	EEPROMIntStatus:
+ 10483              	.LFB18:
+ 999:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+1000:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+1001:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+1002:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Reports the state of the EEPROM interrupt.
+1003:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+1004:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param bMasked determines whether the masked or unmasked state of the
+1005:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! interrupt is to be returned. If bMasked is \e true, the masked state is
+1006:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! returned, otherwise the unmasked state is returned.
+1007:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+1008:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function allows an application to query the state of the EEPROM
+1009:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! interrupt.  If active, the interrupt may be cleared by calling
+1010:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! EEPROMIntClear().
+1011:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+1012:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return Returns \b EEPROM_INT_PROGRAM if an interrupt is being signaled or
+1013:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! 0 otherwise.
+1014:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+1015:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+1016:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** unsigned long
+1017:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMIntStatus(tBoolean bMasked)
+1018:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 10484              		.loc 1 1018 0
+ 10485              		.cfi_startproc
+ 10486              		@ args = 0, pretend = 0, frame = 8
+ 10487              		@ frame_needed = 1, uses_anonymous_args = 0
+ 10488              		@ link register save eliminated.
+ 10489 0000 80B4     		push	{r7}
+ 10490              	.LCFI49:
+ 10491              		.cfi_def_cfa_offset 4
+ 10492 0002 83B0     		sub	sp, sp, #12
+ 10493              	.LCFI50:
+ 10494              		.cfi_def_cfa_offset 16
+ 10495 0004 00AF     		add	r7, sp, #0
+ 10496              		.cfi_offset 7, -4
+ 10497              	.LCFI51:
+ 10498              		.cfi_def_cfa_register 7
+ 10499 0006 0346     		mov	r3, r0
+ 10500 0008 FB71     		strb	r3, [r7, #7]
+1019:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     if(bMasked)
+ 10501              		.loc 1 1019 0
+ 10502 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 10503 000c 002B     		cmp	r3, #0
+ 10504 000e 04D0     		beq	.L78
+1020:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+1021:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+1022:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // If asked for the masked interrupt status, we check to see if the
+1023:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // relevant interrupt is pending in the flash controller then return
+1024:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // the appropriate EEPROM flag if it is.
+1025:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+1026:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         return((HWREG(FLASH_FCMISC) & FLASH_FCMISC_EMISC) ?
+ 10505              		.loc 1 1026 0
+ 10506 0010 0B4B     		ldr	r3, .L82
+ 10507 0012 1B68     		ldr	r3, [r3, #0]
+ 10508 0014 03F00403 		and	r3, r3, #4
+ 10509 0018 0BE0     		b	.L79
+ 10510              	.L78:
+1027:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****                 EEPROM_INT_PROGRAM : 0);
+1028:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+1029:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     else
+1030:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+1031:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+1032:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // If asked for the unmasked interrupt status, infer that an interrupt
+1033:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // is pending if the WORKING bit of the EEDONE register is clear.  The
+1034:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // actual interrupt fires on the high to low transition of this bit
+1035:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // but we don't have access to an unmasked interrupt status for the
+1036:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // EEPROM because it's handled via the flash controller so we have to
+1037:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         // make do with this instead.
+1038:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         //
+1039:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         return((HWREG(EEPROM_EEDONE) & EEPROM_EEDONE_WORKING) ?
+ 10511              		.loc 1 1039 0
+ 10512 001a 0A4B     		ldr	r3, .L82+4
+ 10513 001c 1B68     		ldr	r3, [r3, #0]
+ 10514 001e 03F00103 		and	r3, r3, #1
+ 10515 0022 DBB2     		uxtb	r3, r3
+ 10516 0024 002B     		cmp	r3, #0
+ 10517 0026 02D0     		beq	.L80
+ 10518              		.loc 1 1039 0 is_stmt 0 discriminator 1
+ 10519 0028 4FF00003 		mov	r3, #0
+ 10520 002c 01E0     		b	.L81
+ 10521              	.L80:
+ 10522              		.loc 1 1039 0 discriminator 2
+ 10523 002e 4FF00403 		mov	r3, #4
+ 10524              	.L81:
+ 10525              	.L79:
+1040:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****                0 : EEPROM_INT_PROGRAM);
+1041:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+1042:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 10526              		.loc 1 1042 0 is_stmt 1
+ 10527 0032 1846     		mov	r0, r3
+ 10528 0034 07F10C07 		add	r7, r7, #12
+ 10529 0038 BD46     		mov	sp, r7
+ 10530 003a 80BC     		pop	{r7}
+ 10531 003c 7047     		bx	lr
+ 10532              	.L83:
+ 10533 003e 00BF     		.align	2
+ 10534              	.L82:
+ 10535 0040 14D00F40 		.word	1074778132
+ 10536 0044 18F00A40 		.word	1074458648
+ 10537              		.cfi_endproc
+ 10538              	.LFE18:
+ 10540              		.section	.text.EEPROMIntClear,"ax",%progbits
+ 10541              		.align	2
+ 10542              		.global	EEPROMIntClear
+ 10543              		.thumb
+ 10544              		.thumb_func
+ 10546              	EEPROMIntClear:
+ 10547              	.LFB19:
+1043:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+1044:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+1045:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+1046:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Clears the EEPROM interrupt.
+1047:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+1048:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \param ulIntFlags indicates which interrupt sources to clear.  Currently,
+1049:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! the only valid value is \b EEPROM_INT_PROGRAM.
+1050:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+1051:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function allows an application to clear the EEPROM interrupt.
+1052:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+1053:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \note Because there is a write buffer in the Cortex-M processor, it may
+1054:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! take several clock cycles before the interrupt source is actually cleared.
+1055:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Therefore, it is recommended that the interrupt source be cleared early in
+1056:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! the interrupt handler (as opposed to the very last action) to avoid
+1057:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! returning from the interrupt handler before the interrupt source is
+1058:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! actually cleared.  Failure to do so may result in the interrupt handler
+1059:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! being immediately reentered (because the interrupt controller still sees
+1060:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! the interrupt source asserted).
+1061:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+1062:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return None.
+1063:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+1064:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+1065:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** void
+1066:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMIntClear(unsigned long ulIntFlags)
+1067:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 10548              		.loc 1 1067 0
+ 10549              		.cfi_startproc
+ 10550              		@ args = 0, pretend = 0, frame = 8
+ 10551              		@ frame_needed = 1, uses_anonymous_args = 0
+ 10552 0000 80B5     		push	{r7, lr}
+ 10553              	.LCFI52:
+ 10554              		.cfi_def_cfa_offset 8
+ 10555 0002 82B0     		sub	sp, sp, #8
+ 10556              	.LCFI53:
+ 10557              		.cfi_def_cfa_offset 16
+ 10558 0004 00AF     		add	r7, sp, #0
+ 10559              		.cfi_offset 14, -4
+ 10560              		.cfi_offset 7, -8
+ 10561              	.LCFI54:
+ 10562              		.cfi_def_cfa_register 7
+ 10563 0006 7860     		str	r0, [r7, #4]
+1068:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+1069:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Clear the flash interrupt.
+1070:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+1071:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     HWREG(FLASH_FCMISC) = FLASH_FCMISC_EMISC;
+ 10564              		.loc 1 1071 0
+ 10565 0008 0C4B     		ldr	r3, .L86
+ 10566 000a 4FF00402 		mov	r2, #4
+ 10567 000e 1A60     		str	r2, [r3, #0]
+1072:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+1073:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+1074:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // Clear the sector protection bits to prevent possible problems when
+1075:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     // programming the main flash array later.
+1076:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     //
+1077:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     if(CLASS_IS_BLIZZARD && REVISION_IS_A0)
+ 10568              		.loc 1 1077 0
+ 10569 0010 0B4B     		ldr	r3, .L86+4
+ 10570 0012 1A68     		ldr	r2, [r3, #0]
+ 10571 0014 0B4B     		ldr	r3, .L86+8
+ 10572 0016 02EA0303 		and	r3, r2, r3
+ 10573 001a 0B4A     		ldr	r2, .L86+12
+ 10574 001c 9342     		cmp	r3, r2
+ 10575 001e 09D1     		bne	.L84
+ 10576              		.loc 1 1077 0 is_stmt 0 discriminator 1
+ 10577 0020 074B     		ldr	r3, .L86+4
+ 10578 0022 1B68     		ldr	r3, [r3, #0]
+ 10579 0024 4FEA0343 		lsl	r3, r3, #16
+ 10580 0028 4FEA1343 		lsr	r3, r3, #16
+ 10581 002c 002B     		cmp	r3, #0
+ 10582 002e 01D1     		bne	.L84
+1078:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     {
+1079:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****         EEPROMClearSectorMask();
+ 10583              		.loc 1 1079 0 is_stmt 1
+ 10584 0030 FFF7FEFF 		bl	EEPROMClearSectorMask
+ 10585              	.L84:
+1080:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     }
+1081:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 10586              		.loc 1 1081 0
+ 10587 0034 07F10807 		add	r7, r7, #8
+ 10588 0038 BD46     		mov	sp, r7
+ 10589 003a 80BD     		pop	{r7, pc}
+ 10590              	.L87:
+ 10591              		.align	2
+ 10592              	.L86:
+ 10593 003c 14D00F40 		.word	1074778132
+ 10594 0040 00E00F40 		.word	1074782208
+ 10595 0044 0000FF70 		.word	1895759872
+ 10596 0048 00000510 		.word	268763136
+ 10597              		.cfi_endproc
+ 10598              	.LFE19:
+ 10600              		.section	.text.EEPROMStatusGet,"ax",%progbits
+ 10601              		.align	2
+ 10602              		.global	EEPROMStatusGet
+ 10603              		.thumb
+ 10604              		.thumb_func
+ 10606              	EEPROMStatusGet:
+ 10607              	.LFB20:
+1082:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** 
+1083:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+1084:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //
+1085:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! Returns status on the last EEPROM program or erase operation.
+1086:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+1087:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! This function returns the current status of the last program or erase
+1088:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! operation performed by the EEPROM.  It is intended to provide error
+1089:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! information to applications programming or setting EEPROM protection
+1090:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! options under interrupt control.
+1091:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+1092:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \return Returns 0 if the last program or erase operation completed without
+1093:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! any errors.  If an operation is ongoing or an error occurred, the return
+1094:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! value is a logical OR combination of \b EEPROM_RC_INVPL,
+1095:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_RC_WRBUSY, \b EEPROM_RC_NOPERM, \b EEPROM_RC_WKCOPY,
+1096:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //! \b EEPROM_RC_WKERASE, and \b EEPROM_RC_WORKING.
+1097:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //!
+1098:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** //*****************************************************************************
+1099:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** unsigned long
+1100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** EEPROMStatusGet(void)
+1101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** {
+ 10608              		.loc 1 1101 0
+ 10609              		.cfi_startproc
+ 10610              		@ args = 0, pretend = 0, frame = 0
+ 10611              		@ frame_needed = 1, uses_anonymous_args = 0
+ 10612              		@ link register save eliminated.
+ 10613 0000 80B4     		push	{r7}
+ 10614              	.LCFI55:
+ 10615              		.cfi_def_cfa_offset 4
+ 10616 0002 00AF     		add	r7, sp, #0
+ 10617              		.cfi_offset 7, -4
+ 10618              	.LCFI56:
+ 10619              		.cfi_def_cfa_register 7
+1102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c ****     return(HWREG(EEPROM_EEDONE));
+ 10620              		.loc 1 1102 0
+ 10621 0004 024B     		ldr	r3, .L89
+ 10622 0006 1B68     		ldr	r3, [r3, #0]
+1103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/eeprom.c **** }
+ 10623              		.loc 1 1103 0
+ 10624 0008 1846     		mov	r0, r3
+ 10625 000a BD46     		mov	sp, r7
+ 10626 000c 80BC     		pop	{r7}
+ 10627 000e 7047     		bx	lr
+ 10628              	.L90:
+ 10629              		.align	2
+ 10630              	.L89:
+ 10631 0010 18F00A40 		.word	1074458648
+ 10632              		.cfi_endproc
+ 10633              	.LFE20:
+ 10635              		.text
+ 10636              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 eeprom.c
+     /tmp/cc0eZFDA.s:9296   .text.EEPROMSetSectorMask:00000000 $t
+     /tmp/cc0eZFDA.s:9300   .text.EEPROMSetSectorMask:00000000 EEPROMSetSectorMask
+     /tmp/cc0eZFDA.s:9356   .text.EEPROMSetSectorMask:0000005c $d
+     /tmp/cc0eZFDA.s:9362   .text.EEPROMClearSectorMask:00000000 $t
+     /tmp/cc0eZFDA.s:9366   .text.EEPROMClearSectorMask:00000000 EEPROMClearSectorMask
+     /tmp/cc0eZFDA.s:9409   .text.EEPROMClearSectorMask:00000040 $d
+     /tmp/cc0eZFDA.s:9415   .text.EEPROMWaitForDone:00000000 $t
+     /tmp/cc0eZFDA.s:9419   .text.EEPROMWaitForDone:00000000 EEPROMWaitForDone
+     /tmp/cc0eZFDA.s:9450   .text.EEPROMWaitForDone:0000001c $d
+     /tmp/cc0eZFDA.s:9455   .text.EEPROMInit:00000000 $t
+     /tmp/cc0eZFDA.s:9460   .text.EEPROMInit:00000000 EEPROMInit
+     /tmp/cc0eZFDA.s:9527   .text.EEPROMInit:00000060 $d
+     /tmp/cc0eZFDA.s:9533   .text.EEPROMSizeGet:00000000 $t
+     /tmp/cc0eZFDA.s:9538   .text.EEPROMSizeGet:00000000 EEPROMSizeGet
+     /tmp/cc0eZFDA.s:9566   .text.EEPROMSizeGet:0000001c $d
+     /tmp/cc0eZFDA.s:9571   .text.EEPROMBlockCountGet:00000000 $t
+     /tmp/cc0eZFDA.s:9576   .text.EEPROMBlockCountGet:00000000 EEPROMBlockCountGet
+     /tmp/cc0eZFDA.s:9604   .text.EEPROMBlockCountGet:0000001c $d
+     /tmp/cc0eZFDA.s:9610   .text.EEPROMRead:00000000 $t
+     /tmp/cc0eZFDA.s:9615   .text.EEPROMRead:00000000 EEPROMRead
+     /tmp/cc0eZFDA.s:9690   .text.EEPROMRead:0000006c $d
+     /tmp/cc0eZFDA.s:9697   .text.EEPROMProgram:00000000 $t
+     /tmp/cc0eZFDA.s:9702   .text.EEPROMProgram:00000000 EEPROMProgram
+     /tmp/cc0eZFDA.s:9856   .text.EEPROMProgram:000000fc $d
+     /tmp/cc0eZFDA.s:9867   .text.EEPROMProgramNonBlocking:00000000 $t
+     /tmp/cc0eZFDA.s:9872   .text.EEPROMProgramNonBlocking:00000000 EEPROMProgramNonBlocking
+     /tmp/cc0eZFDA.s:9936   .text.EEPROMProgramNonBlocking:0000005c $d
+     /tmp/cc0eZFDA.s:9947   .text.EEPROMMassErase:00000000 $t
+     /tmp/cc0eZFDA.s:9952   .text.EEPROMMassErase:00000000 EEPROMMassErase
+     /tmp/cc0eZFDA.s:10007  .text.EEPROMMassErase:0000004c $d
+     /tmp/cc0eZFDA.s:10018  .text.EEPROMBlockProtectGet:00000000 $t
+     /tmp/cc0eZFDA.s:10023  .text.EEPROMBlockProtectGet:00000000 EEPROMBlockProtectGet
+     /tmp/cc0eZFDA.s:10057  .text.EEPROMBlockProtectGet:00000020 $d
+     /tmp/cc0eZFDA.s:10063  .text.EEPROMBlockProtectSet:00000000 $t
+     /tmp/cc0eZFDA.s:10068  .text.EEPROMBlockProtectSet:00000000 EEPROMBlockProtectSet
+     /tmp/cc0eZFDA.s:10117  .text.EEPROMBlockProtectSet:00000038 $d
+     /tmp/cc0eZFDA.s:10124  .text.EEPROMBlockPasswordSet:00000000 $t
+     /tmp/cc0eZFDA.s:10129  .text.EEPROMBlockPasswordSet:00000000 EEPROMBlockPasswordSet
+     /tmp/cc0eZFDA.s:10203  .text.EEPROMBlockPasswordSet:00000060 $d
+     /tmp/cc0eZFDA.s:10210  .text.EEPROMBlockLock:00000000 $t
+     /tmp/cc0eZFDA.s:10215  .text.EEPROMBlockLock:00000000 EEPROMBlockLock
+     /tmp/cc0eZFDA.s:10253  .text.EEPROMBlockLock:00000028 $d
+     /tmp/cc0eZFDA.s:10259  .text.EEPROMBlockUnlock:00000000 $t
+     /tmp/cc0eZFDA.s:10264  .text.EEPROMBlockUnlock:00000000 EEPROMBlockUnlock
+     /tmp/cc0eZFDA.s:10331  .text.EEPROMBlockUnlock:0000005c $d
+     /tmp/cc0eZFDA.s:10337  .text.EEPROMBlockHide:00000000 $t
+     /tmp/cc0eZFDA.s:10342  .text.EEPROMBlockHide:00000000 EEPROMBlockHide
+     /tmp/cc0eZFDA.s:10374  .text.EEPROMBlockHide:00000020 $d
+     /tmp/cc0eZFDA.s:10379  .text.EEPROMIntEnable:00000000 $t
+     /tmp/cc0eZFDA.s:10384  .text.EEPROMIntEnable:00000000 EEPROMIntEnable
+     /tmp/cc0eZFDA.s:10422  .text.EEPROMIntEnable:0000002c $d
+     /tmp/cc0eZFDA.s:10428  .text.EEPROMIntDisable:00000000 $t
+     /tmp/cc0eZFDA.s:10433  .text.EEPROMIntDisable:00000000 EEPROMIntDisable
+     /tmp/cc0eZFDA.s:10471  .text.EEPROMIntDisable:0000002c $d
+     /tmp/cc0eZFDA.s:10477  .text.EEPROMIntStatus:00000000 $t
+     /tmp/cc0eZFDA.s:10482  .text.EEPROMIntStatus:00000000 EEPROMIntStatus
+     /tmp/cc0eZFDA.s:10535  .text.EEPROMIntStatus:00000040 $d
+     /tmp/cc0eZFDA.s:10541  .text.EEPROMIntClear:00000000 $t
+     /tmp/cc0eZFDA.s:10546  .text.EEPROMIntClear:00000000 EEPROMIntClear
+     /tmp/cc0eZFDA.s:10593  .text.EEPROMIntClear:0000003c $d
+     /tmp/cc0eZFDA.s:10601  .text.EEPROMStatusGet:00000000 $t
+     /tmp/cc0eZFDA.s:10606  .text.EEPROMStatusGet:00000000 EEPROMStatusGet
+     /tmp/cc0eZFDA.s:10631  .text.EEPROMStatusGet:00000010 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+SysCtlDelay
+SysCtlPeripheralReset

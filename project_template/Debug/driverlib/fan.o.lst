@@ -1,0 +1,1348 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"fan.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c"
+ 3207              		.align	2
+ 3208              		.global	FanChannelEnable
+ 3209              		.thumb
+ 3210              		.thumb_func
+ 3212              	FanChannelEnable:
+ 3213              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // fan.c - Driver for the FAN controller.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // Copyright (c) 2010-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** #include "inc/hw_types.h"
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** #include "inc/hw_memmap.h"
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** #include "inc/hw_fan.h"
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** #include "inc/hw_ints.h"
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** #include "driverlib/fan.h"
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** #include "driverlib/debug.h"
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** #include "driverlib/interrupt.h"
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \addtogroup fan_api
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! @{
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Enables a FAN channel for operation.
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulChannel is the FAN channel to enable.
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function enables the specified FAN channel for operation.
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return None.
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** void
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanChannelEnable(unsigned long ulBase, unsigned long ulChannel)
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3214              		.loc 1 54 0
+ 3215              		.cfi_startproc
+ 3216              		@ args = 0, pretend = 0, frame = 8
+ 3217              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3218              		@ link register save eliminated.
+ 3219 0000 80B4     		push	{r7}
+ 3220              	.LCFI0:
+ 3221              		.cfi_def_cfa_offset 4
+ 3222 0002 83B0     		sub	sp, sp, #12
+ 3223              	.LCFI1:
+ 3224              		.cfi_def_cfa_offset 16
+ 3225 0004 00AF     		add	r7, sp, #0
+ 3226              		.cfi_offset 7, -4
+ 3227              	.LCFI2:
+ 3228              		.cfi_def_cfa_register 7
+ 3229 0006 7860     		str	r0, [r7, #4]
+ 3230 0008 3960     		str	r1, [r7, #0]
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulChannel <= 5);
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Enable the requested channel
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     HWREG(ulBase + FAN_O_CTL) |= 1 << ulChannel;
+ 3231              		.loc 1 64 0
+ 3232 000a 7B68     		ldr	r3, [r7, #4]
+ 3233 000c 03F10403 		add	r3, r3, #4
+ 3234 0010 7A68     		ldr	r2, [r7, #4]
+ 3235 0012 02F10402 		add	r2, r2, #4
+ 3236 0016 1168     		ldr	r1, [r2, #0]
+ 3237 0018 3A68     		ldr	r2, [r7, #0]
+ 3238 001a 4FF00100 		mov	r0, #1
+ 3239 001e 00FA02F2 		lsl	r2, r0, r2
+ 3240 0022 41EA0202 		orr	r2, r1, r2
+ 3241 0026 1A60     		str	r2, [r3, #0]
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3242              		.loc 1 65 0
+ 3243 0028 07F10C07 		add	r7, r7, #12
+ 3244 002c BD46     		mov	sp, r7
+ 3245 002e 80BC     		pop	{r7}
+ 3246 0030 7047     		bx	lr
+ 3247              		.cfi_endproc
+ 3248              	.LFE0:
+ 3250 0032 00BF     		.section	.text.FanChannelDisable,"ax",%progbits
+ 3251              		.align	2
+ 3252              		.global	FanChannelDisable
+ 3253              		.thumb
+ 3254              		.thumb_func
+ 3256              	FanChannelDisable:
+ 3257              	.LFB1:
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Disables a FAN channel for operation.
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulChannel is the FAN channel to disable.
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function disables the specified FAN channel for operation.
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return None.
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** void
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanChannelDisable(unsigned long ulBase, unsigned long ulChannel)
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3258              		.loc 1 81 0
+ 3259              		.cfi_startproc
+ 3260              		@ args = 0, pretend = 0, frame = 8
+ 3261              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3262              		@ link register save eliminated.
+ 3263 0000 80B4     		push	{r7}
+ 3264              	.LCFI3:
+ 3265              		.cfi_def_cfa_offset 4
+ 3266 0002 83B0     		sub	sp, sp, #12
+ 3267              	.LCFI4:
+ 3268              		.cfi_def_cfa_offset 16
+ 3269 0004 00AF     		add	r7, sp, #0
+ 3270              		.cfi_offset 7, -4
+ 3271              	.LCFI5:
+ 3272              		.cfi_def_cfa_register 7
+ 3273 0006 7860     		str	r0, [r7, #4]
+ 3274 0008 3960     		str	r1, [r7, #0]
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulChannel <= 5);
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Disable the requested channel
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     HWREG(ulBase + FAN_O_CTL) &= ~(1 << ulChannel);
+ 3275              		.loc 1 91 0
+ 3276 000a 7B68     		ldr	r3, [r7, #4]
+ 3277 000c 03F10403 		add	r3, r3, #4
+ 3278 0010 7A68     		ldr	r2, [r7, #4]
+ 3279 0012 02F10402 		add	r2, r2, #4
+ 3280 0016 1168     		ldr	r1, [r2, #0]
+ 3281 0018 3A68     		ldr	r2, [r7, #0]
+ 3282 001a 4FF00100 		mov	r0, #1
+ 3283 001e 00FA02F2 		lsl	r2, r0, r2
+ 3284 0022 6FEA0202 		mvn	r2, r2
+ 3285 0026 01EA0202 		and	r2, r1, r2
+ 3286 002a 1A60     		str	r2, [r3, #0]
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3287              		.loc 1 92 0
+ 3288 002c 07F10C07 		add	r7, r7, #12
+ 3289 0030 BD46     		mov	sp, r7
+ 3290 0032 80BC     		pop	{r7}
+ 3291 0034 7047     		bx	lr
+ 3292              		.cfi_endproc
+ 3293              	.LFE1:
+ 3295 0036 00BF     		.section	.text.FanChannelStatus,"ax",%progbits
+ 3296              		.align	2
+ 3297              		.global	FanChannelStatus
+ 3298              		.thumb
+ 3299              		.thumb_func
+ 3301              	FanChannelStatus:
+ 3302              	.LFB2:
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Gets the status of a FAN channel.
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulChannel is the FAN channel to query for status.
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function queries and returns the status of the specified channel.
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! The returned value is one of:
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_STATUS_STALLED if the cooling fan is stalled
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_STATUS_CHANGING if the fan is changing to the commanded speed
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_STATUS_LOCKED if the fan is locked at the commanded speed
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_STATUS_NOATTAIN if the fan cannot achieve the commanded speed
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return Returns the status of the specified FAN channel.
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** unsigned long
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanChannelStatus(unsigned long ulBase, unsigned long ulChannel)
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3303              		.loc 1 114 0
+ 3304              		.cfi_startproc
+ 3305              		@ args = 0, pretend = 0, frame = 8
+ 3306              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3307              		@ link register save eliminated.
+ 3308 0000 80B4     		push	{r7}
+ 3309              	.LCFI6:
+ 3310              		.cfi_def_cfa_offset 4
+ 3311 0002 83B0     		sub	sp, sp, #12
+ 3312              	.LCFI7:
+ 3313              		.cfi_def_cfa_offset 16
+ 3314 0004 00AF     		add	r7, sp, #0
+ 3315              		.cfi_offset 7, -4
+ 3316              	.LCFI8:
+ 3317              		.cfi_def_cfa_register 7
+ 3318 0006 7860     		str	r0, [r7, #4]
+ 3319 0008 3960     		str	r1, [r7, #0]
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulChannel <= 5);
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Read and return the status for the specified fan channel
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     return((HWREG(ulBase + FAN_O_STS) >> (ulChannel * 2)) & FAN_STS_ST0_M);
+ 3320              		.loc 1 124 0
+ 3321 000a 7B68     		ldr	r3, [r7, #4]
+ 3322 000c 1A68     		ldr	r2, [r3, #0]
+ 3323 000e 3B68     		ldr	r3, [r7, #0]
+ 3324 0010 4FEA4303 		lsl	r3, r3, #1
+ 3325 0014 22FA03F3 		lsr	r3, r2, r3
+ 3326 0018 03F00303 		and	r3, r3, #3
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3327              		.loc 1 125 0
+ 3328 001c 1846     		mov	r0, r3
+ 3329 001e 07F10C07 		add	r7, r7, #12
+ 3330 0022 BD46     		mov	sp, r7
+ 3331 0024 80BC     		pop	{r7}
+ 3332 0026 7047     		bx	lr
+ 3333              		.cfi_endproc
+ 3334              	.LFE2:
+ 3336              		.section	.text.FanChannelConfigManual,"ax",%progbits
+ 3337              		.align	2
+ 3338              		.global	FanChannelConfigManual
+ 3339              		.thumb
+ 3340              		.thumb_func
+ 3342              	FanChannelConfigManual:
+ 3343              	.LFB3:
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Configures a FAN channel for manual operation.
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulChannel is the FAN channel to configure.
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulConfig is the logical OR of manual configuration flags.
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function configures a specific FAN channel to operate in manual
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! mode.  The \e ulConfig parameter is the logical OR of several choices of
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! configuration flags as follows:
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! One of the following to select the number of tachometer pulses used for
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! speed averaging:
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_AVG_NONE to disable fan speed averaging
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_AVG_2 to select 2 pulses for speed averaging
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_AVG_4 to select 4 pulses for speed averaging
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_AVG_8 to select 8 pulses for speed averaging
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! One of the following to select the tachometer pulses per revolution:
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_TACH_1 to select 1 pulse per revolution
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_TACH_2 to select 2 pulses per revolution
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_TACH_4 to select 4 pulses per revolution
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_TACH_8 to select 8 pulses per revolution
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return None.
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** void
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanChannelConfigManual(unsigned long ulBase, unsigned long ulChannel,
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****                        unsigned long ulConfig)
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3344              		.loc 1 160 0
+ 3345              		.cfi_startproc
+ 3346              		@ args = 0, pretend = 0, frame = 16
+ 3347              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3348              		@ link register save eliminated.
+ 3349 0000 80B4     		push	{r7}
+ 3350              	.LCFI9:
+ 3351              		.cfi_def_cfa_offset 4
+ 3352 0002 85B0     		sub	sp, sp, #20
+ 3353              	.LCFI10:
+ 3354              		.cfi_def_cfa_offset 24
+ 3355 0004 00AF     		add	r7, sp, #0
+ 3356              		.cfi_offset 7, -4
+ 3357              	.LCFI11:
+ 3358              		.cfi_def_cfa_register 7
+ 3359 0006 F860     		str	r0, [r7, #12]
+ 3360 0008 B960     		str	r1, [r7, #8]
+ 3361 000a 7A60     		str	r2, [r7, #4]
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulChannel <= 5);
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Program the fan channel for manual mode with parameters.
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     HWREG(ulBase + FAN_O_CH0 + (ulChannel * 0x10)) =  FAN_CH0_MAN | ulConfig;
+ 3362              		.loc 1 170 0
+ 3363 000c BB68     		ldr	r3, [r7, #8]
+ 3364 000e 4FEA0312 		lsl	r2, r3, #4
+ 3365 0012 FB68     		ldr	r3, [r7, #12]
+ 3366 0014 D318     		adds	r3, r2, r3
+ 3367 0016 03F11003 		add	r3, r3, #16
+ 3368 001a 7A68     		ldr	r2, [r7, #4]
+ 3369 001c 42F00102 		orr	r2, r2, #1
+ 3370 0020 1A60     		str	r2, [r3, #0]
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3371              		.loc 1 171 0
+ 3372 0022 07F11407 		add	r7, r7, #20
+ 3373 0026 BD46     		mov	sp, r7
+ 3374 0028 80BC     		pop	{r7}
+ 3375 002a 7047     		bx	lr
+ 3376              		.cfi_endproc
+ 3377              	.LFE3:
+ 3379              		.section	.text.FanChannelConfigAuto,"ax",%progbits
+ 3380              		.align	2
+ 3381              		.global	FanChannelConfigAuto
+ 3382              		.thumb
+ 3383              		.thumb_func
+ 3385              	FanChannelConfigAuto:
+ 3386              	.LFB4:
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Configures a FAN channel for automatic operation.
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulChannel is the FAN channel to configure.
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulConfig is the logical OR of configuration flags.
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function configures a specific FAN channel to operate in automatic
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! mode.  The \e ulConfig parameter is the logical OR of several choices of
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! configuration flags as follows:
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! One of the following to select the automatic restart mode:
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_RESTART to enable automatic restart after stall
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_NORESTART to disable automatic restart after stall
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! One of the following to select the acceleration rate when changing speed:
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_ACCEL_FAST to select fast acceleration
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_ACCEL_SLOW to select slow acceleration
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! One of the following to select the number of tachometer pulses to use
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! for the hysteresis count:
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \b FAN_CONFIG_HYST_1, \b FAN_CONFIG_HYST_2, \b FAN_CONFIG_HYST_4,
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \b FAN_CONFIG_HYST_8, \b FAN_CONFIG_HYST_16, \b FAN_CONFIG_HYST_32,
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \b FAN_CONFIG_HYST_64, or \b FAN_CONFIG_HYST_128
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! One of the following to select the start period as the number of tachometer
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! pulses.  The start period is the amount of time that a starting PWM duty
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! cycle is used after the FAN channel is commended to a certain speed:
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \b FAN_CONFIG_START_2, \b FAN_CONFIG_START_4, \b FAN_CONFIG_START_8,
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \b FAN_CONFIG_START_16, \b FAN_CONFIG_START_32, \b FAN_CONFIG_START_64,
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \b FAN_CONFIG_START_128, or \b FAN_CONFIG_START_256
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! One of the following to specify the duty cycle that is used when the FAN
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! channel is starting, during the starting period (above):
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_START_DUTY_OFF to disable the use of startup duty cycle
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_START_DUTY_50 to select 50% startup duty cycle
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_START_DUTY_75 to select 75% startup duty cycle
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_START_DUTY_100 to select 100% startup duty cycle
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! One of the following to select the number of tachometer pulses used for
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! speed averaging:
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_AVG_NONE to disable fan speed averaging
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_AVG_2 to select 2 pulses for speed averaging
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_AVG_4 to select 4 pulses for speed averaging
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_AVG_8 to select 8 pulses for speed averaging
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! One of the following to select the tachometer pulses per revolution:
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_TACH_1 to select 1 pulse per revolution
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_TACH_2 to select 2 pulses per revolution
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_TACH_4 to select 4 pulses per revolution
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CONFIG_TACH_8 to select 8 pulses per revolution
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return None.
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** void
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanChannelConfigAuto(unsigned long ulBase, unsigned long ulChannel,
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****                      unsigned long ulConfig)
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3387              		.loc 1 237 0
+ 3388              		.cfi_startproc
+ 3389              		@ args = 0, pretend = 0, frame = 16
+ 3390              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3391              		@ link register save eliminated.
+ 3392 0000 80B4     		push	{r7}
+ 3393              	.LCFI12:
+ 3394              		.cfi_def_cfa_offset 4
+ 3395 0002 85B0     		sub	sp, sp, #20
+ 3396              	.LCFI13:
+ 3397              		.cfi_def_cfa_offset 24
+ 3398 0004 00AF     		add	r7, sp, #0
+ 3399              		.cfi_offset 7, -4
+ 3400              	.LCFI14:
+ 3401              		.cfi_def_cfa_register 7
+ 3402 0006 F860     		str	r0, [r7, #12]
+ 3403 0008 B960     		str	r1, [r7, #8]
+ 3404 000a 7A60     		str	r2, [r7, #4]
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulChannel <= 5);
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Program the fan channel for automatic mode with parameters.
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     HWREG(ulBase + FAN_O_CH0 + (ulChannel * 0x10)) = ~FAN_CH0_MAN & ulConfig;
+ 3405              		.loc 1 247 0
+ 3406 000c BB68     		ldr	r3, [r7, #8]
+ 3407 000e 4FEA0312 		lsl	r2, r3, #4
+ 3408 0012 FB68     		ldr	r3, [r7, #12]
+ 3409 0014 D318     		adds	r3, r2, r3
+ 3410 0016 03F11003 		add	r3, r3, #16
+ 3411 001a 7A68     		ldr	r2, [r7, #4]
+ 3412 001c 22F00102 		bic	r2, r2, #1
+ 3413 0020 1A60     		str	r2, [r3, #0]
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3414              		.loc 1 248 0
+ 3415 0022 07F11407 		add	r7, r7, #20
+ 3416 0026 BD46     		mov	sp, r7
+ 3417 0028 80BC     		pop	{r7}
+ 3418 002a 7047     		bx	lr
+ 3419              		.cfi_endproc
+ 3420              	.LFE4:
+ 3422              		.section	.text.FanChannelDutySet,"ax",%progbits
+ 3423              		.align	2
+ 3424              		.global	FanChannelDutySet
+ 3425              		.thumb
+ 3426              		.thumb_func
+ 3428              	FanChannelDutySet:
+ 3429              	.LFB5:
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Sets the duty cycle of a FAN channel when in manual mode.
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulChannel is the FAN channel to program the duty cycle.
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulDuty is the duty cycle in clocks from 0-511.
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function sets the duty cycle of a FAN channel if the channel is
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! configured for manual mode.  The duty cycle is specified in clocks from
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! 0-511 out of a 512 clock PWM period.
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return None.
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** void
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanChannelDutySet(unsigned long ulBase, unsigned long ulChannel,
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****                   unsigned long ulDuty)
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3430              		.loc 1 268 0
+ 3431              		.cfi_startproc
+ 3432              		@ args = 0, pretend = 0, frame = 16
+ 3433              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3434              		@ link register save eliminated.
+ 3435 0000 80B4     		push	{r7}
+ 3436              	.LCFI15:
+ 3437              		.cfi_def_cfa_offset 4
+ 3438 0002 85B0     		sub	sp, sp, #20
+ 3439              	.LCFI16:
+ 3440              		.cfi_def_cfa_offset 24
+ 3441 0004 00AF     		add	r7, sp, #0
+ 3442              		.cfi_offset 7, -4
+ 3443              	.LCFI17:
+ 3444              		.cfi_def_cfa_register 7
+ 3445 0006 F860     		str	r0, [r7, #12]
+ 3446 0008 B960     		str	r1, [r7, #8]
+ 3447 000a 7A60     		str	r2, [r7, #4]
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulChannel <= 5);
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulDuty < 512);
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Program the specified duty cycle for the specified channel
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     HWREG(ulBase + FAN_O_CMD0 + (ulChannel * 0x10)) =
+ 3448              		.loc 1 279 0
+ 3449 000c BB68     		ldr	r3, [r7, #8]
+ 3450 000e 4FEA0312 		lsl	r2, r3, #4
+ 3451 0012 FB68     		ldr	r3, [r7, #12]
+ 3452 0014 D318     		adds	r3, r2, r3
+ 3453 0016 03F11403 		add	r3, r3, #20
+ 3454 001a 1A46     		mov	r2, r3
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****             (ulDuty << FAN_CMD0_DC_S) & FAN_CMD0_DC_M;
+ 3455              		.loc 1 280 0
+ 3456 001c 7B68     		ldr	r3, [r7, #4]
+ 3457 001e 4FEA0341 		lsl	r1, r3, #16
+ 3458 0022 044B     		ldr	r3, .L7
+ 3459 0024 01EA0303 		and	r3, r1, r3
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     HWREG(ulBase + FAN_O_CMD0 + (ulChannel * 0x10)) =
+ 3460              		.loc 1 279 0
+ 3461 0028 1360     		str	r3, [r2, #0]
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3462              		.loc 1 281 0
+ 3463 002a 07F11407 		add	r7, r7, #20
+ 3464 002e BD46     		mov	sp, r7
+ 3465 0030 80BC     		pop	{r7}
+ 3466 0032 7047     		bx	lr
+ 3467              	.L8:
+ 3468              		.align	2
+ 3469              	.L7:
+ 3470 0034 0000FF01 		.word	33488896
+ 3471              		.cfi_endproc
+ 3472              	.LFE5:
+ 3474              		.section	.text.FanChannelDutyGet,"ax",%progbits
+ 3475              		.align	2
+ 3476              		.global	FanChannelDutyGet
+ 3477              		.thumb
+ 3478              		.thumb_func
+ 3480              	FanChannelDutyGet:
+ 3481              	.LFB6:
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Reads the duty cycle of a FAN channel.
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulChannel is the FAN channel to query for duty cycle.
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function gets the duty cycle of a FAN channel.  If the channel is in
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! manual mode, then this is the value that was programmed.  If the FAN
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! channel is configured for automatic mode, then this is the value that is
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! calculated by the Fan Control peripheral.
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return Returns the FAN channel duty cycle as a number of clocks from
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! 0-511, out of a 512 clock PWM period.
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** unsigned long
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanChannelDutyGet(unsigned long ulBase, unsigned long ulChannel)
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3482              		.loc 1 301 0
+ 3483              		.cfi_startproc
+ 3484              		@ args = 0, pretend = 0, frame = 16
+ 3485              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3486              		@ link register save eliminated.
+ 3487 0000 80B4     		push	{r7}
+ 3488              	.LCFI18:
+ 3489              		.cfi_def_cfa_offset 4
+ 3490 0002 85B0     		sub	sp, sp, #20
+ 3491              	.LCFI19:
+ 3492              		.cfi_def_cfa_offset 24
+ 3493 0004 00AF     		add	r7, sp, #0
+ 3494              		.cfi_offset 7, -4
+ 3495              	.LCFI20:
+ 3496              		.cfi_def_cfa_register 7
+ 3497 0006 7860     		str	r0, [r7, #4]
+ 3498 0008 3960     		str	r1, [r7, #0]
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     unsigned long ulDuty;
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulChannel <= 5);
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Read the duty cycle field from the command register and shift to
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // lower bits for return value.
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ulDuty = HWREG(ulBase + FAN_O_CMD0 + (ulChannel * 0x10)) & FAN_CMD0_DC_M;
+ 3499              		.loc 1 314 0
+ 3500 000a 3B68     		ldr	r3, [r7, #0]
+ 3501 000c 4FEA0312 		lsl	r2, r3, #4
+ 3502 0010 7B68     		ldr	r3, [r7, #4]
+ 3503 0012 D318     		adds	r3, r2, r3
+ 3504 0014 03F11403 		add	r3, r3, #20
+ 3505 0018 1A68     		ldr	r2, [r3, #0]
+ 3506 001a 074B     		ldr	r3, .L10
+ 3507 001c 02EA0303 		and	r3, r2, r3
+ 3508 0020 FB60     		str	r3, [r7, #12]
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ulDuty >>= FAN_CMD0_DC_S;
+ 3509              		.loc 1 315 0
+ 3510 0022 FB68     		ldr	r3, [r7, #12]
+ 3511 0024 4FEA1343 		lsr	r3, r3, #16
+ 3512 0028 FB60     		str	r3, [r7, #12]
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Return the duty cycle for the specified channel.
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     return(ulDuty);
+ 3513              		.loc 1 320 0
+ 3514 002a FB68     		ldr	r3, [r7, #12]
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3515              		.loc 1 321 0
+ 3516 002c 1846     		mov	r0, r3
+ 3517 002e 07F11407 		add	r7, r7, #20
+ 3518 0032 BD46     		mov	sp, r7
+ 3519 0034 80BC     		pop	{r7}
+ 3520 0036 7047     		bx	lr
+ 3521              	.L11:
+ 3522              		.align	2
+ 3523              	.L10:
+ 3524 0038 0000FF01 		.word	33488896
+ 3525              		.cfi_endproc
+ 3526              	.LFE6:
+ 3528              		.section	.text.FanChannelRPMSet,"ax",%progbits
+ 3529              		.align	2
+ 3530              		.global	FanChannelRPMSet
+ 3531              		.thumb
+ 3532              		.thumb_func
+ 3534              	FanChannelRPMSet:
+ 3535              	.LFB7:
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Sets the RPM of a FAN channel when in automatic mode.
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulChannel is the FAN channel to program the RPM.
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulRPM is the RPM as a value from 0-8191.
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function sets the RPM of the fan channel if the fan channel is
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! configured for automatic mode.  If configured for manual mode, then this
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! function has no effect.
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return None.
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** void
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanChannelRPMSet(unsigned long ulBase, unsigned long ulChannel,
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****                  unsigned long ulRPM)
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3536              		.loc 1 341 0
+ 3537              		.cfi_startproc
+ 3538              		@ args = 0, pretend = 0, frame = 16
+ 3539              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3540              		@ link register save eliminated.
+ 3541 0000 80B4     		push	{r7}
+ 3542              	.LCFI21:
+ 3543              		.cfi_def_cfa_offset 4
+ 3544 0002 85B0     		sub	sp, sp, #20
+ 3545              	.LCFI22:
+ 3546              		.cfi_def_cfa_offset 24
+ 3547 0004 00AF     		add	r7, sp, #0
+ 3548              		.cfi_offset 7, -4
+ 3549              	.LCFI23:
+ 3550              		.cfi_def_cfa_register 7
+ 3551 0006 F860     		str	r0, [r7, #12]
+ 3552 0008 B960     		str	r1, [r7, #8]
+ 3553 000a 7A60     		str	r2, [r7, #4]
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulChannel <= 5);
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulRPM < 8192);
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Program the specified RPM for the specified channel
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     HWREG(ulBase + FAN_O_CMD0 + (ulChannel * 0x10)) = ulRPM;
+ 3554              		.loc 1 352 0
+ 3555 000c BB68     		ldr	r3, [r7, #8]
+ 3556 000e 4FEA0312 		lsl	r2, r3, #4
+ 3557 0012 FB68     		ldr	r3, [r7, #12]
+ 3558 0014 D318     		adds	r3, r2, r3
+ 3559 0016 03F11403 		add	r3, r3, #20
+ 3560 001a 7A68     		ldr	r2, [r7, #4]
+ 3561 001c 1A60     		str	r2, [r3, #0]
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3562              		.loc 1 353 0
+ 3563 001e 07F11407 		add	r7, r7, #20
+ 3564 0022 BD46     		mov	sp, r7
+ 3565 0024 80BC     		pop	{r7}
+ 3566 0026 7047     		bx	lr
+ 3567              		.cfi_endproc
+ 3568              	.LFE7:
+ 3570              		.section	.text.FanChannelRPMGet,"ax",%progbits
+ 3571              		.align	2
+ 3572              		.global	FanChannelRPMGet
+ 3573              		.thumb
+ 3574              		.thumb_func
+ 3576              	FanChannelRPMGet:
+ 3577              	.LFB8:
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Reads the RPM of a FAN channel.
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulChannel is the FAN channel to query for RPM.
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function gets the RPM of a FAN channel.
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return Returns the FAN channel RPM as a number from 0-4095.
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** unsigned long
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanChannelRPMGet(unsigned long ulBase, unsigned long ulChannel)
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3578              		.loc 1 369 0
+ 3579              		.cfi_startproc
+ 3580              		@ args = 0, pretend = 0, frame = 8
+ 3581              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3582              		@ link register save eliminated.
+ 3583 0000 80B4     		push	{r7}
+ 3584              	.LCFI24:
+ 3585              		.cfi_def_cfa_offset 4
+ 3586 0002 83B0     		sub	sp, sp, #12
+ 3587              	.LCFI25:
+ 3588              		.cfi_def_cfa_offset 16
+ 3589 0004 00AF     		add	r7, sp, #0
+ 3590              		.cfi_offset 7, -4
+ 3591              	.LCFI26:
+ 3592              		.cfi_def_cfa_register 7
+ 3593 0006 7860     		str	r0, [r7, #4]
+ 3594 0008 3960     		str	r1, [r7, #0]
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulChannel <= 5);
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Read and return the RPM for the specified channel.
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     return(HWREG(ulBase + FAN_O_CST0 + (ulChannel * 0x10)) & FAN_CST0_RPM_M);
+ 3595              		.loc 1 379 0
+ 3596 000a 3B68     		ldr	r3, [r7, #0]
+ 3597 000c 4FEA0312 		lsl	r2, r3, #4
+ 3598 0010 7B68     		ldr	r3, [r7, #4]
+ 3599 0012 D318     		adds	r3, r2, r3
+ 3600 0014 03F11803 		add	r3, r3, #24
+ 3601 0018 1B68     		ldr	r3, [r3, #0]
+ 3602 001a 4FEAC343 		lsl	r3, r3, #19
+ 3603 001e 4FEAD343 		lsr	r3, r3, #19
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3604              		.loc 1 380 0
+ 3605 0022 1846     		mov	r0, r3
+ 3606 0024 07F10C07 		add	r7, r7, #12
+ 3607 0028 BD46     		mov	sp, r7
+ 3608 002a 80BC     		pop	{r7}
+ 3609 002c 7047     		bx	lr
+ 3610              		.cfi_endproc
+ 3611              	.LFE8:
+ 3613 002e 00BF     		.section	.text.FanIntEnable,"ax",%progbits
+ 3614              		.align	2
+ 3615              		.global	FanIntEnable
+ 3616              		.thumb
+ 3617              		.thumb_func
+ 3619              	FanIntEnable:
+ 3620              	.LFB9:
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Enables FAN module interrupts.
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulFlags is the logical OR of all the interrupts to be enabled.
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function enables one or more interrupts from the FAN module.  The 
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \e ulFlags parameter is the logical OR of all the possible interrupts that 
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! can be enabled.  For each channel, the following interrupt flags are 
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! available:
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CHn_INT_STALL means that a stall was detected (in either mode).
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CHn_INT_AUTO_SPEED_ERROR means that in automatic mode, the cooling
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! fan cannot attain the commanded speed.
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CHn_INT_AUTO_SPEED_OK means that in automatic mode, the cooling
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! fan has attained the commanded speed.
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! In the above flag names, the \b CHn placeholder should be replaced with
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! the actual channel number, 0-5 (for example, CH1).
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! The interrupt flags have a different meaning if the FAN channel is
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! configured for manual mode.  The following alternate set of flag names is
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! available for convenience to use in manual mode:
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CHn_INT_MANUAL_SPEED_UPDATE means that in manual mode, the speed
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! was calculated.
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! - \b FAN_CHn_INT_MANUAL_SPEED_CHANGE means that in manual mode, the speed
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! changed.
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Note that even though the names are different for manual mode, the values
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! are the same.  For example \b _AUTO_SPEED_ERROR is the same value as
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \b _MANUAL_SPEED_UPDATE.  The different names are provided just to make it
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! easier to associate a meaning with each interrupt flag.
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return None.
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** void
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanIntEnable(unsigned long ulBase, unsigned long ulFlags)
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3621              		.loc 1 422 0
+ 3622              		.cfi_startproc
+ 3623              		@ args = 0, pretend = 0, frame = 8
+ 3624              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3625              		@ link register save eliminated.
+ 3626 0000 80B4     		push	{r7}
+ 3627              	.LCFI27:
+ 3628              		.cfi_def_cfa_offset 4
+ 3629 0002 83B0     		sub	sp, sp, #12
+ 3630              	.LCFI28:
+ 3631              		.cfi_def_cfa_offset 16
+ 3632 0004 00AF     		add	r7, sp, #0
+ 3633              		.cfi_offset 7, -4
+ 3634              	.LCFI29:
+ 3635              		.cfi_def_cfa_register 7
+ 3636 0006 7860     		str	r0, [r7, #4]
+ 3637 0008 3960     		str	r1, [r7, #0]
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Enable the requested interrupt sources.
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     HWREG(ulBase + FAN_O_IM) |= ulFlags;
+ 3638              		.loc 1 431 0
+ 3639 000a 7B68     		ldr	r3, [r7, #4]
+ 3640 000c 03F19003 		add	r3, r3, #144
+ 3641 0010 7A68     		ldr	r2, [r7, #4]
+ 3642 0012 02F19002 		add	r2, r2, #144
+ 3643 0016 1168     		ldr	r1, [r2, #0]
+ 3644 0018 3A68     		ldr	r2, [r7, #0]
+ 3645 001a 41EA0202 		orr	r2, r1, r2
+ 3646 001e 1A60     		str	r2, [r3, #0]
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3647              		.loc 1 432 0
+ 3648 0020 07F10C07 		add	r7, r7, #12
+ 3649 0024 BD46     		mov	sp, r7
+ 3650 0026 80BC     		pop	{r7}
+ 3651 0028 7047     		bx	lr
+ 3652              		.cfi_endproc
+ 3653              	.LFE9:
+ 3655 002a 00BF     		.section	.text.FanIntDisable,"ax",%progbits
+ 3656              		.align	2
+ 3657              		.global	FanIntDisable
+ 3658              		.thumb
+ 3659              		.thumb_func
+ 3661              	FanIntDisable:
+ 3662              	.LFB10:
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Disables FAN module interrupts.
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulFlags is the logical OR of all the interrupts to be disabled.
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function disables one or more interrupts from the FAN module.  The
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \e ulFlags parameter is the logical OR of all the possible interrupts that
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! can be enabled.  For a list of possible interrupt flags, refer to the
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! documentation for the function FanIntEnable().
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return None.
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** void
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanIntDisable(unsigned long ulBase, unsigned long ulFlags)
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3663              		.loc 1 451 0
+ 3664              		.cfi_startproc
+ 3665              		@ args = 0, pretend = 0, frame = 8
+ 3666              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3667              		@ link register save eliminated.
+ 3668 0000 80B4     		push	{r7}
+ 3669              	.LCFI30:
+ 3670              		.cfi_def_cfa_offset 4
+ 3671 0002 83B0     		sub	sp, sp, #12
+ 3672              	.LCFI31:
+ 3673              		.cfi_def_cfa_offset 16
+ 3674 0004 00AF     		add	r7, sp, #0
+ 3675              		.cfi_offset 7, -4
+ 3676              	.LCFI32:
+ 3677              		.cfi_def_cfa_register 7
+ 3678 0006 7860     		str	r0, [r7, #4]
+ 3679 0008 3960     		str	r1, [r7, #0]
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Disable the requested interrupt sources.
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     HWREG(ulBase + FAN_O_IM) &= ~ulFlags;
+ 3680              		.loc 1 460 0
+ 3681 000a 7B68     		ldr	r3, [r7, #4]
+ 3682 000c 03F19003 		add	r3, r3, #144
+ 3683 0010 7A68     		ldr	r2, [r7, #4]
+ 3684 0012 02F19002 		add	r2, r2, #144
+ 3685 0016 1168     		ldr	r1, [r2, #0]
+ 3686 0018 3A68     		ldr	r2, [r7, #0]
+ 3687 001a 6FEA0202 		mvn	r2, r2
+ 3688 001e 01EA0202 		and	r2, r1, r2
+ 3689 0022 1A60     		str	r2, [r3, #0]
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3690              		.loc 1 461 0
+ 3691 0024 07F10C07 		add	r7, r7, #12
+ 3692 0028 BD46     		mov	sp, r7
+ 3693 002a 80BC     		pop	{r7}
+ 3694 002c 7047     		bx	lr
+ 3695              		.cfi_endproc
+ 3696              	.LFE10:
+ 3698 002e 00BF     		.section	.text.FanIntStatus,"ax",%progbits
+ 3699              		.align	2
+ 3700              		.global	FanIntStatus
+ 3701              		.thumb
+ 3702              		.thumb_func
+ 3704              	FanIntStatus:
+ 3705              	.LFB11:
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Gets the FAN module interrupt status.
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param bMasked is set \b true to get the masked interrupt status, or
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \b false to get the raw interrupt status.
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function returns the interrupt status of the FAN module.  It can
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! return either the raw or masked interrupt status.
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return Returns the masked or raw FAN interrupt status, as a bit field
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! of multiple FAN interrupt flags.  For a list of all the possible interrupt
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! flags, refer to the documentation for the function FanIntEnable().
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** unsigned long
+ 480:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanIntStatus(unsigned long ulBase, tBoolean bMasked)
+ 481:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3706              		.loc 1 481 0
+ 3707              		.cfi_startproc
+ 3708              		@ args = 0, pretend = 0, frame = 8
+ 3709              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3710              		@ link register save eliminated.
+ 3711 0000 80B4     		push	{r7}
+ 3712              	.LCFI33:
+ 3713              		.cfi_def_cfa_offset 4
+ 3714 0002 83B0     		sub	sp, sp, #12
+ 3715              	.LCFI34:
+ 3716              		.cfi_def_cfa_offset 16
+ 3717 0004 00AF     		add	r7, sp, #0
+ 3718              		.cfi_offset 7, -4
+ 3719              	.LCFI35:
+ 3720              		.cfi_def_cfa_register 7
+ 3721 0006 7860     		str	r0, [r7, #4]
+ 3722 0008 0B46     		mov	r3, r1
+ 3723 000a FB70     		strb	r3, [r7, #3]
+ 482:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 484:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 485:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 486:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 487:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 488:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Return either the interrupt status or the raw interrupt status as
+ 489:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // requested.
+ 490:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 491:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     if(bMasked)
+ 3724              		.loc 1 491 0
+ 3725 000c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 3726 000e 002B     		cmp	r3, #0
+ 3727 0010 04D0     		beq	.L17
+ 492:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     {
+ 493:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****         return(HWREG(ulBase + FAN_O_MIS));
+ 3728              		.loc 1 493 0
+ 3729 0012 7B68     		ldr	r3, [r7, #4]
+ 3730 0014 03F19803 		add	r3, r3, #152
+ 3731 0018 1B68     		ldr	r3, [r3, #0]
+ 3732 001a 03E0     		b	.L18
+ 3733              	.L17:
+ 494:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     }
+ 495:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     else
+ 496:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     {
+ 497:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****         return(HWREG(ulBase + FAN_O_RIS));
+ 3734              		.loc 1 497 0
+ 3735 001c 7B68     		ldr	r3, [r7, #4]
+ 3736 001e 03F19403 		add	r3, r3, #148
+ 3737 0022 1B68     		ldr	r3, [r3, #0]
+ 3738              	.L18:
+ 498:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     }
+ 499:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3739              		.loc 1 499 0
+ 3740 0024 1846     		mov	r0, r3
+ 3741 0026 07F10C07 		add	r7, r7, #12
+ 3742 002a BD46     		mov	sp, r7
+ 3743 002c 80BC     		pop	{r7}
+ 3744 002e 7047     		bx	lr
+ 3745              		.cfi_endproc
+ 3746              	.LFE11:
+ 3748              		.section	.text.FanIntClear,"ax",%progbits
+ 3749              		.align	2
+ 3750              		.global	FanIntClear
+ 3751              		.thumb
+ 3752              		.thumb_func
+ 3754              	FanIntClear:
+ 3755              	.LFB12:
+ 500:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 501:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 502:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Clears pending FAN module interrupts.
+ 504:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 505:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+ 506:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulFlags is the logical OR of all the interrupts to be cleared.
+ 507:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 508:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function clears one or more interrupts from the FAN module.  The 
+ 509:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \e ulFlags parameter is the logical OR of all the possible interrupts that 
+ 510:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! can be cleared.  For a list of possible interrupt flags, refer to the
+ 511:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! documentation for the function FanIntEnable().
+ 512:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 513:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return None.
+ 514:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 515:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 516:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** void
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanIntClear(unsigned long ulBase, unsigned long ulFlags)
+ 518:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3756              		.loc 1 518 0
+ 3757              		.cfi_startproc
+ 3758              		@ args = 0, pretend = 0, frame = 8
+ 3759              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3760              		@ link register save eliminated.
+ 3761 0000 80B4     		push	{r7}
+ 3762              	.LCFI36:
+ 3763              		.cfi_def_cfa_offset 4
+ 3764 0002 83B0     		sub	sp, sp, #12
+ 3765              	.LCFI37:
+ 3766              		.cfi_def_cfa_offset 16
+ 3767 0004 00AF     		add	r7, sp, #0
+ 3768              		.cfi_offset 7, -4
+ 3769              	.LCFI38:
+ 3770              		.cfi_def_cfa_register 7
+ 3771 0006 7860     		str	r0, [r7, #4]
+ 3772 0008 3960     		str	r1, [r7, #0]
+ 519:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 520:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 521:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 522:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 523:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 524:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 525:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Clear the requested pending interrupts
+ 526:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 527:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     HWREG(ulBase + FAN_O_IC) = ulFlags;
+ 3773              		.loc 1 527 0
+ 3774 000a 7B68     		ldr	r3, [r7, #4]
+ 3775 000c 03F19C03 		add	r3, r3, #156
+ 3776 0010 3A68     		ldr	r2, [r7, #0]
+ 3777 0012 1A60     		str	r2, [r3, #0]
+ 528:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3778              		.loc 1 528 0
+ 3779 0014 07F10C07 		add	r7, r7, #12
+ 3780 0018 BD46     		mov	sp, r7
+ 3781 001a 80BC     		pop	{r7}
+ 3782 001c 7047     		bx	lr
+ 3783              		.cfi_endproc
+ 3784              	.LFE12:
+ 3786 001e 00BF     		.section	.text.FanIntRegister,"ax",%progbits
+ 3787              		.align	2
+ 3788              		.global	FanIntRegister
+ 3789              		.thumb
+ 3790              		.thumb_func
+ 3792              	FanIntRegister:
+ 3793              	.LFB13:
+ 529:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 530:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 531:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 532:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Registers an interrupt handler for the FAN module.
+ 533:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 534:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+ 535:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param pfnHandler is a pointer to the function to be called when the
+ 536:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! interrupt is activated.
+ 537:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 538:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function sets and enables the handler to be called when the FAN module
+ 539:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! generates an interrupt.  Specific FAN interrupts must still be enabled
+ 540:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! with the FanIntEnable() function.
+ 541:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 542:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \sa IntRegister() for important information about registering interrupt
+ 543:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! handlers.
+ 544:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 545:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return None.
+ 546:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 547:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** void
+ 549:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanIntRegister(unsigned long ulBase, void (*pfnHandler)(void))
+ 550:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3794              		.loc 1 550 0
+ 3795              		.cfi_startproc
+ 3796              		@ args = 0, pretend = 0, frame = 8
+ 3797              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3798 0000 80B5     		push	{r7, lr}
+ 3799              	.LCFI39:
+ 3800              		.cfi_def_cfa_offset 8
+ 3801 0002 82B0     		sub	sp, sp, #8
+ 3802              	.LCFI40:
+ 3803              		.cfi_def_cfa_offset 16
+ 3804 0004 00AF     		add	r7, sp, #0
+ 3805              		.cfi_offset 14, -4
+ 3806              		.cfi_offset 7, -8
+ 3807              	.LCFI41:
+ 3808              		.cfi_def_cfa_register 7
+ 3809 0006 7860     		str	r0, [r7, #4]
+ 3810 0008 3960     		str	r1, [r7, #0]
+ 551:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 552:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 553:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 554:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 555:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(pfnHandler);
+ 556:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 557:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 558:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Register the interrupt handler.
+ 559:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 560:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     IntRegister(INT_FAN0, pfnHandler);
+ 3811              		.loc 1 560 0
+ 3812 000a 4FF08200 		mov	r0, #130
+ 3813 000e 3968     		ldr	r1, [r7, #0]
+ 3814 0010 FFF7FEFF 		bl	IntRegister
+ 561:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 562:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 563:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Enable the FAN peripheral interrupt.
+ 564:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 565:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     IntEnable(INT_FAN0);
+ 3815              		.loc 1 565 0
+ 3816 0014 4FF08200 		mov	r0, #130
+ 3817 0018 FFF7FEFF 		bl	IntEnable
+ 566:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3818              		.loc 1 566 0
+ 3819 001c 07F10807 		add	r7, r7, #8
+ 3820 0020 BD46     		mov	sp, r7
+ 3821 0022 80BD     		pop	{r7, pc}
+ 3822              		.cfi_endproc
+ 3823              	.LFE13:
+ 3825              		.section	.text.FanIntUnregister,"ax",%progbits
+ 3826              		.align	2
+ 3827              		.global	FanIntUnregister
+ 3828              		.thumb
+ 3829              		.thumb_func
+ 3831              	FanIntUnregister:
+ 3832              	.LFB14:
+ 567:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 568:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 569:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 570:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Unregisters an interrupt handler for the FAN module.
+ 571:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 572:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+ 573:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 574:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function disables and clears the handler to be called when the
+ 575:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! FAN module interrupt occurs.
+ 576:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 577:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \sa IntRegister() for important information about registering interrupt
+ 578:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! handlers.
+ 579:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return None.
+ 581:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 582:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 583:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** void
+ 584:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanIntUnregister(unsigned long ulBase)
+ 585:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3833              		.loc 1 585 0
+ 3834              		.cfi_startproc
+ 3835              		@ args = 0, pretend = 0, frame = 8
+ 3836              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3837 0000 80B5     		push	{r7, lr}
+ 3838              	.LCFI42:
+ 3839              		.cfi_def_cfa_offset 8
+ 3840 0002 82B0     		sub	sp, sp, #8
+ 3841              	.LCFI43:
+ 3842              		.cfi_def_cfa_offset 16
+ 3843 0004 00AF     		add	r7, sp, #0
+ 3844              		.cfi_offset 14, -4
+ 3845              		.cfi_offset 7, -8
+ 3846              	.LCFI44:
+ 3847              		.cfi_def_cfa_register 7
+ 3848 0006 7860     		str	r0, [r7, #4]
+ 586:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 587:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 588:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 589:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 590:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 591:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 592:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Disable the FAN peripheral interrupt.
+ 593:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 594:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     IntDisable(INT_FAN0);
+ 3849              		.loc 1 594 0
+ 3850 0008 4FF08200 		mov	r0, #130
+ 3851 000c FFF7FEFF 		bl	IntDisable
+ 595:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 596:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 597:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Unregister the interrupt handler.
+ 598:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 599:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     IntUnregister(INT_FAN0);
+ 3852              		.loc 1 599 0
+ 3853 0010 4FF08200 		mov	r0, #130
+ 3854 0014 FFF7FEFF 		bl	IntUnregister
+ 600:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3855              		.loc 1 600 0
+ 3856 0018 07F10807 		add	r7, r7, #8
+ 3857 001c BD46     		mov	sp, r7
+ 3858 001e 80BD     		pop	{r7, pc}
+ 3859              		.cfi_endproc
+ 3860              	.LFE14:
+ 3862              		.section	.text.FanChannelsGet,"ax",%progbits
+ 3863              		.align	2
+ 3864              		.global	FanChannelsGet
+ 3865              		.thumb
+ 3866              		.thumb_func
+ 3868              	FanChannelsGet:
+ 3869              	.LFB15:
+ 601:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 602:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 603:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 604:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Gets the number of supported FAN channels.
+ 605:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 606:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \param ulBase is the base address of the FAN module.
+ 607:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 608:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! This function gets the number of FAN channels that are supported by the
+ 609:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! Fan Control peripheral.
+ 610:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //!
+ 611:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //! \return Returns the number of FAN channels.
+ 612:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //
+ 613:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** //*****************************************************************************
+ 614:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** unsigned long
+ 615:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** FanChannelsGet(unsigned long ulBase)
+ 616:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** {
+ 3870              		.loc 1 616 0
+ 3871              		.cfi_startproc
+ 3872              		@ args = 0, pretend = 0, frame = 8
+ 3873              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3874              		@ link register save eliminated.
+ 3875 0000 80B4     		push	{r7}
+ 3876              	.LCFI45:
+ 3877              		.cfi_def_cfa_offset 4
+ 3878 0002 83B0     		sub	sp, sp, #12
+ 3879              	.LCFI46:
+ 3880              		.cfi_def_cfa_offset 16
+ 3881 0004 00AF     		add	r7, sp, #0
+ 3882              		.cfi_offset 7, -4
+ 3883              	.LCFI47:
+ 3884              		.cfi_def_cfa_register 7
+ 3885 0006 7860     		str	r0, [r7, #4]
+ 617:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 618:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Check the arguments.
+ 619:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 620:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     ASSERT(ulBase == FAN0_BASE);
+ 621:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** 
+ 622:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 623:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     // Read and return the fan channel count
+ 624:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     //
+ 625:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c ****     return(HWREG(ulBase + FAN_O_PP) & FAN_PP_CHAN_M);
+ 3886              		.loc 1 625 0
+ 3887 0008 7B68     		ldr	r3, [r7, #4]
+ 3888 000a 03F57C63 		add	r3, r3, #4032
+ 3889 000e 1B68     		ldr	r3, [r3, #0]
+ 3890 0010 03F00F03 		and	r3, r3, #15
+ 626:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fan.c **** }
+ 3891              		.loc 1 626 0
+ 3892 0014 1846     		mov	r0, r3
+ 3893 0016 07F10C07 		add	r7, r7, #12
+ 3894 001a BD46     		mov	sp, r7
+ 3895 001c 80BC     		pop	{r7}
+ 3896 001e 7047     		bx	lr
+ 3897              		.cfi_endproc
+ 3898              	.LFE15:
+ 3900              		.text
+ 3901              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 fan.c
+     /tmp/cctuvun3.s:3207   .text.FanChannelEnable:00000000 $t
+     /tmp/cctuvun3.s:3212   .text.FanChannelEnable:00000000 FanChannelEnable
+     /tmp/cctuvun3.s:3251   .text.FanChannelDisable:00000000 $t
+     /tmp/cctuvun3.s:3256   .text.FanChannelDisable:00000000 FanChannelDisable
+     /tmp/cctuvun3.s:3296   .text.FanChannelStatus:00000000 $t
+     /tmp/cctuvun3.s:3301   .text.FanChannelStatus:00000000 FanChannelStatus
+     /tmp/cctuvun3.s:3337   .text.FanChannelConfigManual:00000000 $t
+     /tmp/cctuvun3.s:3342   .text.FanChannelConfigManual:00000000 FanChannelConfigManual
+     /tmp/cctuvun3.s:3380   .text.FanChannelConfigAuto:00000000 $t
+     /tmp/cctuvun3.s:3385   .text.FanChannelConfigAuto:00000000 FanChannelConfigAuto
+     /tmp/cctuvun3.s:3423   .text.FanChannelDutySet:00000000 $t
+     /tmp/cctuvun3.s:3428   .text.FanChannelDutySet:00000000 FanChannelDutySet
+     /tmp/cctuvun3.s:3470   .text.FanChannelDutySet:00000034 $d
+     /tmp/cctuvun3.s:3475   .text.FanChannelDutyGet:00000000 $t
+     /tmp/cctuvun3.s:3480   .text.FanChannelDutyGet:00000000 FanChannelDutyGet
+     /tmp/cctuvun3.s:3524   .text.FanChannelDutyGet:00000038 $d
+     /tmp/cctuvun3.s:3529   .text.FanChannelRPMSet:00000000 $t
+     /tmp/cctuvun3.s:3534   .text.FanChannelRPMSet:00000000 FanChannelRPMSet
+     /tmp/cctuvun3.s:3571   .text.FanChannelRPMGet:00000000 $t
+     /tmp/cctuvun3.s:3576   .text.FanChannelRPMGet:00000000 FanChannelRPMGet
+     /tmp/cctuvun3.s:3614   .text.FanIntEnable:00000000 $t
+     /tmp/cctuvun3.s:3619   .text.FanIntEnable:00000000 FanIntEnable
+     /tmp/cctuvun3.s:3656   .text.FanIntDisable:00000000 $t
+     /tmp/cctuvun3.s:3661   .text.FanIntDisable:00000000 FanIntDisable
+     /tmp/cctuvun3.s:3699   .text.FanIntStatus:00000000 $t
+     /tmp/cctuvun3.s:3704   .text.FanIntStatus:00000000 FanIntStatus
+     /tmp/cctuvun3.s:3749   .text.FanIntClear:00000000 $t
+     /tmp/cctuvun3.s:3754   .text.FanIntClear:00000000 FanIntClear
+     /tmp/cctuvun3.s:3787   .text.FanIntRegister:00000000 $t
+     /tmp/cctuvun3.s:3792   .text.FanIntRegister:00000000 FanIntRegister
+     /tmp/cctuvun3.s:3826   .text.FanIntUnregister:00000000 $t
+     /tmp/cctuvun3.s:3831   .text.FanIntUnregister:00000000 FanIntUnregister
+     /tmp/cctuvun3.s:3863   .text.FanChannelsGet:00000000 $t
+     /tmp/cctuvun3.s:3868   .text.FanChannelsGet:00000000 FanChannelsGet
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister

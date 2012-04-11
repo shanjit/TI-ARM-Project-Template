@@ -1,0 +1,675 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"fpu.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c"
+ 4133              		.align	2
+ 4134              		.global	FPUEnable
+ 4135              		.thumb
+ 4136              		.thumb_func
+ 4138              	FPUEnable:
+ 4139              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // fpu.c - Routines for manipulating the floating-point unit in the Cortex-M
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //         processor.
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // Copyright (c) 2011 Texas Instruments Incorporated.  All rights reserved.
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // Software License Agreement
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // 
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // Texas Instruments (TI) is supplying this software for use solely and
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // exclusively on TI's microcontroller products. The software is owned by
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // laws. You may not combine this software with "viral" open-source
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // software in order to form a larger program.
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // 
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // 
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** 
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \addtogroup fpu_api
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! @{
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** 
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** #include "inc/hw_nvic.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** #include "inc/hw_types.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** #include "fpu.h"
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** 
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! Enables the floating-point unit.
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! This function enables the floating-point unit, allowing the floating-point
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! instructions to be executed.  This function must be called prior to
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! performing any hardware floating-point operations; failure to do so results
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! in a NOCP usage fault.
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \return None.
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** void
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** FPUEnable(void)
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** {
+ 4140              		.loc 1 51 0
+ 4141              		.cfi_startproc
+ 4142              		@ args = 0, pretend = 0, frame = 0
+ 4143              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4144              		@ link register save eliminated.
+ 4145 0000 80B4     		push	{r7}
+ 4146              	.LCFI0:
+ 4147              		.cfi_def_cfa_offset 4
+ 4148 0002 00AF     		add	r7, sp, #0
+ 4149              		.cfi_offset 7, -4
+ 4150              	.LCFI1:
+ 4151              		.cfi_def_cfa_register 7
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     // Enable the coprocessors used by the floating-point unit.
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     HWREG(NVIC_CPAC) = ((HWREG(NVIC_CPAC) &
+ 4152              		.loc 1 55 0
+ 4153 0004 044B     		ldr	r3, .L2
+ 4154 0006 044A     		ldr	r2, .L2
+ 4155 0008 1268     		ldr	r2, [r2, #0]
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****                          ~(NVIC_CPAC_CP10_M | NVIC_CPAC_CP11_M)) |
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****                         NVIC_CPAC_CP10_FULL | NVIC_CPAC_CP11_FULL);
+ 4156              		.loc 1 57 0
+ 4157 000a 42F47002 		orr	r2, r2, #15728640
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     HWREG(NVIC_CPAC) = ((HWREG(NVIC_CPAC) &
+ 4158              		.loc 1 55 0
+ 4159 000e 1A60     		str	r2, [r3, #0]
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** }
+ 4160              		.loc 1 58 0
+ 4161 0010 BD46     		mov	sp, r7
+ 4162 0012 80BC     		pop	{r7}
+ 4163 0014 7047     		bx	lr
+ 4164              	.L3:
+ 4165 0016 00BF     		.align	2
+ 4166              	.L2:
+ 4167 0018 88ED00E0 		.word	-536810104
+ 4168              		.cfi_endproc
+ 4169              	.LFE0:
+ 4171              		.section	.text.FPUDisable,"ax",%progbits
+ 4172              		.align	2
+ 4173              		.global	FPUDisable
+ 4174              		.thumb
+ 4175              		.thumb_func
+ 4177              	FPUDisable:
+ 4178              	.LFB1:
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** 
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! Disables the floating-point unit.
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! This function disables the floating-point unit, preventing floating-point
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! instructions from executing (generating a NOCP usage fault instead).
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \return None.
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** void
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** FPUDisable(void)
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** {
+ 4179              		.loc 1 72 0
+ 4180              		.cfi_startproc
+ 4181              		@ args = 0, pretend = 0, frame = 0
+ 4182              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4183              		@ link register save eliminated.
+ 4184 0000 80B4     		push	{r7}
+ 4185              	.LCFI2:
+ 4186              		.cfi_def_cfa_offset 4
+ 4187 0002 00AF     		add	r7, sp, #0
+ 4188              		.cfi_offset 7, -4
+ 4189              	.LCFI3:
+ 4190              		.cfi_def_cfa_register 7
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     // Disable the coprocessors used by the floating-point unit.
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     HWREG(NVIC_CPAC) = ((HWREG(NVIC_CPAC) &
+ 4191              		.loc 1 76 0
+ 4192 0004 044B     		ldr	r3, .L5
+ 4193 0006 044A     		ldr	r2, .L5
+ 4194 0008 1268     		ldr	r2, [r2, #0]
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****                          ~(NVIC_CPAC_CP10_M | NVIC_CPAC_CP11_M)) |
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****                         NVIC_CPAC_CP10_DIS | NVIC_CPAC_CP11_DIS);
+ 4195              		.loc 1 78 0
+ 4196 000a 22F47002 		bic	r2, r2, #15728640
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     HWREG(NVIC_CPAC) = ((HWREG(NVIC_CPAC) &
+ 4197              		.loc 1 76 0
+ 4198 000e 1A60     		str	r2, [r3, #0]
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** }
+ 4199              		.loc 1 79 0
+ 4200 0010 BD46     		mov	sp, r7
+ 4201 0012 80BC     		pop	{r7}
+ 4202 0014 7047     		bx	lr
+ 4203              	.L6:
+ 4204 0016 00BF     		.align	2
+ 4205              	.L5:
+ 4206 0018 88ED00E0 		.word	-536810104
+ 4207              		.cfi_endproc
+ 4208              	.LFE1:
+ 4210              		.section	.text.FPUStackingEnable,"ax",%progbits
+ 4211              		.align	2
+ 4212              		.global	FPUStackingEnable
+ 4213              		.thumb
+ 4214              		.thumb_func
+ 4216              	FPUStackingEnable:
+ 4217              	.LFB2:
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** 
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! Enables the stacking of floating-point registers.
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! This function enables the stacking of floating-point registers s0-s15 when
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! an interrupt is handled.  When enabled, space is reserved on the stack for
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! the floating-point context and the floating-point state is saved into this
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! stack space.  Upon return from the interrupt, the floating-point context is
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! restored.
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! If the floating-point registers are not stacked, floating-point
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! instructions cannot be safely executed in an interrupt handler because the
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! values of s0-s15 are not likely to be preserved for the interrupted code.
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! On the other hand, stacking the floating-point registers increases the
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! stacking operation from 8 words to 26 words, also increasing the interrupt
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! response latency.
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \return None.
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** void
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** FPUStackingEnable(void)
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** {
+ 4218              		.loc 1 103 0
+ 4219              		.cfi_startproc
+ 4220              		@ args = 0, pretend = 0, frame = 0
+ 4221              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4222              		@ link register save eliminated.
+ 4223 0000 80B4     		push	{r7}
+ 4224              	.LCFI4:
+ 4225              		.cfi_def_cfa_offset 4
+ 4226 0002 00AF     		add	r7, sp, #0
+ 4227              		.cfi_offset 7, -4
+ 4228              	.LCFI5:
+ 4229              		.cfi_def_cfa_register 7
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     // Enable automatic state preservation for the floating-point unit, and
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     // disable lazy state preservation (meaning that the floating-point state
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     // is always stacked when floating-point instructions are used).
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     HWREG(NVIC_FPCC) = (HWREG(NVIC_FPCC) & ~NVIC_FPCC_LSPEN) | NVIC_FPCC_ASPEN;
+ 4230              		.loc 1 109 0
+ 4231 0004 054B     		ldr	r3, .L8
+ 4232 0006 054A     		ldr	r2, .L8
+ 4233 0008 1268     		ldr	r2, [r2, #0]
+ 4234 000a 22F04042 		bic	r2, r2, #-1073741824
+ 4235 000e 42F00042 		orr	r2, r2, #-2147483648
+ 4236 0012 1A60     		str	r2, [r3, #0]
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** }
+ 4237              		.loc 1 110 0
+ 4238 0014 BD46     		mov	sp, r7
+ 4239 0016 80BC     		pop	{r7}
+ 4240 0018 7047     		bx	lr
+ 4241              	.L9:
+ 4242 001a 00BF     		.align	2
+ 4243              	.L8:
+ 4244 001c 34EF00E0 		.word	-536809676
+ 4245              		.cfi_endproc
+ 4246              	.LFE2:
+ 4248              		.section	.text.FPULazyStackingEnable,"ax",%progbits
+ 4249              		.align	2
+ 4250              		.global	FPULazyStackingEnable
+ 4251              		.thumb
+ 4252              		.thumb_func
+ 4254              	FPULazyStackingEnable:
+ 4255              	.LFB3:
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** 
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! Enables the lazy stacking of floating-point registers.
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! This function enables the lazy stacking of floating-point registers s0-s15
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! when an interrupt is handled.  When lazy stacking is enabled, space is
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! reserved on the stack for the floating-point context, but the
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! floating-point state is not saved.  If a floating-point instruction is
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! executed from within the interrupt context, the floating-point context is
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! first saved into the space reserved on the stack.  On completion of the
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! interrupt handler, the floating-point context is only restored if it was
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! saved (as the result of executing a floating-point instruction).
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! This method provides a compromise between fast interrupt response (because 
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! the floating-point state is not saved on interrupt entry) and the ability 
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! to use floating-point in interrupt handlers (because the floating-point 
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! state is saved if floating-point instructions are used).
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \return None.
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** void
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** FPULazyStackingEnable(void)
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** {
+ 4256              		.loc 1 135 0
+ 4257              		.cfi_startproc
+ 4258              		@ args = 0, pretend = 0, frame = 0
+ 4259              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4260              		@ link register save eliminated.
+ 4261 0000 80B4     		push	{r7}
+ 4262              	.LCFI6:
+ 4263              		.cfi_def_cfa_offset 4
+ 4264 0002 00AF     		add	r7, sp, #0
+ 4265              		.cfi_offset 7, -4
+ 4266              	.LCFI7:
+ 4267              		.cfi_def_cfa_register 7
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     // Enable automatic and lazy state preservation for the floating-point
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     // unit.
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     HWREG(NVIC_FPCC) |= NVIC_FPCC_ASPEN | NVIC_FPCC_LSPEN;
+ 4268              		.loc 1 140 0
+ 4269 0004 044B     		ldr	r3, .L11
+ 4270 0006 044A     		ldr	r2, .L11
+ 4271 0008 1268     		ldr	r2, [r2, #0]
+ 4272 000a 42F04042 		orr	r2, r2, #-1073741824
+ 4273 000e 1A60     		str	r2, [r3, #0]
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** }
+ 4274              		.loc 1 141 0
+ 4275 0010 BD46     		mov	sp, r7
+ 4276 0012 80BC     		pop	{r7}
+ 4277 0014 7047     		bx	lr
+ 4278              	.L12:
+ 4279 0016 00BF     		.align	2
+ 4280              	.L11:
+ 4281 0018 34EF00E0 		.word	-536809676
+ 4282              		.cfi_endproc
+ 4283              	.LFE3:
+ 4285              		.section	.text.FPUStackingDisable,"ax",%progbits
+ 4286              		.align	2
+ 4287              		.global	FPUStackingDisable
+ 4288              		.thumb
+ 4289              		.thumb_func
+ 4291              	FPUStackingDisable:
+ 4292              	.LFB4:
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** 
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! Disables the stacking of floating-point registers.
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! This function disables the stacking of floating-point registers s0-s15 when
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! an interrupt is handled.  When floating-point context stacking is disabled,
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! floating-point operations performed in an interrupt handler destroy the
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! floating-point context of the main thread of execution.
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \return None.
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** void
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** FPUStackingDisable(void)
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** {
+ 4293              		.loc 1 157 0
+ 4294              		.cfi_startproc
+ 4295              		@ args = 0, pretend = 0, frame = 0
+ 4296              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4297              		@ link register save eliminated.
+ 4298 0000 80B4     		push	{r7}
+ 4299              	.LCFI8:
+ 4300              		.cfi_def_cfa_offset 4
+ 4301 0002 00AF     		add	r7, sp, #0
+ 4302              		.cfi_offset 7, -4
+ 4303              	.LCFI9:
+ 4304              		.cfi_def_cfa_register 7
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     // Disable automatic and lazy state preservation for the floating-point
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     // unit.
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     HWREG(NVIC_FPCC) &= ~(NVIC_FPCC_ASPEN | NVIC_FPCC_LSPEN);
+ 4305              		.loc 1 162 0
+ 4306 0004 044B     		ldr	r3, .L14
+ 4307 0006 044A     		ldr	r2, .L14
+ 4308 0008 1268     		ldr	r2, [r2, #0]
+ 4309 000a 22F04042 		bic	r2, r2, #-1073741824
+ 4310 000e 1A60     		str	r2, [r3, #0]
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** }
+ 4311              		.loc 1 163 0
+ 4312 0010 BD46     		mov	sp, r7
+ 4313 0012 80BC     		pop	{r7}
+ 4314 0014 7047     		bx	lr
+ 4315              	.L15:
+ 4316 0016 00BF     		.align	2
+ 4317              	.L14:
+ 4318 0018 34EF00E0 		.word	-536809676
+ 4319              		.cfi_endproc
+ 4320              	.LFE4:
+ 4322              		.section	.text.FPUHalfPrecisionModeSet,"ax",%progbits
+ 4323              		.align	2
+ 4324              		.global	FPUHalfPrecisionModeSet
+ 4325              		.thumb
+ 4326              		.thumb_func
+ 4328              	FPUHalfPrecisionModeSet:
+ 4329              	.LFB5:
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** 
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! Selects the format of half-precision floating-point values.
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \param ulMode is the format for half-precision floating-point value, which
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! is either \b FPU_HALF_IEEE or \b FPU_HALF_ALTERNATE.
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! This function selects between the IEEE half-precision floating-point
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! representation and the Cortex-M processor alternative representation.  The
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! alternative representation has a larger range but does not have a way to
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! encode infinity (positive or negative) or NaN (quiet or signaling).  The
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! default setting is the IEEE format.
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \note Unless this function is called prior to executing any floating-point
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! instructions, the default mode is used.
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \return None.
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** void
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** FPUHalfPrecisionModeSet(unsigned long ulMode)
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** {
+ 4330              		.loc 1 186 0
+ 4331              		.cfi_startproc
+ 4332              		@ args = 0, pretend = 0, frame = 8
+ 4333              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4334              		@ link register save eliminated.
+ 4335 0000 80B4     		push	{r7}
+ 4336              	.LCFI10:
+ 4337              		.cfi_def_cfa_offset 4
+ 4338 0002 83B0     		sub	sp, sp, #12
+ 4339              	.LCFI11:
+ 4340              		.cfi_def_cfa_offset 16
+ 4341 0004 00AF     		add	r7, sp, #0
+ 4342              		.cfi_offset 7, -4
+ 4343              	.LCFI12:
+ 4344              		.cfi_def_cfa_register 7
+ 4345 0006 7860     		str	r0, [r7, #4]
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     // Set the half-precision floating-point format.
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     HWREG(NVIC_FPDSC) = (HWREG(NVIC_FPDSC) & ~(NVIC_FPDSC_AHP)) | ulMode;
+ 4346              		.loc 1 190 0
+ 4347 0008 064B     		ldr	r3, .L17
+ 4348 000a 064A     		ldr	r2, .L17
+ 4349 000c 1268     		ldr	r2, [r2, #0]
+ 4350 000e 22F08061 		bic	r1, r2, #67108864
+ 4351 0012 7A68     		ldr	r2, [r7, #4]
+ 4352 0014 41EA0202 		orr	r2, r1, r2
+ 4353 0018 1A60     		str	r2, [r3, #0]
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** }
+ 4354              		.loc 1 191 0
+ 4355 001a 07F10C07 		add	r7, r7, #12
+ 4356 001e BD46     		mov	sp, r7
+ 4357 0020 80BC     		pop	{r7}
+ 4358 0022 7047     		bx	lr
+ 4359              	.L18:
+ 4360              		.align	2
+ 4361              	.L17:
+ 4362 0024 3CEF00E0 		.word	-536809668
+ 4363              		.cfi_endproc
+ 4364              	.LFE5:
+ 4366              		.section	.text.FPUNaNModeSet,"ax",%progbits
+ 4367              		.align	2
+ 4368              		.global	FPUNaNModeSet
+ 4369              		.thumb
+ 4370              		.thumb_func
+ 4372              	FPUNaNModeSet:
+ 4373              	.LFB6:
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** 
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! Selects the NaN mode.
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \param ulMode is the mode for NaN results; which is either
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \b FPU_NAN_PROPAGATE or \b FPU_NAN_DEFAULT.
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! This function selects the handling of NaN results during floating-point
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! computations.  NaNs can either propagate (the default), or they can return
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! the default NaN.
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \note Unless this function is called prior to executing any floating-point
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! instructions, the default mode is used.
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \return None.
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** void
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** FPUNaNModeSet(unsigned long ulMode)
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** {
+ 4374              		.loc 1 212 0
+ 4375              		.cfi_startproc
+ 4376              		@ args = 0, pretend = 0, frame = 8
+ 4377              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4378              		@ link register save eliminated.
+ 4379 0000 80B4     		push	{r7}
+ 4380              	.LCFI13:
+ 4381              		.cfi_def_cfa_offset 4
+ 4382 0002 83B0     		sub	sp, sp, #12
+ 4383              	.LCFI14:
+ 4384              		.cfi_def_cfa_offset 16
+ 4385 0004 00AF     		add	r7, sp, #0
+ 4386              		.cfi_offset 7, -4
+ 4387              	.LCFI15:
+ 4388              		.cfi_def_cfa_register 7
+ 4389 0006 7860     		str	r0, [r7, #4]
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     // Set the NaN mode.
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     HWREG(NVIC_FPDSC) = (HWREG(NVIC_FPDSC) & ~(NVIC_FPDSC_DN)) | ulMode;
+ 4390              		.loc 1 216 0
+ 4391 0008 064B     		ldr	r3, .L20
+ 4392 000a 064A     		ldr	r2, .L20
+ 4393 000c 1268     		ldr	r2, [r2, #0]
+ 4394 000e 22F00071 		bic	r1, r2, #33554432
+ 4395 0012 7A68     		ldr	r2, [r7, #4]
+ 4396 0014 41EA0202 		orr	r2, r1, r2
+ 4397 0018 1A60     		str	r2, [r3, #0]
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** }
+ 4398              		.loc 1 217 0
+ 4399 001a 07F10C07 		add	r7, r7, #12
+ 4400 001e BD46     		mov	sp, r7
+ 4401 0020 80BC     		pop	{r7}
+ 4402 0022 7047     		bx	lr
+ 4403              	.L21:
+ 4404              		.align	2
+ 4405              	.L20:
+ 4406 0024 3CEF00E0 		.word	-536809668
+ 4407              		.cfi_endproc
+ 4408              	.LFE6:
+ 4410              		.section	.text.FPUFlushToZeroModeSet,"ax",%progbits
+ 4411              		.align	2
+ 4412              		.global	FPUFlushToZeroModeSet
+ 4413              		.thumb
+ 4414              		.thumb_func
+ 4416              	FPUFlushToZeroModeSet:
+ 4417              	.LFB7:
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** 
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! Selects the flush-to-zero mode.
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \param ulMode is the flush-to-zero mode; which is either
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \b FPU_FLUSH_TO_ZERO_DIS or \b FPU_FLUSH_TO_ZERO_EN.
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! This function enables or disables the flush-to-zero mode of the
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! floating-point unit.  When disabled (the default), the floating-point unit
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! is fully IEEE compliant.  When enabled, values close to zero are treated as
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! zero, greatly improving the execution speed at the expense of some accuracy
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! (as well as IEEE compliance).
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \note Unless this function is called prior to executing any floating-point
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! instructions, the default mode is used.
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \return None.
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** void
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** FPUFlushToZeroModeSet(unsigned long ulMode)
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** {
+ 4418              		.loc 1 240 0
+ 4419              		.cfi_startproc
+ 4420              		@ args = 0, pretend = 0, frame = 8
+ 4421              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4422              		@ link register save eliminated.
+ 4423 0000 80B4     		push	{r7}
+ 4424              	.LCFI16:
+ 4425              		.cfi_def_cfa_offset 4
+ 4426 0002 83B0     		sub	sp, sp, #12
+ 4427              	.LCFI17:
+ 4428              		.cfi_def_cfa_offset 16
+ 4429 0004 00AF     		add	r7, sp, #0
+ 4430              		.cfi_offset 7, -4
+ 4431              	.LCFI18:
+ 4432              		.cfi_def_cfa_register 7
+ 4433 0006 7860     		str	r0, [r7, #4]
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     // Set the flush-to-zero mode.
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     HWREG(NVIC_FPDSC) = (HWREG(NVIC_FPDSC) & ~(NVIC_FPDSC_FZ)) | ulMode;
+ 4434              		.loc 1 244 0
+ 4435 0008 064B     		ldr	r3, .L23
+ 4436 000a 064A     		ldr	r2, .L23
+ 4437 000c 1268     		ldr	r2, [r2, #0]
+ 4438 000e 22F08071 		bic	r1, r2, #16777216
+ 4439 0012 7A68     		ldr	r2, [r7, #4]
+ 4440 0014 41EA0202 		orr	r2, r1, r2
+ 4441 0018 1A60     		str	r2, [r3, #0]
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** }
+ 4442              		.loc 1 245 0
+ 4443 001a 07F10C07 		add	r7, r7, #12
+ 4444 001e BD46     		mov	sp, r7
+ 4445 0020 80BC     		pop	{r7}
+ 4446 0022 7047     		bx	lr
+ 4447              	.L24:
+ 4448              		.align	2
+ 4449              	.L23:
+ 4450 0024 3CEF00E0 		.word	-536809668
+ 4451              		.cfi_endproc
+ 4452              	.LFE7:
+ 4454              		.section	.text.FPURoundingModeSet,"ax",%progbits
+ 4455              		.align	2
+ 4456              		.global	FPURoundingModeSet
+ 4457              		.thumb
+ 4458              		.thumb_func
+ 4460              	FPURoundingModeSet:
+ 4461              	.LFB8:
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** 
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! Selects the rounding mode for floating-point results.
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \param ulMode is the rounding mode.
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! This function selects the rounding mode for floating-point results.  After
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! a floating-point operation, the result is rounded toward the specified
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! value.  The default mode is \b FPU_ROUND_NEAREST.
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! The following rounding modes are available (as specified by \e ulMode):
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! - \b FPU_ROUND_NEAREST - round toward the nearest value
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! - \b FPU_ROUND_POS_INF - round toward positive infinity
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! - \b FPU_ROUND_NEG_INF - round toward negative infinity
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! - \b FPU_ROUND_ZERO - round toward zero
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \note Unless this function is called prior to executing any floating-point
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! instructions, the default mode is used.
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //!
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //! \return None.
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** //*****************************************************************************
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** void
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** FPURoundingModeSet(unsigned long ulMode)
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** {
+ 4462              		.loc 1 272 0
+ 4463              		.cfi_startproc
+ 4464              		@ args = 0, pretend = 0, frame = 8
+ 4465              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4466              		@ link register save eliminated.
+ 4467 0000 80B4     		push	{r7}
+ 4468              	.LCFI19:
+ 4469              		.cfi_def_cfa_offset 4
+ 4470 0002 83B0     		sub	sp, sp, #12
+ 4471              	.LCFI20:
+ 4472              		.cfi_def_cfa_offset 16
+ 4473 0004 00AF     		add	r7, sp, #0
+ 4474              		.cfi_offset 7, -4
+ 4475              	.LCFI21:
+ 4476              		.cfi_def_cfa_register 7
+ 4477 0006 7860     		str	r0, [r7, #4]
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     // Set the rounding mode.
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     //
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c ****     HWREG(NVIC_FPDSC) = (HWREG(NVIC_FPDSC) & ~(NVIC_FPDSC_RMODE_M)) | ulMode;
+ 4478              		.loc 1 276 0
+ 4479 0008 064B     		ldr	r3, .L26
+ 4480 000a 064A     		ldr	r2, .L26
+ 4481 000c 1268     		ldr	r2, [r2, #0]
+ 4482 000e 22F44001 		bic	r1, r2, #12582912
+ 4483 0012 7A68     		ldr	r2, [r7, #4]
+ 4484 0014 41EA0202 		orr	r2, r1, r2
+ 4485 0018 1A60     		str	r2, [r3, #0]
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/fpu.c **** }
+ 4486              		.loc 1 277 0
+ 4487 001a 07F10C07 		add	r7, r7, #12
+ 4488 001e BD46     		mov	sp, r7
+ 4489 0020 80BC     		pop	{r7}
+ 4490 0022 7047     		bx	lr
+ 4491              	.L27:
+ 4492              		.align	2
+ 4493              	.L26:
+ 4494 0024 3CEF00E0 		.word	-536809668
+ 4495              		.cfi_endproc
+ 4496              	.LFE8:
+ 4498              		.text
+ 4499              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 fpu.c
+     /tmp/ccRj39le.s:4133   .text.FPUEnable:00000000 $t
+     /tmp/ccRj39le.s:4138   .text.FPUEnable:00000000 FPUEnable
+     /tmp/ccRj39le.s:4167   .text.FPUEnable:00000018 $d
+     /tmp/ccRj39le.s:4172   .text.FPUDisable:00000000 $t
+     /tmp/ccRj39le.s:4177   .text.FPUDisable:00000000 FPUDisable
+     /tmp/ccRj39le.s:4206   .text.FPUDisable:00000018 $d
+     /tmp/ccRj39le.s:4211   .text.FPUStackingEnable:00000000 $t
+     /tmp/ccRj39le.s:4216   .text.FPUStackingEnable:00000000 FPUStackingEnable
+     /tmp/ccRj39le.s:4244   .text.FPUStackingEnable:0000001c $d
+     /tmp/ccRj39le.s:4249   .text.FPULazyStackingEnable:00000000 $t
+     /tmp/ccRj39le.s:4254   .text.FPULazyStackingEnable:00000000 FPULazyStackingEnable
+     /tmp/ccRj39le.s:4281   .text.FPULazyStackingEnable:00000018 $d
+     /tmp/ccRj39le.s:4286   .text.FPUStackingDisable:00000000 $t
+     /tmp/ccRj39le.s:4291   .text.FPUStackingDisable:00000000 FPUStackingDisable
+     /tmp/ccRj39le.s:4318   .text.FPUStackingDisable:00000018 $d
+     /tmp/ccRj39le.s:4323   .text.FPUHalfPrecisionModeSet:00000000 $t
+     /tmp/ccRj39le.s:4328   .text.FPUHalfPrecisionModeSet:00000000 FPUHalfPrecisionModeSet
+     /tmp/ccRj39le.s:4362   .text.FPUHalfPrecisionModeSet:00000024 $d
+     /tmp/ccRj39le.s:4367   .text.FPUNaNModeSet:00000000 $t
+     /tmp/ccRj39le.s:4372   .text.FPUNaNModeSet:00000000 FPUNaNModeSet
+     /tmp/ccRj39le.s:4406   .text.FPUNaNModeSet:00000024 $d
+     /tmp/ccRj39le.s:4411   .text.FPUFlushToZeroModeSet:00000000 $t
+     /tmp/ccRj39le.s:4416   .text.FPUFlushToZeroModeSet:00000000 FPUFlushToZeroModeSet
+     /tmp/ccRj39le.s:4450   .text.FPUFlushToZeroModeSet:00000024 $d
+     /tmp/ccRj39le.s:4455   .text.FPURoundingModeSet:00000000 $t
+     /tmp/ccRj39le.s:4460   .text.FPURoundingModeSet:00000000 FPURoundingModeSet
+     /tmp/ccRj39le.s:4494   .text.FPURoundingModeSet:00000024 $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,355 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"cmdline.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c"
+ 1620              		.align	2
+ 1621              		.global	CmdLineProcess
+ 1622              		.thumb
+ 1623              		.thumb_func
+ 1625              	CmdLineProcess:
+ 1626              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // cmdline.c - Functions to help with processing command lines.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // Copyright (c) 2007-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // This is part of revision 8264 of the Stellaris Firmware Development Package.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //*****************************************************************************
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! \addtogroup cmdline_api
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! @{
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //*****************************************************************************
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** #include <string.h>
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** #include "utils/cmdline.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** 
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //*****************************************************************************
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** // Defines the maximum number of arguments that can be parsed.
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //*****************************************************************************
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** #ifndef CMDLINE_MAX_ARGS
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** #define CMDLINE_MAX_ARGS        8
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** #endif
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** 
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //*****************************************************************************
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! Process a command line string into arguments and execute the command.
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //!
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! \param pcCmdLine points to a string that contains a command line that was
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! obtained by an application by some means.
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //!
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! This function will take the supplied command line string and break it up
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! into individual arguments.  The first argument is treated as a command and
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! is searched for in the command table.  If the command is found, then the
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! command function is called and all of the command line arguments are passed
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! in the normal argc, argv form.
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //!
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! The command table is contained in an array named <tt>g_sCmdTable</tt> which
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! must be provided by the application.
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //!
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! \return Returns \b CMDLINE_BAD_CMD if the command is not found,
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! \b CMDLINE_TOO_MANY_ARGS if there are more arguments than can be parsed.
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //! Otherwise it returns the code that was returned by the command function.
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** //*****************************************************************************
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** int
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** CmdLineProcess(char *pcCmdLine)
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** {
+ 1627              		.loc 1 67 0
+ 1628              		.cfi_startproc
+ 1629              		@ args = 0, pretend = 0, frame = 24
+ 1630              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1631 0000 80B5     		push	{r7, lr}
+ 1632              	.LCFI0:
+ 1633              		.cfi_def_cfa_offset 8
+ 1634 0002 86B0     		sub	sp, sp, #24
+ 1635              	.LCFI1:
+ 1636              		.cfi_def_cfa_offset 32
+ 1637 0004 00AF     		add	r7, sp, #0
+ 1638              		.cfi_offset 14, -4
+ 1639              		.cfi_offset 7, -8
+ 1640              	.LCFI2:
+ 1641              		.cfi_def_cfa_register 7
+ 1642 0006 7860     		str	r0, [r7, #4]
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     static char *argv[CMDLINE_MAX_ARGS + 1];
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     char *pcChar;
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     int argc;
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     int bFindArg = 1;
+ 1643              		.loc 1 71 0
+ 1644 0008 4FF00103 		mov	r3, #1
+ 1645 000c FB60     		str	r3, [r7, #12]
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     tCmdLineEntry *pCmdEntry;
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** 
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     //
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     // Initialize the argument counter, and point to the beginning of the
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     // command line string.
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     //
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     argc = 0;
+ 1646              		.loc 1 78 0
+ 1647 000e 4FF00003 		mov	r3, #0
+ 1648 0012 3B61     		str	r3, [r7, #16]
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     pcChar = pcCmdLine;
+ 1649              		.loc 1 79 0
+ 1650 0014 7B68     		ldr	r3, [r7, #4]
+ 1651 0016 7B61     		str	r3, [r7, #20]
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** 
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     //
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     // Advance through the command line until a zero character is found.
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     //
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     while(*pcChar)
+ 1652              		.loc 1 84 0
+ 1653 0018 25E0     		b	.L2
+ 1654              	.L7:
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     {
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         //
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         // If there is a space, then replace it with a zero, and set the flag
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         // to search for the next argument.
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         //
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         if(*pcChar == ' ')
+ 1655              		.loc 1 90 0
+ 1656 001a 7B69     		ldr	r3, [r7, #20]
+ 1657 001c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1658 001e 202B     		cmp	r3, #32
+ 1659 0020 07D1     		bne	.L3
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         {
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             *pcChar = 0;
+ 1660              		.loc 1 92 0
+ 1661 0022 7B69     		ldr	r3, [r7, #20]
+ 1662 0024 4FF00002 		mov	r2, #0
+ 1663 0028 1A70     		strb	r2, [r3, #0]
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             bFindArg = 1;
+ 1664              		.loc 1 93 0
+ 1665 002a 4FF00103 		mov	r3, #1
+ 1666 002e FB60     		str	r3, [r7, #12]
+ 1667 0030 15E0     		b	.L4
+ 1668              	.L3:
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         }
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** 
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         //
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         // Otherwise it is not a space, so it must be a character that is part
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         // of an argument.
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         //
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         else
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         {
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             //
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             // If bFindArg is set, then that means we are looking for the start
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             // of the next argument.
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             //
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             if(bFindArg)
+ 1669              		.loc 1 106 0
+ 1670 0032 FB68     		ldr	r3, [r7, #12]
+ 1671 0034 002B     		cmp	r3, #0
+ 1672 0036 12D0     		beq	.L4
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             {
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 //
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 // As long as the maximum number of arguments has not been
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 // reached, then save the pointer to the start of this new arg
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 // in the argv array, and increment the count of args, argc.
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 //
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 if(argc < CMDLINE_MAX_ARGS)
+ 1673              		.loc 1 113 0
+ 1674 0038 3B69     		ldr	r3, [r7, #16]
+ 1675 003a 072B     		cmp	r3, #7
+ 1676 003c 0CDC     		bgt	.L5
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 {
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                     argv[argc] = pcChar;
+ 1677              		.loc 1 115 0
+ 1678 003e 1F4B     		ldr	r3, .L12
+ 1679 0040 3A69     		ldr	r2, [r7, #16]
+ 1680 0042 7969     		ldr	r1, [r7, #20]
+ 1681 0044 43F82210 		str	r1, [r3, r2, lsl #2]
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                     argc++;
+ 1682              		.loc 1 116 0
+ 1683 0048 3B69     		ldr	r3, [r7, #16]
+ 1684 004a 03F10103 		add	r3, r3, #1
+ 1685 004e 3B61     		str	r3, [r7, #16]
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                     bFindArg = 0;
+ 1686              		.loc 1 117 0
+ 1687 0050 4FF00003 		mov	r3, #0
+ 1688 0054 FB60     		str	r3, [r7, #12]
+ 1689 0056 02E0     		b	.L4
+ 1690              	.L5:
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 }
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** 
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 //
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 // The maximum number of arguments has been reached so return
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 // the error.
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 //
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 else
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 {
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                     return(CMDLINE_TOO_MANY_ARGS);
+ 1691              		.loc 1 126 0
+ 1692 0058 6FF00103 		mvn	r3, #1
+ 1693 005c 29E0     		b	.L6
+ 1694              	.L4:
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 }
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             }
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         }
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** 
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         //
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         // Advance to the next character in the command line.
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         //
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         pcChar++;
+ 1695              		.loc 1 134 0
+ 1696 005e 7B69     		ldr	r3, [r7, #20]
+ 1697 0060 03F10103 		add	r3, r3, #1
+ 1698 0064 7B61     		str	r3, [r7, #20]
+ 1699              	.L2:
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     while(*pcChar)
+ 1700              		.loc 1 84 0 discriminator 1
+ 1701 0066 7B69     		ldr	r3, [r7, #20]
+ 1702 0068 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1703 006a 002B     		cmp	r3, #0
+ 1704 006c D5D1     		bne	.L7
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     }
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** 
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     //
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     // If one or more arguments was found, then process the command.
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     //
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     if(argc)
+ 1705              		.loc 1 140 0
+ 1706 006e 3B69     		ldr	r3, [r7, #16]
+ 1707 0070 002B     		cmp	r3, #0
+ 1708 0072 1CD0     		beq	.L8
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     {
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         //
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         // Start at the beginning of the command table, to look for a matching
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         // command.
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         //
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         pCmdEntry = &g_sCmdTable[0];
+ 1709              		.loc 1 146 0
+ 1710 0074 124B     		ldr	r3, .L12+4
+ 1711 0076 BB60     		str	r3, [r7, #8]
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** 
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         //
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         // Search through the command table until a null command string is
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         // found, which marks the end of the table.
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         //
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         while(pCmdEntry->pcCmd)
+ 1712              		.loc 1 152 0
+ 1713 0078 15E0     		b	.L9
+ 1714              	.L11:
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         {
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             //
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             // If this command entry command string matches argv[0], then call
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             // the function for this command, passing the command line
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             // arguments.
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             //
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             if(!strcmp(argv[0], pCmdEntry->pcCmd))
+ 1715              		.loc 1 159 0
+ 1716 007a 104B     		ldr	r3, .L12
+ 1717 007c 1A68     		ldr	r2, [r3, #0]
+ 1718 007e BB68     		ldr	r3, [r7, #8]
+ 1719 0080 1B68     		ldr	r3, [r3, #0]
+ 1720 0082 1046     		mov	r0, r2
+ 1721 0084 1946     		mov	r1, r3
+ 1722 0086 FFF7FEFF 		bl	strcmp
+ 1723 008a 0346     		mov	r3, r0
+ 1724 008c 002B     		cmp	r3, #0
+ 1725 008e 06D1     		bne	.L10
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             {
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****                 return(pCmdEntry->pfnCmd(argc, argv));
+ 1726              		.loc 1 161 0
+ 1727 0090 BB68     		ldr	r3, [r7, #8]
+ 1728 0092 5B68     		ldr	r3, [r3, #4]
+ 1729 0094 3869     		ldr	r0, [r7, #16]
+ 1730 0096 0949     		ldr	r1, .L12
+ 1731 0098 9847     		blx	r3
+ 1732 009a 0346     		mov	r3, r0
+ 1733 009c 09E0     		b	.L6
+ 1734              	.L10:
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             }
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** 
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             //
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             // Not found, so advance to the next entry.
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             //
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****             pCmdEntry++;
+ 1735              		.loc 1 167 0
+ 1736 009e BB68     		ldr	r3, [r7, #8]
+ 1737 00a0 03F10C03 		add	r3, r3, #12
+ 1738 00a4 BB60     		str	r3, [r7, #8]
+ 1739              	.L9:
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         while(pCmdEntry->pcCmd)
+ 1740              		.loc 1 152 0 discriminator 1
+ 1741 00a6 BB68     		ldr	r3, [r7, #8]
+ 1742 00a8 1B68     		ldr	r3, [r3, #0]
+ 1743 00aa 002B     		cmp	r3, #0
+ 1744 00ac E5D1     		bne	.L11
+ 1745              	.L8:
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****         }
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     }
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** 
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     //
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     // Fall through to here means that no matching command was found, so return
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     // an error.
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     //
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c ****     return(CMDLINE_BAD_CMD);
+ 1746              		.loc 1 175 0
+ 1747 00ae 4FF0FF33 		mov	r3, #-1
+ 1748              	.L6:
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/cmdline.c **** }
+ 1749              		.loc 1 176 0
+ 1750 00b2 1846     		mov	r0, r3
+ 1751 00b4 07F11807 		add	r7, r7, #24
+ 1752 00b8 BD46     		mov	sp, r7
+ 1753 00ba 80BD     		pop	{r7, pc}
+ 1754              	.L13:
+ 1755              		.align	2
+ 1756              	.L12:
+ 1757 00bc 00000000 		.word	argv.4273
+ 1758 00c0 00000000 		.word	g_sCmdTable
+ 1759              		.cfi_endproc
+ 1760              	.LFE0:
+ 1762              		.bss
+ 1763              		.align	2
+ 1764              	argv.4273:
+ 1765 0000 00000000 		.space	36
+ 1765      00000000 
+ 1765      00000000 
+ 1765      00000000 
+ 1765      00000000 
+ 1766              		.text
+ 1767              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 cmdline.c
+     /tmp/ccR4VBwN.s:1620   .text.CmdLineProcess:00000000 $t
+     /tmp/ccR4VBwN.s:1625   .text.CmdLineProcess:00000000 CmdLineProcess
+     /tmp/ccR4VBwN.s:1757   .text.CmdLineProcess:000000bc $d
+     /tmp/ccR4VBwN.s:1764   .bss:00000000 argv.4273
+     /tmp/ccR4VBwN.s:1763   .bss:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+strcmp
+g_sCmdTable

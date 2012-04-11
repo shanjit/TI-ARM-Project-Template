@@ -1,0 +1,511 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"sysexc.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c"
+ 1643              		.align	2
+ 1644              		.global	SysExcIntRegister
+ 1645              		.thumb
+ 1646              		.thumb_func
+ 1648              	SysExcIntRegister:
+ 1649              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // sysexc.c - Routines for the System Exception Module.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // Copyright (c) 2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \addtogroup sysexc_api
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! @{
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** #include "inc/hw_ints.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** #include "inc/hw_sysexc.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** #include "inc/hw_types.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** #include "interrupt.h"
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** 
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! Registers an interrupt handler for the system exception interrupt.
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \param pfnHandler is a pointer to the function to be called when the system
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! exception interrupt occurs.
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! This function places the address of the system exception interrupt handler
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! into the interrupt vector table in SRAM.  This function also enables the 
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! global interrupt in the interrupt controller; specific system exception 
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! interrupts must be enabled via SysExcIntEnable().  It is the interrupt 
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! handler's responsibility to clear the interrupt source.
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \sa IntRegister() for important information about registering interrupt
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! handlers.
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \return None.
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** void
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** SysExcIntRegister(void (*pfnHandler)(void))
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** {
+ 1650              		.loc 1 58 0
+ 1651              		.cfi_startproc
+ 1652              		@ args = 0, pretend = 0, frame = 8
+ 1653              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1654 0000 80B5     		push	{r7, lr}
+ 1655              	.LCFI0:
+ 1656              		.cfi_def_cfa_offset 8
+ 1657 0002 82B0     		sub	sp, sp, #8
+ 1658              	.LCFI1:
+ 1659              		.cfi_def_cfa_offset 16
+ 1660 0004 00AF     		add	r7, sp, #0
+ 1661              		.cfi_offset 14, -4
+ 1662              		.cfi_offset 7, -8
+ 1663              	.LCFI2:
+ 1664              		.cfi_def_cfa_register 7
+ 1665 0006 7860     		str	r0, [r7, #4]
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     // Register the interrupt handler.
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     IntRegister(INT_SYSEXC, pfnHandler);
+ 1666              		.loc 1 62 0
+ 1667 0008 4FF07A00 		mov	r0, #122
+ 1668 000c 7968     		ldr	r1, [r7, #4]
+ 1669 000e FFF7FEFF 		bl	IntRegister
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** 
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     // Enable the system exception interrupt.
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     IntEnable(INT_SYSEXC);
+ 1670              		.loc 1 67 0
+ 1671 0012 4FF07A00 		mov	r0, #122
+ 1672 0016 FFF7FEFF 		bl	IntEnable
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** }
+ 1673              		.loc 1 68 0
+ 1674 001a 07F10807 		add	r7, r7, #8
+ 1675 001e BD46     		mov	sp, r7
+ 1676 0020 80BD     		pop	{r7, pc}
+ 1677              		.cfi_endproc
+ 1678              	.LFE0:
+ 1680 0022 00BF     		.section	.text.SysExcIntUnregister,"ax",%progbits
+ 1681              		.align	2
+ 1682              		.global	SysExcIntUnregister
+ 1683              		.thumb
+ 1684              		.thumb_func
+ 1686              	SysExcIntUnregister:
+ 1687              	.LFB1:
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** 
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! Unregisters the system exception interrupt handler.
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! This function removes the system exception interrupt handler from the
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! vector table in SRAM.  This function also masks off the system exception 
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! interrupt in the interrupt controller so that the interrupt handler is no 
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! longer called.
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \sa IntRegister() for important information about registering interrupt
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! handlers.
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \return None.
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** void
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** SysExcIntUnregister(void)
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** {
+ 1688              		.loc 1 87 0
+ 1689              		.cfi_startproc
+ 1690              		@ args = 0, pretend = 0, frame = 0
+ 1691              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1692 0000 80B5     		push	{r7, lr}
+ 1693              	.LCFI3:
+ 1694              		.cfi_def_cfa_offset 8
+ 1695 0002 00AF     		add	r7, sp, #0
+ 1696              		.cfi_offset 14, -4
+ 1697              		.cfi_offset 7, -8
+ 1698              	.LCFI4:
+ 1699              		.cfi_def_cfa_register 7
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     // Disable the system exception interrupt.
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     IntDisable(INT_SYSEXC);
+ 1700              		.loc 1 91 0
+ 1701 0004 4FF07A00 		mov	r0, #122
+ 1702 0008 FFF7FEFF 		bl	IntDisable
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** 
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     // Unregister the system exception interrupt handler.
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     IntUnregister(INT_SYSEXC);
+ 1703              		.loc 1 96 0
+ 1704 000c 4FF07A00 		mov	r0, #122
+ 1705 0010 FFF7FEFF 		bl	IntUnregister
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** }
+ 1706              		.loc 1 97 0
+ 1707 0014 80BD     		pop	{r7, pc}
+ 1708              		.cfi_endproc
+ 1709              	.LFE1:
+ 1711 0016 00BF     		.section	.text.SysExcIntEnable,"ax",%progbits
+ 1712              		.align	2
+ 1713              		.global	SysExcIntEnable
+ 1714              		.thumb
+ 1715              		.thumb_func
+ 1717              	SysExcIntEnable:
+ 1718              	.LFB2:
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** 
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! Enables individual system exception interrupt sources.
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \param ulIntFlags is the bit mask of the interrupt sources to be enabled.
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! This function enables the indicated system exception interrupt sources.
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! Only the sources that are enabled can be reflected to the processor
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! interrupt; disabled sources have no effect on the processor.
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! The \e ulIntFlags parameter is the logical OR of any of the following:
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_IXC - Floating-point inexact exception interrupt
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_OFC - Floating-point overflow exception interrupt
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_UFC - Floating-point underflow exception interrupt
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_IOC - Floating-point invalid operation interrupt
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_DZC - Floating-point divide by zero exception interrupt
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_IDC - Floating-point input denormal exception interrupt
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \return None.
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** void
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** SysExcIntEnable(unsigned long ulIntFlags)
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** {
+ 1719              		.loc 1 123 0
+ 1720              		.cfi_startproc
+ 1721              		@ args = 0, pretend = 0, frame = 8
+ 1722              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1723              		@ link register save eliminated.
+ 1724 0000 80B4     		push	{r7}
+ 1725              	.LCFI5:
+ 1726              		.cfi_def_cfa_offset 4
+ 1727 0002 83B0     		sub	sp, sp, #12
+ 1728              	.LCFI6:
+ 1729              		.cfi_def_cfa_offset 16
+ 1730 0004 00AF     		add	r7, sp, #0
+ 1731              		.cfi_offset 7, -4
+ 1732              	.LCFI7:
+ 1733              		.cfi_def_cfa_register 7
+ 1734 0006 7860     		str	r0, [r7, #4]
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     // Enable the specified interrupts.
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     HWREG(SYSEXC_IM) |= ulIntFlags;
+ 1735              		.loc 1 127 0
+ 1736 0008 054B     		ldr	r3, .L4
+ 1737 000a 054A     		ldr	r2, .L4
+ 1738 000c 1168     		ldr	r1, [r2, #0]
+ 1739 000e 7A68     		ldr	r2, [r7, #4]
+ 1740 0010 41EA0202 		orr	r2, r1, r2
+ 1741 0014 1A60     		str	r2, [r3, #0]
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** }
+ 1742              		.loc 1 128 0
+ 1743 0016 07F10C07 		add	r7, r7, #12
+ 1744 001a BD46     		mov	sp, r7
+ 1745 001c 80BC     		pop	{r7}
+ 1746 001e 7047     		bx	lr
+ 1747              	.L5:
+ 1748              		.align	2
+ 1749              	.L4:
+ 1750 0020 04900F40 		.word	1074761732
+ 1751              		.cfi_endproc
+ 1752              	.LFE2:
+ 1754              		.section	.text.SysExcIntDisable,"ax",%progbits
+ 1755              		.align	2
+ 1756              		.global	SysExcIntDisable
+ 1757              		.thumb
+ 1758              		.thumb_func
+ 1760              	SysExcIntDisable:
+ 1761              	.LFB3:
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** 
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! Disables individual system exception interrupt sources.
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \param ulIntFlags is the bit mask of the interrupt sources to be disabled.
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! This function disables the indicated system exception interrupt sources.
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! Only sources that are enabled can be reflected to the processor interrupt;
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! disabled sources have no effect on the processor.
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! The \e ulIntFlags parameter is the logical OR of any of the following:
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_IXC - Floating-point inexact exception interrupt
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_OFC - Floating-point overflow exception interrupt
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_UFC - Floating-point underflow exception interrupt
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_IOC - Floating-point invalid operation interrupt
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_DZC - Floating-point divide by zero exception interrupt
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_IDC - Floating-point input denormal exception interrupt
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \return None.
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** void
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** SysExcIntDisable(unsigned long ulIntFlags)
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** {
+ 1762              		.loc 1 154 0
+ 1763              		.cfi_startproc
+ 1764              		@ args = 0, pretend = 0, frame = 8
+ 1765              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1766              		@ link register save eliminated.
+ 1767 0000 80B4     		push	{r7}
+ 1768              	.LCFI8:
+ 1769              		.cfi_def_cfa_offset 4
+ 1770 0002 83B0     		sub	sp, sp, #12
+ 1771              	.LCFI9:
+ 1772              		.cfi_def_cfa_offset 16
+ 1773 0004 00AF     		add	r7, sp, #0
+ 1774              		.cfi_offset 7, -4
+ 1775              	.LCFI10:
+ 1776              		.cfi_def_cfa_register 7
+ 1777 0006 7860     		str	r0, [r7, #4]
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     // Disable the specified interrupts.
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     HWREG(SYSEXC_IM) &= ~(ulIntFlags);
+ 1778              		.loc 1 158 0
+ 1779 0008 064B     		ldr	r3, .L7
+ 1780 000a 064A     		ldr	r2, .L7
+ 1781 000c 1168     		ldr	r1, [r2, #0]
+ 1782 000e 7A68     		ldr	r2, [r7, #4]
+ 1783 0010 6FEA0202 		mvn	r2, r2
+ 1784 0014 01EA0202 		and	r2, r1, r2
+ 1785 0018 1A60     		str	r2, [r3, #0]
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** }
+ 1786              		.loc 1 159 0
+ 1787 001a 07F10C07 		add	r7, r7, #12
+ 1788 001e BD46     		mov	sp, r7
+ 1789 0020 80BC     		pop	{r7}
+ 1790 0022 7047     		bx	lr
+ 1791              	.L8:
+ 1792              		.align	2
+ 1793              	.L7:
+ 1794 0024 04900F40 		.word	1074761732
+ 1795              		.cfi_endproc
+ 1796              	.LFE3:
+ 1798              		.section	.text.SysExcIntStatus,"ax",%progbits
+ 1799              		.align	2
+ 1800              		.global	SysExcIntStatus
+ 1801              		.thumb
+ 1802              		.thumb_func
+ 1804              	SysExcIntStatus:
+ 1805              	.LFB4:
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** 
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! Gets the current system exception interrupt status.
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \param bMasked is \b false if the raw interrupt status is required and
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \b true if the masked interrupt status is required.
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! This function returns the system exception interrupt status.  Either the
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! raw interrupt status or the status of interrupts that are allowed to
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! reflect to the processor can be returned.
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \return Returns the current system exception interrupt status, enumerated
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! as the logical OR of \b SYSEXC_INT_FP_IXC, \b SYSEXC_INT_FP_OFC,
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \b SYSEXC_INT_FP_UFC, \b SYSEXC_INT_FP_IOC, \b SYSEXC_INT_FP_DZC, and
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \b SYSEXC_INT_FP_IDC.
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** unsigned long
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** SysExcIntStatus(tBoolean bMasked)
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** {
+ 1806              		.loc 1 180 0
+ 1807              		.cfi_startproc
+ 1808              		@ args = 0, pretend = 0, frame = 8
+ 1809              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1810              		@ link register save eliminated.
+ 1811 0000 80B4     		push	{r7}
+ 1812              	.LCFI11:
+ 1813              		.cfi_def_cfa_offset 4
+ 1814 0002 83B0     		sub	sp, sp, #12
+ 1815              	.LCFI12:
+ 1816              		.cfi_def_cfa_offset 16
+ 1817 0004 00AF     		add	r7, sp, #0
+ 1818              		.cfi_offset 7, -4
+ 1819              	.LCFI13:
+ 1820              		.cfi_def_cfa_register 7
+ 1821 0006 0346     		mov	r3, r0
+ 1822 0008 FB71     		strb	r3, [r7, #7]
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     // Return either the interrupt status or the raw interrupt status as
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     // requested.
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     if(bMasked)
+ 1823              		.loc 1 185 0
+ 1824 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1825 000c 002B     		cmp	r3, #0
+ 1826 000e 02D0     		beq	.L10
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     {
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****         return(HWREG(SYSEXC_MIS));
+ 1827              		.loc 1 187 0
+ 1828 0010 054B     		ldr	r3, .L12
+ 1829 0012 1B68     		ldr	r3, [r3, #0]
+ 1830 0014 01E0     		b	.L11
+ 1831              	.L10:
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     }
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     else
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     {
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****         return(HWREG(SYSEXC_RIS));
+ 1832              		.loc 1 191 0
+ 1833 0016 054B     		ldr	r3, .L12+4
+ 1834 0018 1B68     		ldr	r3, [r3, #0]
+ 1835              	.L11:
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     }
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** }
+ 1836              		.loc 1 193 0
+ 1837 001a 1846     		mov	r0, r3
+ 1838 001c 07F10C07 		add	r7, r7, #12
+ 1839 0020 BD46     		mov	sp, r7
+ 1840 0022 80BC     		pop	{r7}
+ 1841 0024 7047     		bx	lr
+ 1842              	.L13:
+ 1843 0026 00BF     		.align	2
+ 1844              	.L12:
+ 1845 0028 08900F40 		.word	1074761736
+ 1846 002c 00900F40 		.word	1074761728
+ 1847              		.cfi_endproc
+ 1848              	.LFE4:
+ 1850              		.section	.text.SysExcIntClear,"ax",%progbits
+ 1851              		.align	2
+ 1852              		.global	SysExcIntClear
+ 1853              		.thumb
+ 1854              		.thumb_func
+ 1856              	SysExcIntClear:
+ 1857              	.LFB5:
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** 
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! Clears system exception interrupt sources.
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be cleared.
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! This function clears the specified system exception interrupt sources, so 
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! that they no longer assert.  This function must be called in the interrupt
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! handler to keep the interrupt from being recognized again immediately upon 
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! exit.
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! The \e ulIntFlags parameter is the logical OR of any of the following:
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_IXC - Floating-point inexact exception interrupt
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_OFC - Floating-point overflow exception interrupt
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_UFC - Floating-point underflow exception interrupt
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_IOC - Floating-point invalid operation interrupt
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_DZC - Floating-point divide by zero exception interrupt
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! - \b SYSEXC_INT_FP_IDC - Floating-point input denormal exception interrupt
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \note Because there is a write buffer in the Cortex-M processor, it may
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! take several clock cycles before the interrupt source is actually cleared.
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! Therefore, it is recommended that the interrupt source be cleared early in
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! the interrupt handler (as opposed to the very last action) to avoid
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! returning from the interrupt handler before the interrupt source is
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! actually cleared.  Failure to do so may result in the interrupt handler
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! being immediately reentered (because the interrupt controller still sees
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! the interrupt source asserted).
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //!
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //! \return None.
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** //*****************************************************************************
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** void
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** SysExcIntClear(unsigned long ulIntFlags)
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** {
+ 1858              		.loc 1 229 0
+ 1859              		.cfi_startproc
+ 1860              		@ args = 0, pretend = 0, frame = 8
+ 1861              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1862              		@ link register save eliminated.
+ 1863 0000 80B4     		push	{r7}
+ 1864              	.LCFI14:
+ 1865              		.cfi_def_cfa_offset 4
+ 1866 0002 83B0     		sub	sp, sp, #12
+ 1867              	.LCFI15:
+ 1868              		.cfi_def_cfa_offset 16
+ 1869 0004 00AF     		add	r7, sp, #0
+ 1870              		.cfi_offset 7, -4
+ 1871              	.LCFI16:
+ 1872              		.cfi_def_cfa_register 7
+ 1873 0006 7860     		str	r0, [r7, #4]
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     // Clear the requested interrupt sources.
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     //
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c ****     HWREG(SYSEXC_IC) = ulIntFlags;
+ 1874              		.loc 1 233 0
+ 1875 0008 034B     		ldr	r3, .L15
+ 1876 000a 7A68     		ldr	r2, [r7, #4]
+ 1877 000c 1A60     		str	r2, [r3, #0]
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/sysexc.c **** }
+ 1878              		.loc 1 234 0
+ 1879 000e 07F10C07 		add	r7, r7, #12
+ 1880 0012 BD46     		mov	sp, r7
+ 1881 0014 80BC     		pop	{r7}
+ 1882 0016 7047     		bx	lr
+ 1883              	.L16:
+ 1884              		.align	2
+ 1885              	.L15:
+ 1886 0018 0C900F40 		.word	1074761740
+ 1887              		.cfi_endproc
+ 1888              	.LFE5:
+ 1890              		.text
+ 1891              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 sysexc.c
+     /tmp/ccc1GjOm.s:1643   .text.SysExcIntRegister:00000000 $t
+     /tmp/ccc1GjOm.s:1648   .text.SysExcIntRegister:00000000 SysExcIntRegister
+     /tmp/ccc1GjOm.s:1681   .text.SysExcIntUnregister:00000000 $t
+     /tmp/ccc1GjOm.s:1686   .text.SysExcIntUnregister:00000000 SysExcIntUnregister
+     /tmp/ccc1GjOm.s:1712   .text.SysExcIntEnable:00000000 $t
+     /tmp/ccc1GjOm.s:1717   .text.SysExcIntEnable:00000000 SysExcIntEnable
+     /tmp/ccc1GjOm.s:1750   .text.SysExcIntEnable:00000020 $d
+     /tmp/ccc1GjOm.s:1755   .text.SysExcIntDisable:00000000 $t
+     /tmp/ccc1GjOm.s:1760   .text.SysExcIntDisable:00000000 SysExcIntDisable
+     /tmp/ccc1GjOm.s:1794   .text.SysExcIntDisable:00000024 $d
+     /tmp/ccc1GjOm.s:1799   .text.SysExcIntStatus:00000000 $t
+     /tmp/ccc1GjOm.s:1804   .text.SysExcIntStatus:00000000 SysExcIntStatus
+     /tmp/ccc1GjOm.s:1845   .text.SysExcIntStatus:00000028 $d
+     /tmp/ccc1GjOm.s:1851   .text.SysExcIntClear:00000000 $t
+     /tmp/ccc1GjOm.s:1856   .text.SysExcIntClear:00000000 SysExcIntClear
+     /tmp/ccc1GjOm.s:1886   .text.SysExcIntClear:00000018 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister

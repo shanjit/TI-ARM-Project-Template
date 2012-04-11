@@ -1,0 +1,882 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"comp.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c"
+ 2411              		.align	2
+ 2412              		.global	ComparatorConfigure
+ 2413              		.thumb
+ 2414              		.thumb_func
+ 2416              	ComparatorConfigure:
+ 2417              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // comp.c - Driver for the analog comparator.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // Copyright (c) 2005-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \addtogroup comp_api
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! @{
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** #include "inc/hw_comp.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** #include "inc/hw_ints.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** #include "inc/hw_memmap.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** #include "inc/hw_types.h"
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** #include "driverlib/comp.h"
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** #include "driverlib/debug.h"
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** #include "driverlib/interrupt.h"
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! Configures a comparator.
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulBase is the base address of the comparator module.
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulComp is the index of the comparator to configure.
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulConfig is the configuration of the comparator.
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! This function configures a comparator.  The \e ulConfig parameter is the
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! result of a logical OR operation between the \b COMP_TRIG_xxx,
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \b COMP_INT_xxx, \b COMP_ASRCP_xxx, and \b COMP_OUTPUT_xxx values.
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! The \b COMP_TRIG_xxx term can take on the following values:
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_TRIG_NONE to have no trigger to the ADC.
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_TRIG_HIGH to trigger the ADC when the comparator output is high.
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_TRIG_LOW to trigger the ADC when the comparator output is low.
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_TRIG_FALL to trigger the ADC when the comparator output goes low.
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_TRIG_RISE to trigger the ADC when the comparator output goes
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! high.
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_TRIG_BOTH to trigger the ADC when the comparator output goes low
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! or high.
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! The \b COMP_INT_xxx term can take on the following values:
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_INT_HIGH to generate an interrupt when the comparator output is
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! high.
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_INT_LOW to generate an interrupt when the comparator output is
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! low.
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_INT_FALL to generate an interrupt when the comparator output goes
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! low.
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_INT_RISE to generate an interrupt when the comparator output goes
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! high.
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_INT_BOTH to generate an interrupt when the comparator output goes
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! low or high.
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! The \b COMP_ASRCP_xxx term can take on the following values:
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_ASRCP_PIN to use the dedicated Comp+ pin as the reference
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! voltage.
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_ASRCP_PIN0 to use the Comp0+ pin as the reference voltage (this
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! the same as \b COMP_ASRCP_PIN for the comparator 0).
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_ASRCP_REF to use the internally generated voltage as the
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! reference voltage.
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! The \b COMP_OUTPUT_xxx term can take on the following values:
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_OUTPUT_NORMAL to enable a non-inverted output from the comparator
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! to a device pin.
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_OUTPUT_INVERT to enable an inverted output from the comparator to
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! a device pin.
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_OUTPUT_NONE is deprecated and behaves the same as
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \b COMP_OUTPUT_NORMAL.
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \return None.
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** void
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** ComparatorConfigure(unsigned long ulBase, unsigned long ulComp,
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****                     unsigned long ulConfig)
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** {
+ 2418              		.loc 1 100 0
+ 2419              		.cfi_startproc
+ 2420              		@ args = 0, pretend = 0, frame = 16
+ 2421              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2422              		@ link register save eliminated.
+ 2423 0000 80B4     		push	{r7}
+ 2424              	.LCFI0:
+ 2425              		.cfi_def_cfa_offset 4
+ 2426 0002 85B0     		sub	sp, sp, #20
+ 2427              	.LCFI1:
+ 2428              		.cfi_def_cfa_offset 24
+ 2429 0004 00AF     		add	r7, sp, #0
+ 2430              		.cfi_offset 7, -4
+ 2431              	.LCFI2:
+ 2432              		.cfi_def_cfa_register 7
+ 2433 0006 F860     		str	r0, [r7, #12]
+ 2434 0008 B960     		str	r1, [r7, #8]
+ 2435 000a 7A60     		str	r2, [r7, #4]
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Check the arguments.
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulBase == COMP_BASE);
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulComp < 3);
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Configure this comparator.
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     HWREG(ulBase + (ulComp * 0x20) + COMP_O_ACCTL0) = ulConfig;
+ 2436              		.loc 1 110 0
+ 2437 000c BB68     		ldr	r3, [r7, #8]
+ 2438 000e 4FEA4312 		lsl	r2, r3, #5
+ 2439 0012 FB68     		ldr	r3, [r7, #12]
+ 2440 0014 D318     		adds	r3, r2, r3
+ 2441 0016 03F12403 		add	r3, r3, #36
+ 2442 001a 7A68     		ldr	r2, [r7, #4]
+ 2443 001c 1A60     		str	r2, [r3, #0]
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** }
+ 2444              		.loc 1 111 0
+ 2445 001e 07F11407 		add	r7, r7, #20
+ 2446 0022 BD46     		mov	sp, r7
+ 2447 0024 80BC     		pop	{r7}
+ 2448 0026 7047     		bx	lr
+ 2449              		.cfi_endproc
+ 2450              	.LFE0:
+ 2452              		.section	.text.ComparatorRefSet,"ax",%progbits
+ 2453              		.align	2
+ 2454              		.global	ComparatorRefSet
+ 2455              		.thumb
+ 2456              		.thumb_func
+ 2458              	ComparatorRefSet:
+ 2459              	.LFB1:
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! Sets the internal reference voltage.
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulBase is the base address of the comparator module.
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulRef is the desired reference voltage.
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! This function sets the internal reference voltage value.  The voltage is
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! specified as one of the following values:
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_OFF to turn off the reference voltage
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_0V to set the reference voltage to 0 V
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_0_1375V to set the reference voltage to 0.1375 V
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_0_275V to set the reference voltage to 0.275 V
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_0_4125V to set the reference voltage to 0.4125 V
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_0_55V to set the reference voltage to 0.55 V
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_0_6875V to set the reference voltage to 0.6875 V
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_0_825V to set the reference voltage to 0.825 V
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_0_928125V to set the reference voltage to 0.928125 V
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_0_9625V to set the reference voltage to 0.9625 V
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_03125V to set the reference voltage to 1.03125 V
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_134375V to set the reference voltage to 1.134375 V
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_1V to set the reference voltage to 1.1 V
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_2375V to set the reference voltage to 1.2375 V
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_340625V to set the reference voltage to 1.340625 V
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_375V to set the reference voltage to 1.375 V
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_44375V to set the reference voltage to 1.44375 V
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_5125V to set the reference voltage to 1.5125 V
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_546875V to set the reference voltage to 1.546875 V
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_65V to set the reference voltage to 1.65 V
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_753125V to set the reference voltage to 1.753125 V
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_7875V to set the reference voltage to 1.7875 V
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_85625V to set the reference voltage to 1.85625 V
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_925V to set the reference voltage to 1.925 V
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_1_959375V to set the reference voltage to 1.959375 V
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_2_0625V to set the reference voltage to 2.0625 V
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_2_165625V to set the reference voltage to 2.165625 V
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_2_26875V to set the reference voltage to 2.26875 V
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! - \b COMP_REF_2_371875V to set the reference voltage to 2.371875 V
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \return None.
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** void
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** ComparatorRefSet(unsigned long ulBase, unsigned long ulRef)
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** {
+ 2460              		.loc 1 158 0
+ 2461              		.cfi_startproc
+ 2462              		@ args = 0, pretend = 0, frame = 8
+ 2463              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2464              		@ link register save eliminated.
+ 2465 0000 80B4     		push	{r7}
+ 2466              	.LCFI3:
+ 2467              		.cfi_def_cfa_offset 4
+ 2468 0002 83B0     		sub	sp, sp, #12
+ 2469              	.LCFI4:
+ 2470              		.cfi_def_cfa_offset 16
+ 2471 0004 00AF     		add	r7, sp, #0
+ 2472              		.cfi_offset 7, -4
+ 2473              	.LCFI5:
+ 2474              		.cfi_def_cfa_register 7
+ 2475 0006 7860     		str	r0, [r7, #4]
+ 2476 0008 3960     		str	r1, [r7, #0]
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Check the arguments.
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulBase == COMP_BASE);
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Set the voltage reference voltage as requested.
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     HWREG(ulBase + COMP_O_ACREFCTL) = ulRef;
+ 2477              		.loc 1 167 0
+ 2478 000a 7B68     		ldr	r3, [r7, #4]
+ 2479 000c 03F11003 		add	r3, r3, #16
+ 2480 0010 3A68     		ldr	r2, [r7, #0]
+ 2481 0012 1A60     		str	r2, [r3, #0]
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** }
+ 2482              		.loc 1 168 0
+ 2483 0014 07F10C07 		add	r7, r7, #12
+ 2484 0018 BD46     		mov	sp, r7
+ 2485 001a 80BC     		pop	{r7}
+ 2486 001c 7047     		bx	lr
+ 2487              		.cfi_endproc
+ 2488              	.LFE1:
+ 2490 001e 00BF     		.section	.text.ComparatorValueGet,"ax",%progbits
+ 2491              		.align	2
+ 2492              		.global	ComparatorValueGet
+ 2493              		.thumb
+ 2494              		.thumb_func
+ 2496              	ComparatorValueGet:
+ 2497              	.LFB2:
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! Gets the current comparator output value.
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulBase is the base address of the comparator module.
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulComp is the index of the comparator.
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! This function retrieves the current value of the comparator output.
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \return Returns \b true if the comparator output is high and \b false if
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! the comparator output is low.
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** tBoolean
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** ComparatorValueGet(unsigned long ulBase, unsigned long ulComp)
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** {
+ 2498              		.loc 1 185 0
+ 2499              		.cfi_startproc
+ 2500              		@ args = 0, pretend = 0, frame = 8
+ 2501              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2502              		@ link register save eliminated.
+ 2503 0000 80B4     		push	{r7}
+ 2504              	.LCFI6:
+ 2505              		.cfi_def_cfa_offset 4
+ 2506 0002 83B0     		sub	sp, sp, #12
+ 2507              	.LCFI7:
+ 2508              		.cfi_def_cfa_offset 16
+ 2509 0004 00AF     		add	r7, sp, #0
+ 2510              		.cfi_offset 7, -4
+ 2511              	.LCFI8:
+ 2512              		.cfi_def_cfa_register 7
+ 2513 0006 7860     		str	r0, [r7, #4]
+ 2514 0008 3960     		str	r1, [r7, #0]
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Check the arguments.
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulBase == COMP_BASE);
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulComp < 3);
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Return the appropriate value based on the comparator's present output
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // value.
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     if(HWREG(ulBase + (ulComp * 0x20) + COMP_O_ACSTAT0) & COMP_ACSTAT0_OVAL)
+ 2515              		.loc 1 196 0
+ 2516 000a 3B68     		ldr	r3, [r7, #0]
+ 2517 000c 4FEA4312 		lsl	r2, r3, #5
+ 2518 0010 7B68     		ldr	r3, [r7, #4]
+ 2519 0012 D318     		adds	r3, r2, r3
+ 2520 0014 03F12003 		add	r3, r3, #32
+ 2521 0018 1B68     		ldr	r3, [r3, #0]
+ 2522 001a 03F00203 		and	r3, r3, #2
+ 2523 001e 002B     		cmp	r3, #0
+ 2524 0020 02D0     		beq	.L4
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     {
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****         return(true);
+ 2525              		.loc 1 198 0
+ 2526 0022 4FF00103 		mov	r3, #1
+ 2527 0026 01E0     		b	.L5
+ 2528              	.L4:
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     }
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     else
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     {
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****         return(false);
+ 2529              		.loc 1 202 0
+ 2530 0028 4FF00003 		mov	r3, #0
+ 2531              	.L5:
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     }
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** }
+ 2532              		.loc 1 204 0
+ 2533 002c 1846     		mov	r0, r3
+ 2534 002e 07F10C07 		add	r7, r7, #12
+ 2535 0032 BD46     		mov	sp, r7
+ 2536 0034 80BC     		pop	{r7}
+ 2537 0036 7047     		bx	lr
+ 2538              		.cfi_endproc
+ 2539              	.LFE2:
+ 2541              		.section	.text.ComparatorIntRegister,"ax",%progbits
+ 2542              		.align	2
+ 2543              		.global	ComparatorIntRegister
+ 2544              		.thumb
+ 2545              		.thumb_func
+ 2547              	ComparatorIntRegister:
+ 2548              	.LFB3:
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! Registers an interrupt handler for the comparator interrupt.
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulBase is the base address of the comparator module.
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulComp is the index of the comparator.
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param pfnHandler is a pointer to the function to be called when the
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! comparator interrupt occurs.
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! This function sets the handler to be called when the comparator interrupt occurs
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! and enables the interrupt in the interrupt controller.  It is the interrupt
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! handler's responsibility to clear the interrupt source via
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! ComparatorIntClear().
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \sa IntRegister() for important information about registering interrupt
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! handlers.
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \return None.
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** void
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** ComparatorIntRegister(unsigned long ulBase, unsigned long ulComp,
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****                       void (*pfnHandler)(void))
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** {
+ 2549              		.loc 1 229 0
+ 2550              		.cfi_startproc
+ 2551              		@ args = 0, pretend = 0, frame = 16
+ 2552              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2553 0000 80B5     		push	{r7, lr}
+ 2554              	.LCFI9:
+ 2555              		.cfi_def_cfa_offset 8
+ 2556 0002 84B0     		sub	sp, sp, #16
+ 2557              	.LCFI10:
+ 2558              		.cfi_def_cfa_offset 24
+ 2559 0004 00AF     		add	r7, sp, #0
+ 2560              		.cfi_offset 14, -4
+ 2561              		.cfi_offset 7, -8
+ 2562              	.LCFI11:
+ 2563              		.cfi_def_cfa_register 7
+ 2564 0006 F860     		str	r0, [r7, #12]
+ 2565 0008 B960     		str	r1, [r7, #8]
+ 2566 000a 7A60     		str	r2, [r7, #4]
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Check the arguments.
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulBase == COMP_BASE);
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulComp < 3);
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Register the interrupt handler, returning an error if an error occurs.
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     IntRegister(INT_COMP0 + ulComp, pfnHandler);
+ 2567              		.loc 1 239 0
+ 2568 000c BB68     		ldr	r3, [r7, #8]
+ 2569 000e 03F12903 		add	r3, r3, #41
+ 2570 0012 1846     		mov	r0, r3
+ 2571 0014 7968     		ldr	r1, [r7, #4]
+ 2572 0016 FFF7FEFF 		bl	IntRegister
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Enable the interrupt in the interrupt controller.
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     IntEnable(INT_COMP0 + ulComp);
+ 2573              		.loc 1 244 0
+ 2574 001a BB68     		ldr	r3, [r7, #8]
+ 2575 001c 03F12903 		add	r3, r3, #41
+ 2576 0020 1846     		mov	r0, r3
+ 2577 0022 FFF7FEFF 		bl	IntEnable
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Enable the comparator interrupt.
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     HWREG(ulBase + COMP_O_ACINTEN) |= 1 << ulComp;
+ 2578              		.loc 1 249 0
+ 2579 0026 FB68     		ldr	r3, [r7, #12]
+ 2580 0028 03F10803 		add	r3, r3, #8
+ 2581 002c FA68     		ldr	r2, [r7, #12]
+ 2582 002e 02F10802 		add	r2, r2, #8
+ 2583 0032 1168     		ldr	r1, [r2, #0]
+ 2584 0034 BA68     		ldr	r2, [r7, #8]
+ 2585 0036 4FF00100 		mov	r0, #1
+ 2586 003a 00FA02F2 		lsl	r2, r0, r2
+ 2587 003e 41EA0202 		orr	r2, r1, r2
+ 2588 0042 1A60     		str	r2, [r3, #0]
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** }
+ 2589              		.loc 1 250 0
+ 2590 0044 07F11007 		add	r7, r7, #16
+ 2591 0048 BD46     		mov	sp, r7
+ 2592 004a 80BD     		pop	{r7, pc}
+ 2593              		.cfi_endproc
+ 2594              	.LFE3:
+ 2596              		.section	.text.ComparatorIntUnregister,"ax",%progbits
+ 2597              		.align	2
+ 2598              		.global	ComparatorIntUnregister
+ 2599              		.thumb
+ 2600              		.thumb_func
+ 2602              	ComparatorIntUnregister:
+ 2603              	.LFB4:
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! Unregisters an interrupt handler for a comparator interrupt.
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulBase is the base address of the comparator module.
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulComp is the index of the comparator.
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! This function clears the handler to be called when a comparator interrupt
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! occurs.  This function also masks off the interrupt in the interrupt controller
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! so that the interrupt handler no longer is called.
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \sa IntRegister() for important information about registering interrupt
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! handlers.
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \return None.
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** void
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** ComparatorIntUnregister(unsigned long ulBase, unsigned long ulComp)
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** {
+ 2604              		.loc 1 271 0
+ 2605              		.cfi_startproc
+ 2606              		@ args = 0, pretend = 0, frame = 8
+ 2607              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2608 0000 80B5     		push	{r7, lr}
+ 2609              	.LCFI12:
+ 2610              		.cfi_def_cfa_offset 8
+ 2611 0002 82B0     		sub	sp, sp, #8
+ 2612              	.LCFI13:
+ 2613              		.cfi_def_cfa_offset 16
+ 2614 0004 00AF     		add	r7, sp, #0
+ 2615              		.cfi_offset 14, -4
+ 2616              		.cfi_offset 7, -8
+ 2617              	.LCFI14:
+ 2618              		.cfi_def_cfa_register 7
+ 2619 0006 7860     		str	r0, [r7, #4]
+ 2620 0008 3960     		str	r1, [r7, #0]
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Check the arguments.
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulBase == COMP_BASE);
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulComp < 3);
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Disable the comparator interrupt.
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     HWREG(ulBase + COMP_O_ACINTEN) &= ~(1 << ulComp);
+ 2621              		.loc 1 281 0
+ 2622 000a 7B68     		ldr	r3, [r7, #4]
+ 2623 000c 03F10803 		add	r3, r3, #8
+ 2624 0010 7A68     		ldr	r2, [r7, #4]
+ 2625 0012 02F10802 		add	r2, r2, #8
+ 2626 0016 1168     		ldr	r1, [r2, #0]
+ 2627 0018 3A68     		ldr	r2, [r7, #0]
+ 2628 001a 4FF00100 		mov	r0, #1
+ 2629 001e 00FA02F2 		lsl	r2, r0, r2
+ 2630 0022 6FEA0202 		mvn	r2, r2
+ 2631 0026 01EA0202 		and	r2, r1, r2
+ 2632 002a 1A60     		str	r2, [r3, #0]
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Disable the interrupt in the interrupt controller.
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     IntDisable(INT_COMP0 + ulComp);
+ 2633              		.loc 1 286 0
+ 2634 002c 3B68     		ldr	r3, [r7, #0]
+ 2635 002e 03F12903 		add	r3, r3, #41
+ 2636 0032 1846     		mov	r0, r3
+ 2637 0034 FFF7FEFF 		bl	IntDisable
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Unregister the interrupt handler.
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     IntUnregister(INT_COMP0 + ulComp);
+ 2638              		.loc 1 291 0
+ 2639 0038 3B68     		ldr	r3, [r7, #0]
+ 2640 003a 03F12903 		add	r3, r3, #41
+ 2641 003e 1846     		mov	r0, r3
+ 2642 0040 FFF7FEFF 		bl	IntUnregister
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** }
+ 2643              		.loc 1 292 0
+ 2644 0044 07F10807 		add	r7, r7, #8
+ 2645 0048 BD46     		mov	sp, r7
+ 2646 004a 80BD     		pop	{r7, pc}
+ 2647              		.cfi_endproc
+ 2648              	.LFE4:
+ 2650              		.section	.text.ComparatorIntEnable,"ax",%progbits
+ 2651              		.align	2
+ 2652              		.global	ComparatorIntEnable
+ 2653              		.thumb
+ 2654              		.thumb_func
+ 2656              	ComparatorIntEnable:
+ 2657              	.LFB5:
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! Enables the comparator interrupt.
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulBase is the base address of the comparator module.
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulComp is the index of the comparator.
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! This function enables generation of an interrupt from the specified
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! comparator.  Only enabled comparator interrupts can be reflected
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! to the processor.
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \return None.
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** void
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** ComparatorIntEnable(unsigned long ulBase, unsigned long ulComp)
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** {
+ 2658              		.loc 1 310 0
+ 2659              		.cfi_startproc
+ 2660              		@ args = 0, pretend = 0, frame = 8
+ 2661              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2662              		@ link register save eliminated.
+ 2663 0000 80B4     		push	{r7}
+ 2664              	.LCFI15:
+ 2665              		.cfi_def_cfa_offset 4
+ 2666 0002 83B0     		sub	sp, sp, #12
+ 2667              	.LCFI16:
+ 2668              		.cfi_def_cfa_offset 16
+ 2669 0004 00AF     		add	r7, sp, #0
+ 2670              		.cfi_offset 7, -4
+ 2671              	.LCFI17:
+ 2672              		.cfi_def_cfa_register 7
+ 2673 0006 7860     		str	r0, [r7, #4]
+ 2674 0008 3960     		str	r1, [r7, #0]
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Check the arguments.
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulBase == COMP_BASE);
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulComp < 3);
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Enable the comparator interrupt.
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     HWREG(ulBase + COMP_O_ACINTEN) |= 1 << ulComp;
+ 2675              		.loc 1 320 0
+ 2676 000a 7B68     		ldr	r3, [r7, #4]
+ 2677 000c 03F10803 		add	r3, r3, #8
+ 2678 0010 7A68     		ldr	r2, [r7, #4]
+ 2679 0012 02F10802 		add	r2, r2, #8
+ 2680 0016 1168     		ldr	r1, [r2, #0]
+ 2681 0018 3A68     		ldr	r2, [r7, #0]
+ 2682 001a 4FF00100 		mov	r0, #1
+ 2683 001e 00FA02F2 		lsl	r2, r0, r2
+ 2684 0022 41EA0202 		orr	r2, r1, r2
+ 2685 0026 1A60     		str	r2, [r3, #0]
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** }
+ 2686              		.loc 1 321 0
+ 2687 0028 07F10C07 		add	r7, r7, #12
+ 2688 002c BD46     		mov	sp, r7
+ 2689 002e 80BC     		pop	{r7}
+ 2690 0030 7047     		bx	lr
+ 2691              		.cfi_endproc
+ 2692              	.LFE5:
+ 2694 0032 00BF     		.section	.text.ComparatorIntDisable,"ax",%progbits
+ 2695              		.align	2
+ 2696              		.global	ComparatorIntDisable
+ 2697              		.thumb
+ 2698              		.thumb_func
+ 2700              	ComparatorIntDisable:
+ 2701              	.LFB6:
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! Disables the comparator interrupt.
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulBase is the base address of the comparator module.
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulComp is the index of the comparator.
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! This function disables generation of an interrupt from the specified
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! comparator.  Only enabled comparator interrupts can be reflected
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! to the processor.
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \return None.
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** void
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** ComparatorIntDisable(unsigned long ulBase, unsigned long ulComp)
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** {
+ 2702              		.loc 1 339 0
+ 2703              		.cfi_startproc
+ 2704              		@ args = 0, pretend = 0, frame = 8
+ 2705              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2706              		@ link register save eliminated.
+ 2707 0000 80B4     		push	{r7}
+ 2708              	.LCFI18:
+ 2709              		.cfi_def_cfa_offset 4
+ 2710 0002 83B0     		sub	sp, sp, #12
+ 2711              	.LCFI19:
+ 2712              		.cfi_def_cfa_offset 16
+ 2713 0004 00AF     		add	r7, sp, #0
+ 2714              		.cfi_offset 7, -4
+ 2715              	.LCFI20:
+ 2716              		.cfi_def_cfa_register 7
+ 2717 0006 7860     		str	r0, [r7, #4]
+ 2718 0008 3960     		str	r1, [r7, #0]
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Check the arguments.
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulBase == COMP_BASE);
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulComp < 3);
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Disable the comparator interrupt.
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     HWREG(ulBase + COMP_O_ACINTEN) &= ~(1 << ulComp);
+ 2719              		.loc 1 349 0
+ 2720 000a 7B68     		ldr	r3, [r7, #4]
+ 2721 000c 03F10803 		add	r3, r3, #8
+ 2722 0010 7A68     		ldr	r2, [r7, #4]
+ 2723 0012 02F10802 		add	r2, r2, #8
+ 2724 0016 1168     		ldr	r1, [r2, #0]
+ 2725 0018 3A68     		ldr	r2, [r7, #0]
+ 2726 001a 4FF00100 		mov	r0, #1
+ 2727 001e 00FA02F2 		lsl	r2, r0, r2
+ 2728 0022 6FEA0202 		mvn	r2, r2
+ 2729 0026 01EA0202 		and	r2, r1, r2
+ 2730 002a 1A60     		str	r2, [r3, #0]
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** }
+ 2731              		.loc 1 350 0
+ 2732 002c 07F10C07 		add	r7, r7, #12
+ 2733 0030 BD46     		mov	sp, r7
+ 2734 0032 80BC     		pop	{r7}
+ 2735 0034 7047     		bx	lr
+ 2736              		.cfi_endproc
+ 2737              	.LFE6:
+ 2739 0036 00BF     		.section	.text.ComparatorIntStatus,"ax",%progbits
+ 2740              		.align	2
+ 2741              		.global	ComparatorIntStatus
+ 2742              		.thumb
+ 2743              		.thumb_func
+ 2745              	ComparatorIntStatus:
+ 2746              	.LFB7:
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! Gets the current interrupt status.
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulBase is the base address of the comparator module.
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulComp is the index of the comparator.
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param bMasked is \b false if the raw interrupt status is required and
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \b true if the masked interrupt status is required.
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! This function returns the interrupt status for the comparator.  Either the raw or
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! the masked interrupt status can be returned.
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \return \b true if the interrupt is asserted and \b false if it is not
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! asserted.
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** tBoolean
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** ComparatorIntStatus(unsigned long ulBase, unsigned long ulComp,
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****                     tBoolean bMasked)
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** {
+ 2747              		.loc 1 371 0
+ 2748              		.cfi_startproc
+ 2749              		@ args = 0, pretend = 0, frame = 16
+ 2750              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2751              		@ link register save eliminated.
+ 2752 0000 80B4     		push	{r7}
+ 2753              	.LCFI21:
+ 2754              		.cfi_def_cfa_offset 4
+ 2755 0002 85B0     		sub	sp, sp, #20
+ 2756              	.LCFI22:
+ 2757              		.cfi_def_cfa_offset 24
+ 2758 0004 00AF     		add	r7, sp, #0
+ 2759              		.cfi_offset 7, -4
+ 2760              	.LCFI23:
+ 2761              		.cfi_def_cfa_register 7
+ 2762 0006 F860     		str	r0, [r7, #12]
+ 2763 0008 B960     		str	r1, [r7, #8]
+ 2764 000a 1346     		mov	r3, r2
+ 2765 000c FB71     		strb	r3, [r7, #7]
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Check the arguments.
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulBase == COMP_BASE);
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulComp < 3);
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Return either the interrupt status or the raw interrupt status as
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // requested.
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     if(bMasked)
+ 2766              		.loc 1 382 0
+ 2767 000e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 2768 0010 002B     		cmp	r3, #0
+ 2769 0012 09D0     		beq	.L11
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     {
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****         return(((HWREG(ulBase + COMP_O_ACMIS) >> ulComp) & 1) ? true : false);
+ 2770              		.loc 1 384 0
+ 2771 0014 FB68     		ldr	r3, [r7, #12]
+ 2772 0016 1A68     		ldr	r2, [r3, #0]
+ 2773 0018 BB68     		ldr	r3, [r7, #8]
+ 2774 001a 22FA03F3 		lsr	r3, r2, r3
+ 2775 001e DBB2     		uxtb	r3, r3
+ 2776 0020 03F00103 		and	r3, r3, #1
+ 2777 0024 DBB2     		uxtb	r3, r3
+ 2778 0026 0AE0     		b	.L12
+ 2779              	.L11:
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     }
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     else
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     {
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****         return(((HWREG(ulBase + COMP_O_ACRIS) >> ulComp) & 1) ? true : false);
+ 2780              		.loc 1 388 0
+ 2781 0028 FB68     		ldr	r3, [r7, #12]
+ 2782 002a 03F10403 		add	r3, r3, #4
+ 2783 002e 1A68     		ldr	r2, [r3, #0]
+ 2784 0030 BB68     		ldr	r3, [r7, #8]
+ 2785 0032 22FA03F3 		lsr	r3, r2, r3
+ 2786 0036 DBB2     		uxtb	r3, r3
+ 2787 0038 03F00103 		and	r3, r3, #1
+ 2788 003c DBB2     		uxtb	r3, r3
+ 2789              	.L12:
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     }
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** }
+ 2790              		.loc 1 390 0
+ 2791 003e 1846     		mov	r0, r3
+ 2792 0040 07F11407 		add	r7, r7, #20
+ 2793 0044 BD46     		mov	sp, r7
+ 2794 0046 80BC     		pop	{r7}
+ 2795 0048 7047     		bx	lr
+ 2796              		.cfi_endproc
+ 2797              	.LFE7:
+ 2799 004a 00BF     		.section	.text.ComparatorIntClear,"ax",%progbits
+ 2800              		.align	2
+ 2801              		.global	ComparatorIntClear
+ 2802              		.thumb
+ 2803              		.thumb_func
+ 2805              	ComparatorIntClear:
+ 2806              	.LFB8:
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! Clears a comparator interrupt.
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulBase is the base address of the comparator module.
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \param ulComp is the index of the comparator.
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! The comparator interrupt is cleared, so that it no longer asserts.  This
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! fucntion must be called in the interrupt handler to keep the handler from
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! being called again immediately upon exit.  Note that for a level-triggered
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! interrupt, the interrupt cannot be cleared until it stops asserting.
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \note Because there is a write buffer in the Cortex-M processor, it may
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! take several clock cycles before the interrupt source is actually cleared.
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! Therefore, it is recommended that the interrupt source be cleared early in
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! the interrupt handler (as opposed to the very last action) to avoid
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! returning from the interrupt handler before the interrupt source is
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! actually cleared.  Failure to do so may result in the interrupt handler
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! being immediately reentered (because the interrupt controller still sees
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! the interrupt source asserted).
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //!
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //! \return None.
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** //*****************************************************************************
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** void
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** ComparatorIntClear(unsigned long ulBase, unsigned long ulComp)
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** {
+ 2807              		.loc 1 418 0
+ 2808              		.cfi_startproc
+ 2809              		@ args = 0, pretend = 0, frame = 8
+ 2810              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2811              		@ link register save eliminated.
+ 2812 0000 80B4     		push	{r7}
+ 2813              	.LCFI24:
+ 2814              		.cfi_def_cfa_offset 4
+ 2815 0002 83B0     		sub	sp, sp, #12
+ 2816              	.LCFI25:
+ 2817              		.cfi_def_cfa_offset 16
+ 2818 0004 00AF     		add	r7, sp, #0
+ 2819              		.cfi_offset 7, -4
+ 2820              	.LCFI26:
+ 2821              		.cfi_def_cfa_register 7
+ 2822 0006 7860     		str	r0, [r7, #4]
+ 2823 0008 3960     		str	r1, [r7, #0]
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Check the arguments.
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulBase == COMP_BASE);
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     ASSERT(ulComp < 3);
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** 
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     // Clear the interrupt.
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     //
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c ****     HWREG(ulBase + COMP_O_ACMIS) = 1 << ulComp;
+ 2824              		.loc 1 428 0
+ 2825 000a 7B68     		ldr	r3, [r7, #4]
+ 2826 000c 3A68     		ldr	r2, [r7, #0]
+ 2827 000e 4FF00101 		mov	r1, #1
+ 2828 0012 01FA02F2 		lsl	r2, r1, r2
+ 2829 0016 1A60     		str	r2, [r3, #0]
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/comp.c **** }
+ 2830              		.loc 1 429 0
+ 2831 0018 07F10C07 		add	r7, r7, #12
+ 2832 001c BD46     		mov	sp, r7
+ 2833 001e 80BC     		pop	{r7}
+ 2834 0020 7047     		bx	lr
+ 2835              		.cfi_endproc
+ 2836              	.LFE8:
+ 2838 0022 00BF     		.text
+ 2839              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 comp.c
+     /tmp/cc83VlNq.s:2411   .text.ComparatorConfigure:00000000 $t
+     /tmp/cc83VlNq.s:2416   .text.ComparatorConfigure:00000000 ComparatorConfigure
+     /tmp/cc83VlNq.s:2453   .text.ComparatorRefSet:00000000 $t
+     /tmp/cc83VlNq.s:2458   .text.ComparatorRefSet:00000000 ComparatorRefSet
+     /tmp/cc83VlNq.s:2491   .text.ComparatorValueGet:00000000 $t
+     /tmp/cc83VlNq.s:2496   .text.ComparatorValueGet:00000000 ComparatorValueGet
+     /tmp/cc83VlNq.s:2542   .text.ComparatorIntRegister:00000000 $t
+     /tmp/cc83VlNq.s:2547   .text.ComparatorIntRegister:00000000 ComparatorIntRegister
+     /tmp/cc83VlNq.s:2597   .text.ComparatorIntUnregister:00000000 $t
+     /tmp/cc83VlNq.s:2602   .text.ComparatorIntUnregister:00000000 ComparatorIntUnregister
+     /tmp/cc83VlNq.s:2651   .text.ComparatorIntEnable:00000000 $t
+     /tmp/cc83VlNq.s:2656   .text.ComparatorIntEnable:00000000 ComparatorIntEnable
+     /tmp/cc83VlNq.s:2695   .text.ComparatorIntDisable:00000000 $t
+     /tmp/cc83VlNq.s:2700   .text.ComparatorIntDisable:00000000 ComparatorIntDisable
+     /tmp/cc83VlNq.s:2740   .text.ComparatorIntStatus:00000000 $t
+     /tmp/cc83VlNq.s:2745   .text.ComparatorIntStatus:00000000 ComparatorIntStatus
+     /tmp/cc83VlNq.s:2800   .text.ComparatorIntClear:00000000 $t
+     /tmp/cc83VlNq.s:2805   .text.ComparatorIntClear:00000000 ComparatorIntClear
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister

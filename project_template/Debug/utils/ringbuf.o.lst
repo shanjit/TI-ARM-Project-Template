@@ -1,0 +1,1634 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"ringbuf.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c"
+ 1160              		.align	2
+ 1161              		.thumb
+ 1162              		.thumb_func
+ 1164              	UpdateIndexAtomic:
+ 1165              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // ringbuf.c - Ring buffer management utilities.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // Copyright (c) 2008-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // This is part of revision 8264 of the Stellaris Firmware Development Package.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** #include "inc/hw_types.h"
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** #include "driverlib/debug.h"
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** #include "driverlib/interrupt.h"
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** #include "utils/ringbuf.h"
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \addtogroup ringbuf_api
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! @{
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // Define NULL, if not already defined.
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** #ifndef NULL
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** #define NULL                    ((void *)0)
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** #endif
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // Change the value of a variable atomically.
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // \param pulVal points to the index whose value is to be modified.
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // \param ulDelta is the number of bytes to increment the index by.
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // \param ulSize is the size of the buffer the index refers to.
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // This function is used to increment a read or write buffer index that may be
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // written in various different contexts. It ensures that the read/modify/write
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // sequence is not interrupted and, hence, guards against corruption of the
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // variable. The new value is adjusted for buffer wrap.
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** // \return None.
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** static void
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** UpdateIndexAtomic(volatile unsigned long *pulVal, unsigned long ulDelta,
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****                   unsigned long ulSize)
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1166              		.loc 1 65 0
+ 1167              		.cfi_startproc
+ 1168              		@ args = 0, pretend = 0, frame = 24
+ 1169              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1170 0000 80B5     		push	{r7, lr}
+ 1171              	.LCFI0:
+ 1172              		.cfi_def_cfa_offset 8
+ 1173 0002 86B0     		sub	sp, sp, #24
+ 1174              	.LCFI1:
+ 1175              		.cfi_def_cfa_offset 32
+ 1176 0004 00AF     		add	r7, sp, #0
+ 1177              		.cfi_offset 14, -4
+ 1178              		.cfi_offset 7, -8
+ 1179              	.LCFI2:
+ 1180              		.cfi_def_cfa_register 7
+ 1181 0006 F860     		str	r0, [r7, #12]
+ 1182 0008 B960     		str	r1, [r7, #8]
+ 1183 000a 7A60     		str	r2, [r7, #4]
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     tBoolean bIntsOff;
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Turn interrupts off temporarily.
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     bIntsOff = IntMasterDisable();
+ 1184              		.loc 1 71 0
+ 1185 000c FFF7FEFF 		bl	IntMasterDisable
+ 1186 0010 0346     		mov	r3, r0
+ 1187 0012 FB75     		strb	r3, [r7, #23]
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Update the variable value.
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     *pulVal += ulDelta;
+ 1188              		.loc 1 76 0
+ 1189 0014 FB68     		ldr	r3, [r7, #12]
+ 1190 0016 1A68     		ldr	r2, [r3, #0]
+ 1191 0018 BB68     		ldr	r3, [r7, #8]
+ 1192 001a D218     		adds	r2, r2, r3
+ 1193 001c FB68     		ldr	r3, [r7, #12]
+ 1194 001e 1A60     		str	r2, [r3, #0]
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Correct for wrap. We use a loop here since we don't want to use a
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // modulus operation with interrupts off but we don't want to fail in
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // case ulDelta is greater than ulSize (which is extremely unlikely but...)
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     while(*pulVal >= ulSize)
+ 1195              		.loc 1 83 0
+ 1196 0020 05E0     		b	.L2
+ 1197              	.L3:
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     {
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         *pulVal -= ulSize;
+ 1198              		.loc 1 85 0
+ 1199 0022 FB68     		ldr	r3, [r7, #12]
+ 1200 0024 1A68     		ldr	r2, [r3, #0]
+ 1201 0026 7B68     		ldr	r3, [r7, #4]
+ 1202 0028 D21A     		subs	r2, r2, r3
+ 1203 002a FB68     		ldr	r3, [r7, #12]
+ 1204 002c 1A60     		str	r2, [r3, #0]
+ 1205              	.L2:
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     while(*pulVal >= ulSize)
+ 1206              		.loc 1 83 0 discriminator 1
+ 1207 002e FB68     		ldr	r3, [r7, #12]
+ 1208 0030 1A68     		ldr	r2, [r3, #0]
+ 1209 0032 7B68     		ldr	r3, [r7, #4]
+ 1210 0034 9A42     		cmp	r2, r3
+ 1211 0036 F4D2     		bcs	.L3
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     }
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Restore the interrupt state
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     if(!bIntsOff)
+ 1212              		.loc 1 91 0
+ 1213 0038 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1214 003a 002B     		cmp	r3, #0
+ 1215 003c 01D1     		bne	.L1
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     {
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         IntMasterEnable();
+ 1216              		.loc 1 93 0
+ 1217 003e FFF7FEFF 		bl	IntMasterEnable
+ 1218              	.L1:
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     }
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1219              		.loc 1 95 0
+ 1220 0042 07F11807 		add	r7, r7, #24
+ 1221 0046 BD46     		mov	sp, r7
+ 1222 0048 80BD     		pop	{r7, pc}
+ 1223              		.cfi_endproc
+ 1224              	.LFE0:
+ 1226 004a 00BF     		.section	.text.RingBufFull,"ax",%progbits
+ 1227              		.align	2
+ 1228              		.global	RingBufFull
+ 1229              		.thumb
+ 1230              		.thumb_func
+ 1232              	RingBufFull:
+ 1233              	.LFB1:
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Determines whether the ring buffer whose pointers and size are provided
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! is full or not.
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf is the ring buffer object to empty.
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function is used to determine whether or not a given ring buffer is
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! full.  The structure is specifically to ensure that we do not see
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! warnings from the compiler related to the order of volatile accesses
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! being undefined.
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return Returns \b true if the buffer is full or \b false otherwise.
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** tBoolean
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufFull(tRingBufObject *ptRingBuf)
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1234              		.loc 1 114 0
+ 1235              		.cfi_startproc
+ 1236              		@ args = 0, pretend = 0, frame = 16
+ 1237              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1238              		@ link register save eliminated.
+ 1239 0000 80B4     		push	{r7}
+ 1240              	.LCFI3:
+ 1241              		.cfi_def_cfa_offset 4
+ 1242 0002 85B0     		sub	sp, sp, #20
+ 1243              	.LCFI4:
+ 1244              		.cfi_def_cfa_offset 24
+ 1245 0004 00AF     		add	r7, sp, #0
+ 1246              		.cfi_offset 7, -4
+ 1247              	.LCFI5:
+ 1248              		.cfi_def_cfa_register 7
+ 1249 0006 7860     		str	r0, [r7, #4]
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulWrite;
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulRead;
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Copy the Read/Write indices for calculation.
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ulWrite = ptRingBuf->ulWriteIndex;
+ 1250              		.loc 1 126 0
+ 1251 0008 7B68     		ldr	r3, [r7, #4]
+ 1252 000a 5B68     		ldr	r3, [r3, #4]
+ 1253 000c FB60     		str	r3, [r7, #12]
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ulRead = ptRingBuf->ulReadIndex;
+ 1254              		.loc 1 127 0
+ 1255 000e 7B68     		ldr	r3, [r7, #4]
+ 1256 0010 9B68     		ldr	r3, [r3, #8]
+ 1257 0012 BB60     		str	r3, [r7, #8]
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Return the full status of the buffer.
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     return((((ulWrite + 1) % ptRingBuf->ulSize) == ulRead) ? true : false);
+ 1258              		.loc 1 132 0
+ 1259 0014 FB68     		ldr	r3, [r7, #12]
+ 1260 0016 03F10103 		add	r3, r3, #1
+ 1261 001a 7A68     		ldr	r2, [r7, #4]
+ 1262 001c 1268     		ldr	r2, [r2, #0]
+ 1263 001e B3FBF2F1 		udiv	r1, r3, r2
+ 1264 0022 02FB01F2 		mul	r2, r2, r1
+ 1265 0026 9A1A     		subs	r2, r3, r2
+ 1266 0028 BB68     		ldr	r3, [r7, #8]
+ 1267 002a 9A42     		cmp	r2, r3
+ 1268 002c 14BF     		ite	ne
+ 1269 002e 0023     		movne	r3, #0
+ 1270 0030 0123     		moveq	r3, #1
+ 1271 0032 DBB2     		uxtb	r3, r3
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1272              		.loc 1 133 0
+ 1273 0034 1846     		mov	r0, r3
+ 1274 0036 07F11407 		add	r7, r7, #20
+ 1275 003a BD46     		mov	sp, r7
+ 1276 003c 80BC     		pop	{r7}
+ 1277 003e 7047     		bx	lr
+ 1278              		.cfi_endproc
+ 1279              	.LFE1:
+ 1281              		.section	.text.RingBufEmpty,"ax",%progbits
+ 1282              		.align	2
+ 1283              		.global	RingBufEmpty
+ 1284              		.thumb
+ 1285              		.thumb_func
+ 1287              	RingBufEmpty:
+ 1288              	.LFB2:
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Determines whether the ring buffer whose pointers and size are provided
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! is empty or not.
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf is the ring buffer object to empty.
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function is used to determine whether or not a given ring buffer is
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! empty.  The structure is specifically to ensure that we do not see
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! warnings from the compiler related to the order of volatile accesses
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! being undefined.
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return Returns \b true if the buffer is empty or \b false otherwise.
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** tBoolean
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufEmpty(tRingBufObject *ptRingBuf)
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1289              		.loc 1 152 0
+ 1290              		.cfi_startproc
+ 1291              		@ args = 0, pretend = 0, frame = 16
+ 1292              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1293              		@ link register save eliminated.
+ 1294 0000 80B4     		push	{r7}
+ 1295              	.LCFI6:
+ 1296              		.cfi_def_cfa_offset 4
+ 1297 0002 85B0     		sub	sp, sp, #20
+ 1298              	.LCFI7:
+ 1299              		.cfi_def_cfa_offset 24
+ 1300 0004 00AF     		add	r7, sp, #0
+ 1301              		.cfi_offset 7, -4
+ 1302              	.LCFI8:
+ 1303              		.cfi_def_cfa_register 7
+ 1304 0006 7860     		str	r0, [r7, #4]
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulWrite;
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulRead;
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Copy the Read/Write indices for calculation.
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ulWrite = ptRingBuf->ulWriteIndex;
+ 1305              		.loc 1 164 0
+ 1306 0008 7B68     		ldr	r3, [r7, #4]
+ 1307 000a 5B68     		ldr	r3, [r3, #4]
+ 1308 000c FB60     		str	r3, [r7, #12]
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ulRead = ptRingBuf->ulReadIndex;
+ 1309              		.loc 1 165 0
+ 1310 000e 7B68     		ldr	r3, [r7, #4]
+ 1311 0010 9B68     		ldr	r3, [r3, #8]
+ 1312 0012 BB60     		str	r3, [r7, #8]
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Return the empty status of the buffer.
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     return((ulWrite == ulRead) ? true : false);
+ 1313              		.loc 1 170 0
+ 1314 0014 FA68     		ldr	r2, [r7, #12]
+ 1315 0016 BB68     		ldr	r3, [r7, #8]
+ 1316 0018 9A42     		cmp	r2, r3
+ 1317 001a 14BF     		ite	ne
+ 1318 001c 0023     		movne	r3, #0
+ 1319 001e 0123     		moveq	r3, #1
+ 1320 0020 DBB2     		uxtb	r3, r3
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1321              		.loc 1 171 0
+ 1322 0022 1846     		mov	r0, r3
+ 1323 0024 07F11407 		add	r7, r7, #20
+ 1324 0028 BD46     		mov	sp, r7
+ 1325 002a 80BC     		pop	{r7}
+ 1326 002c 7047     		bx	lr
+ 1327              		.cfi_endproc
+ 1328              	.LFE2:
+ 1330 002e 00BF     		.section	.text.RingBufFlush,"ax",%progbits
+ 1331              		.align	2
+ 1332              		.global	RingBufFlush
+ 1333              		.thumb
+ 1334              		.thumb_func
+ 1336              	RingBufFlush:
+ 1337              	.LFB3:
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Empties the ring buffer.
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf is the ring buffer object to empty.
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Discards all data from the ring buffer.
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return None.
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** void
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufFlush(tRingBufObject *ptRingBuf)
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1338              		.loc 1 186 0
+ 1339              		.cfi_startproc
+ 1340              		@ args = 0, pretend = 0, frame = 16
+ 1341              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1342 0000 80B5     		push	{r7, lr}
+ 1343              	.LCFI9:
+ 1344              		.cfi_def_cfa_offset 8
+ 1345 0002 84B0     		sub	sp, sp, #16
+ 1346              	.LCFI10:
+ 1347              		.cfi_def_cfa_offset 24
+ 1348 0004 00AF     		add	r7, sp, #0
+ 1349              		.cfi_offset 14, -4
+ 1350              		.cfi_offset 7, -8
+ 1351              	.LCFI11:
+ 1352              		.cfi_def_cfa_register 7
+ 1353 0006 7860     		str	r0, [r7, #4]
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     tBoolean bIntsOff;
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Set the Read/Write pointers to be the same. Do this with interrupts
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // disabled to prevent the possibility of corruption of the read index.
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     bIntsOff = IntMasterDisable();
+ 1354              		.loc 1 198 0
+ 1355 0008 FFF7FEFF 		bl	IntMasterDisable
+ 1356 000c 0346     		mov	r3, r0
+ 1357 000e FB73     		strb	r3, [r7, #15]
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ptRingBuf->ulReadIndex = ptRingBuf->ulWriteIndex;
+ 1358              		.loc 1 199 0
+ 1359 0010 7B68     		ldr	r3, [r7, #4]
+ 1360 0012 5A68     		ldr	r2, [r3, #4]
+ 1361 0014 7B68     		ldr	r3, [r7, #4]
+ 1362 0016 9A60     		str	r2, [r3, #8]
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     if(!bIntsOff)
+ 1363              		.loc 1 200 0
+ 1364 0018 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1365 001a 002B     		cmp	r3, #0
+ 1366 001c 01D1     		bne	.L7
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     {
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         IntMasterEnable();
+ 1367              		.loc 1 202 0
+ 1368 001e FFF7FEFF 		bl	IntMasterEnable
+ 1369              	.L7:
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     }
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1370              		.loc 1 204 0
+ 1371 0022 07F11007 		add	r7, r7, #16
+ 1372 0026 BD46     		mov	sp, r7
+ 1373 0028 80BD     		pop	{r7, pc}
+ 1374              		.cfi_endproc
+ 1375              	.LFE3:
+ 1377 002a 00BF     		.section	.text.RingBufUsed,"ax",%progbits
+ 1378              		.align	2
+ 1379              		.global	RingBufUsed
+ 1380              		.thumb
+ 1381              		.thumb_func
+ 1383              	RingBufUsed:
+ 1384              	.LFB4:
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Returns number of bytes stored in ring buffer.
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf is the ring buffer object to check.
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function returns the number of bytes stored in the ring buffer.
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return Returns the number of bytes stored in the ring buffer.
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** unsigned long
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufUsed(tRingBufObject *ptRingBuf)
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1385              		.loc 1 219 0
+ 1386              		.cfi_startproc
+ 1387              		@ args = 0, pretend = 0, frame = 16
+ 1388              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1389              		@ link register save eliminated.
+ 1390 0000 80B4     		push	{r7}
+ 1391              	.LCFI12:
+ 1392              		.cfi_def_cfa_offset 4
+ 1393 0002 85B0     		sub	sp, sp, #20
+ 1394              	.LCFI13:
+ 1395              		.cfi_def_cfa_offset 24
+ 1396 0004 00AF     		add	r7, sp, #0
+ 1397              		.cfi_offset 7, -4
+ 1398              	.LCFI14:
+ 1399              		.cfi_def_cfa_register 7
+ 1400 0006 7860     		str	r0, [r7, #4]
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulWrite;
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulRead;
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Copy the Read/Write indices for calculation.
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ulWrite = ptRingBuf->ulWriteIndex;
+ 1401              		.loc 1 231 0
+ 1402 0008 7B68     		ldr	r3, [r7, #4]
+ 1403 000a 5B68     		ldr	r3, [r3, #4]
+ 1404 000c FB60     		str	r3, [r7, #12]
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ulRead = ptRingBuf->ulReadIndex;
+ 1405              		.loc 1 232 0
+ 1406 000e 7B68     		ldr	r3, [r7, #4]
+ 1407 0010 9B68     		ldr	r3, [r3, #8]
+ 1408 0012 BB60     		str	r3, [r7, #8]
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Return the number of bytes contained in the ring buffer.
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     return((ulWrite >= ulRead) ? (ulWrite - ulRead) :
+ 1409              		.loc 1 237 0
+ 1410 0014 FA68     		ldr	r2, [r7, #12]
+ 1411 0016 BB68     		ldr	r3, [r7, #8]
+ 1412 0018 9A42     		cmp	r2, r3
+ 1413 001a 03D3     		bcc	.L10
+ 1414              		.loc 1 237 0 is_stmt 0 discriminator 1
+ 1415 001c FA68     		ldr	r2, [r7, #12]
+ 1416 001e BB68     		ldr	r3, [r7, #8]
+ 1417 0020 D31A     		subs	r3, r2, r3
+ 1418 0022 05E0     		b	.L11
+ 1419              	.L10:
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****            (ptRingBuf->ulSize - (ulRead - ulWrite)));
+ 1420              		.loc 1 238 0 is_stmt 1 discriminator 2
+ 1421 0024 7B68     		ldr	r3, [r7, #4]
+ 1422 0026 1A68     		ldr	r2, [r3, #0]
+ 1423 0028 F968     		ldr	r1, [r7, #12]
+ 1424 002a BB68     		ldr	r3, [r7, #8]
+ 1425 002c CB1A     		subs	r3, r1, r3
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     return((ulWrite >= ulRead) ? (ulWrite - ulRead) :
+ 1426              		.loc 1 237 0 discriminator 2
+ 1427 002e D318     		adds	r3, r2, r3
+ 1428              	.L11:
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1429              		.loc 1 239 0 discriminator 3
+ 1430 0030 1846     		mov	r0, r3
+ 1431 0032 07F11407 		add	r7, r7, #20
+ 1432 0036 BD46     		mov	sp, r7
+ 1433 0038 80BC     		pop	{r7}
+ 1434 003a 7047     		bx	lr
+ 1435              		.cfi_endproc
+ 1436              	.LFE4:
+ 1438              		.section	.text.RingBufFree,"ax",%progbits
+ 1439              		.align	2
+ 1440              		.global	RingBufFree
+ 1441              		.thumb
+ 1442              		.thumb_func
+ 1444              	RingBufFree:
+ 1445              	.LFB5:
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Returns number of bytes available in a ring buffer.
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf is the ring buffer object to check.
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function returns the number of bytes available in the ring buffer.
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return Returns the number of bytes available in the ring buffer.
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** unsigned long
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufFree(tRingBufObject *ptRingBuf)
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1446              		.loc 1 254 0
+ 1447              		.cfi_startproc
+ 1448              		@ args = 0, pretend = 0, frame = 8
+ 1449              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1450 0000 90B5     		push	{r4, r7, lr}
+ 1451              	.LCFI15:
+ 1452              		.cfi_def_cfa_offset 12
+ 1453 0002 83B0     		sub	sp, sp, #12
+ 1454              	.LCFI16:
+ 1455              		.cfi_def_cfa_offset 24
+ 1456 0004 00AF     		add	r7, sp, #0
+ 1457              		.cfi_offset 14, -4
+ 1458              		.cfi_offset 7, -8
+ 1459              		.cfi_offset 4, -12
+ 1460              	.LCFI17:
+ 1461              		.cfi_def_cfa_register 7
+ 1462 0006 7860     		str	r0, [r7, #4]
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Return the number of bytes available in the ring buffer.
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     return((ptRingBuf->ulSize - 1) - RingBufUsed(ptRingBuf));
+ 1463              		.loc 1 263 0
+ 1464 0008 7B68     		ldr	r3, [r7, #4]
+ 1465 000a 1C68     		ldr	r4, [r3, #0]
+ 1466 000c 7868     		ldr	r0, [r7, #4]
+ 1467 000e FFF7FEFF 		bl	RingBufUsed
+ 1468 0012 0346     		mov	r3, r0
+ 1469 0014 E31A     		subs	r3, r4, r3
+ 1470 0016 03F1FF33 		add	r3, r3, #-1
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1471              		.loc 1 264 0
+ 1472 001a 1846     		mov	r0, r3
+ 1473 001c 07F10C07 		add	r7, r7, #12
+ 1474 0020 BD46     		mov	sp, r7
+ 1475 0022 90BD     		pop	{r4, r7, pc}
+ 1476              		.cfi_endproc
+ 1477              	.LFE5:
+ 1479              		.section	.text.RingBufContigUsed,"ax",%progbits
+ 1480              		.align	2
+ 1481              		.global	RingBufContigUsed
+ 1482              		.thumb
+ 1483              		.thumb_func
+ 1485              	RingBufContigUsed:
+ 1486              	.LFB6:
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Returns number of contiguous bytes of data stored in ring buffer ahead of
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! the current read pointer.
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf is the ring buffer object to check.
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function returns the number of contiguous bytes of data available in
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! the ring buffer ahead of the current read pointer. This represents the
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! largest block of data which does not straddle the buffer wrap.
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return Returns the number of contiguous bytes available.
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** unsigned long
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufContigUsed(tRingBufObject *ptRingBuf)
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1487              		.loc 1 282 0
+ 1488              		.cfi_startproc
+ 1489              		@ args = 0, pretend = 0, frame = 16
+ 1490              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1491              		@ link register save eliminated.
+ 1492 0000 80B4     		push	{r7}
+ 1493              	.LCFI18:
+ 1494              		.cfi_def_cfa_offset 4
+ 1495 0002 85B0     		sub	sp, sp, #20
+ 1496              	.LCFI19:
+ 1497              		.cfi_def_cfa_offset 24
+ 1498 0004 00AF     		add	r7, sp, #0
+ 1499              		.cfi_offset 7, -4
+ 1500              	.LCFI20:
+ 1501              		.cfi_def_cfa_register 7
+ 1502 0006 7860     		str	r0, [r7, #4]
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulWrite;
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulRead;
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Copy the Read/Write indices for calculation.
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ulWrite = ptRingBuf->ulWriteIndex;
+ 1503              		.loc 1 294 0
+ 1504 0008 7B68     		ldr	r3, [r7, #4]
+ 1505 000a 5B68     		ldr	r3, [r3, #4]
+ 1506 000c FB60     		str	r3, [r7, #12]
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ulRead = ptRingBuf->ulReadIndex;
+ 1507              		.loc 1 295 0
+ 1508 000e 7B68     		ldr	r3, [r7, #4]
+ 1509 0010 9B68     		ldr	r3, [r3, #8]
+ 1510 0012 BB60     		str	r3, [r7, #8]
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Return the number of contiguous bytes available.
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     return((ulWrite >= ulRead) ? (ulWrite - ulRead) :
+ 1511              		.loc 1 300 0
+ 1512 0014 FA68     		ldr	r2, [r7, #12]
+ 1513 0016 BB68     		ldr	r3, [r7, #8]
+ 1514 0018 9A42     		cmp	r2, r3
+ 1515 001a 03D3     		bcc	.L14
+ 1516              		.loc 1 300 0 is_stmt 0 discriminator 1
+ 1517 001c FA68     		ldr	r2, [r7, #12]
+ 1518 001e BB68     		ldr	r3, [r7, #8]
+ 1519 0020 D31A     		subs	r3, r2, r3
+ 1520 0022 03E0     		b	.L15
+ 1521              	.L14:
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****            (ptRingBuf->ulSize - ulRead));
+ 1522              		.loc 1 301 0 is_stmt 1 discriminator 2
+ 1523 0024 7B68     		ldr	r3, [r7, #4]
+ 1524 0026 1A68     		ldr	r2, [r3, #0]
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     return((ulWrite >= ulRead) ? (ulWrite - ulRead) :
+ 1525              		.loc 1 300 0 discriminator 2
+ 1526 0028 BB68     		ldr	r3, [r7, #8]
+ 1527 002a D31A     		subs	r3, r2, r3
+ 1528              	.L15:
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1529              		.loc 1 302 0 discriminator 3
+ 1530 002c 1846     		mov	r0, r3
+ 1531 002e 07F11407 		add	r7, r7, #20
+ 1532 0032 BD46     		mov	sp, r7
+ 1533 0034 80BC     		pop	{r7}
+ 1534 0036 7047     		bx	lr
+ 1535              		.cfi_endproc
+ 1536              	.LFE6:
+ 1538              		.section	.text.RingBufContigFree,"ax",%progbits
+ 1539              		.align	2
+ 1540              		.global	RingBufContigFree
+ 1541              		.thumb
+ 1542              		.thumb_func
+ 1544              	RingBufContigFree:
+ 1545              	.LFB7:
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Returns number of contiguous free bytes available in a ring buffer.
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf is the ring buffer object to check.
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function returns the number of contiguous free bytes ahead of the
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! current write pointer in the ring buffer.
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return Returns the number of contiguous bytes available in the ring
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! buffer.
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** unsigned long
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufContigFree(tRingBufObject *ptRingBuf)
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1546              		.loc 1 319 0
+ 1547              		.cfi_startproc
+ 1548              		@ args = 0, pretend = 0, frame = 16
+ 1549              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1550              		@ link register save eliminated.
+ 1551 0000 80B4     		push	{r7}
+ 1552              	.LCFI21:
+ 1553              		.cfi_def_cfa_offset 4
+ 1554 0002 85B0     		sub	sp, sp, #20
+ 1555              	.LCFI22:
+ 1556              		.cfi_def_cfa_offset 24
+ 1557 0004 00AF     		add	r7, sp, #0
+ 1558              		.cfi_offset 7, -4
+ 1559              	.LCFI23:
+ 1560              		.cfi_def_cfa_register 7
+ 1561 0006 7860     		str	r0, [r7, #4]
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulWrite;
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulRead;
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Copy the Read/Write indices for calculation.
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ulWrite = ptRingBuf->ulWriteIndex;
+ 1562              		.loc 1 331 0
+ 1563 0008 7B68     		ldr	r3, [r7, #4]
+ 1564 000a 5B68     		ldr	r3, [r3, #4]
+ 1565 000c FB60     		str	r3, [r7, #12]
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ulRead = ptRingBuf->ulReadIndex;
+ 1566              		.loc 1 332 0
+ 1567 000e 7B68     		ldr	r3, [r7, #4]
+ 1568 0010 9B68     		ldr	r3, [r3, #8]
+ 1569 0012 BB60     		str	r3, [r7, #8]
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Return the number of contiguous bytes available.
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     if(ulRead > ulWrite)
+ 1570              		.loc 1 337 0
+ 1571 0014 BA68     		ldr	r2, [r7, #8]
+ 1572 0016 FB68     		ldr	r3, [r7, #12]
+ 1573 0018 9A42     		cmp	r2, r3
+ 1574 001a 05D9     		bls	.L17
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     {
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         //
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         // The read pointer is above the write pointer so the amount of free
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         // space is the difference between the two indices minus 1 to account
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         // for the buffer full condition (write index one behind read index).
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         //
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         return((ulRead - ulWrite) - 1);
+ 1575              		.loc 1 344 0
+ 1576 001c BA68     		ldr	r2, [r7, #8]
+ 1577 001e FB68     		ldr	r3, [r7, #12]
+ 1578 0020 D31A     		subs	r3, r2, r3
+ 1579 0022 03F1FF33 		add	r3, r3, #-1
+ 1580 0026 0CE0     		b	.L18
+ 1581              	.L17:
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     }
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     else
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     {
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         //
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         // If the write pointer is above the read pointer, the amount of free
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         // space is the size of the buffer minus the write index. We need to
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         // add a special-case adjustment if the read index is 0 since we need
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         // to leave 1 byte empty to ensure we can tell the difference between
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         // the buffer being full and empty.
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         //
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         return(ptRingBuf->ulSize - ulWrite - ((ulRead == 0) ? 1 : 0));
+ 1582              		.loc 1 355 0
+ 1583 0028 7B68     		ldr	r3, [r7, #4]
+ 1584 002a 1A68     		ldr	r2, [r3, #0]
+ 1585 002c FB68     		ldr	r3, [r7, #12]
+ 1586 002e D21A     		subs	r2, r2, r3
+ 1587 0030 BB68     		ldr	r3, [r7, #8]
+ 1588 0032 002B     		cmp	r3, #0
+ 1589 0034 02D1     		bne	.L19
+ 1590              		.loc 1 355 0 is_stmt 0 discriminator 1
+ 1591 0036 4FF00103 		mov	r3, #1
+ 1592 003a 01E0     		b	.L20
+ 1593              	.L19:
+ 1594              		.loc 1 355 0 discriminator 2
+ 1595 003c 4FF00003 		mov	r3, #0
+ 1596              	.L20:
+ 1597              		.loc 1 355 0 discriminator 3
+ 1598 0040 D31A     		subs	r3, r2, r3
+ 1599              	.L18:
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     }
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1600              		.loc 1 357 0 is_stmt 1
+ 1601 0042 1846     		mov	r0, r3
+ 1602 0044 07F11407 		add	r7, r7, #20
+ 1603 0048 BD46     		mov	sp, r7
+ 1604 004a 80BC     		pop	{r7}
+ 1605 004c 7047     		bx	lr
+ 1606              		.cfi_endproc
+ 1607              	.LFE7:
+ 1609 004e 00BF     		.section	.text.RingBufSize,"ax",%progbits
+ 1610              		.align	2
+ 1611              		.global	RingBufSize
+ 1612              		.thumb
+ 1613              		.thumb_func
+ 1615              	RingBufSize:
+ 1616              	.LFB8:
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Return size in bytes of a ring buffer.
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf is the ring buffer object to check.
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function returns the size of the ring buffer.
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return Returns the size in bytes of the ring buffer.
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** unsigned long
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufSize(tRingBufObject *ptRingBuf)
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1617              		.loc 1 372 0
+ 1618              		.cfi_startproc
+ 1619              		@ args = 0, pretend = 0, frame = 8
+ 1620              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1621              		@ link register save eliminated.
+ 1622 0000 80B4     		push	{r7}
+ 1623              	.LCFI24:
+ 1624              		.cfi_def_cfa_offset 4
+ 1625 0002 83B0     		sub	sp, sp, #12
+ 1626              	.LCFI25:
+ 1627              		.cfi_def_cfa_offset 16
+ 1628 0004 00AF     		add	r7, sp, #0
+ 1629              		.cfi_offset 7, -4
+ 1630              	.LCFI26:
+ 1631              		.cfi_def_cfa_register 7
+ 1632 0006 7860     		str	r0, [r7, #4]
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Return the number of bytes available in the ring buffer.
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     return(ptRingBuf->ulSize);
+ 1633              		.loc 1 381 0
+ 1634 0008 7B68     		ldr	r3, [r7, #4]
+ 1635 000a 1B68     		ldr	r3, [r3, #0]
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1636              		.loc 1 382 0
+ 1637 000c 1846     		mov	r0, r3
+ 1638 000e 07F10C07 		add	r7, r7, #12
+ 1639 0012 BD46     		mov	sp, r7
+ 1640 0014 80BC     		pop	{r7}
+ 1641 0016 7047     		bx	lr
+ 1642              		.cfi_endproc
+ 1643              	.LFE8:
+ 1645              		.section	.text.RingBufReadOne,"ax",%progbits
+ 1646              		.align	2
+ 1647              		.global	RingBufReadOne
+ 1648              		.thumb
+ 1649              		.thumb_func
+ 1651              	RingBufReadOne:
+ 1652              	.LFB9:
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Reads a single byte of data from a ring buffer.
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf points to the ring buffer to be written to.
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function reads a single byte of data from a ring buffer.
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return The byte read from the ring buffer.
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** unsigned char
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufReadOne(tRingBufObject *ptRingBuf)
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1653              		.loc 1 397 0
+ 1654              		.cfi_startproc
+ 1655              		@ args = 0, pretend = 0, frame = 16
+ 1656              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1657 0000 80B5     		push	{r7, lr}
+ 1658              	.LCFI27:
+ 1659              		.cfi_def_cfa_offset 8
+ 1660 0002 84B0     		sub	sp, sp, #16
+ 1661              	.LCFI28:
+ 1662              		.cfi_def_cfa_offset 24
+ 1663 0004 00AF     		add	r7, sp, #0
+ 1664              		.cfi_offset 14, -4
+ 1665              		.cfi_offset 7, -8
+ 1666              	.LCFI29:
+ 1667              		.cfi_def_cfa_register 7
+ 1668 0006 7860     		str	r0, [r7, #4]
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned char ucTemp;
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Verify that space is available in the buffer.
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(RingBufUsed(ptRingBuf) != 0);
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Write the data byte.
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ucTemp = ptRingBuf->pucBuf[ptRingBuf->ulReadIndex];
+ 1669              		.loc 1 413 0
+ 1670 0008 7B68     		ldr	r3, [r7, #4]
+ 1671 000a DA68     		ldr	r2, [r3, #12]
+ 1672 000c 7B68     		ldr	r3, [r7, #4]
+ 1673 000e 9B68     		ldr	r3, [r3, #8]
+ 1674 0010 D318     		adds	r3, r2, r3
+ 1675 0012 1B78     		ldrb	r3, [r3, #0]
+ 1676 0014 FB73     		strb	r3, [r7, #15]
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Increment the read index.
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     UpdateIndexAtomic(&ptRingBuf->ulReadIndex, 1, ptRingBuf->ulSize);
+ 1677              		.loc 1 418 0
+ 1678 0016 7B68     		ldr	r3, [r7, #4]
+ 1679 0018 03F10802 		add	r2, r3, #8
+ 1680 001c 7B68     		ldr	r3, [r7, #4]
+ 1681 001e 1B68     		ldr	r3, [r3, #0]
+ 1682 0020 1046     		mov	r0, r2
+ 1683 0022 4FF00101 		mov	r1, #1
+ 1684 0026 1A46     		mov	r2, r3
+ 1685 0028 FFF7FEFF 		bl	UpdateIndexAtomic
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Return the character read.
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     return(ucTemp);
+ 1686              		.loc 1 423 0
+ 1687 002c FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1688              		.loc 1 424 0
+ 1689 002e 1846     		mov	r0, r3
+ 1690 0030 07F11007 		add	r7, r7, #16
+ 1691 0034 BD46     		mov	sp, r7
+ 1692 0036 80BD     		pop	{r7, pc}
+ 1693              		.cfi_endproc
+ 1694              	.LFE9:
+ 1696              		.section	.text.RingBufRead,"ax",%progbits
+ 1697              		.align	2
+ 1698              		.global	RingBufRead
+ 1699              		.thumb
+ 1700              		.thumb_func
+ 1702              	RingBufRead:
+ 1703              	.LFB10:
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Reads data from a ring buffer.
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf points to the ring buffer to be read from.
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param pucData points to where the data should be stored.
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ulLength is the number of bytes to be read.
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function reads a sequence of bytes from a ring buffer.
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return None.
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** void
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufRead(tRingBufObject *ptRingBuf, unsigned char *pucData,
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****                unsigned long ulLength)
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1704              		.loc 1 442 0
+ 1705              		.cfi_startproc
+ 1706              		@ args = 0, pretend = 0, frame = 24
+ 1707              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1708 0000 90B5     		push	{r4, r7, lr}
+ 1709              	.LCFI30:
+ 1710              		.cfi_def_cfa_offset 12
+ 1711 0002 87B0     		sub	sp, sp, #28
+ 1712              	.LCFI31:
+ 1713              		.cfi_def_cfa_offset 40
+ 1714 0004 00AF     		add	r7, sp, #0
+ 1715              		.cfi_offset 14, -4
+ 1716              		.cfi_offset 7, -8
+ 1717              		.cfi_offset 4, -12
+ 1718              	.LCFI32:
+ 1719              		.cfi_def_cfa_register 7
+ 1720 0006 F860     		str	r0, [r7, #12]
+ 1721 0008 B960     		str	r1, [r7, #8]
+ 1722 000a 7A60     		str	r2, [r7, #4]
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulTemp;
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(pucData != NULL);
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ulLength != 0);
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Verify that data is available in the buffer.
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ulLength <= RingBufUsed(ptRingBuf));
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Read the data from the ring buffer.
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     for(ulTemp = 0; ulTemp < ulLength; ulTemp++)
+ 1723              		.loc 1 460 0
+ 1724 000c 4FF00003 		mov	r3, #0
+ 1725 0010 7B61     		str	r3, [r7, #20]
+ 1726 0012 0BE0     		b	.L24
+ 1727              	.L25:
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     {
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         pucData[ulTemp] = RingBufReadOne(ptRingBuf);
+ 1728              		.loc 1 462 0 discriminator 2
+ 1729 0014 BA68     		ldr	r2, [r7, #8]
+ 1730 0016 7B69     		ldr	r3, [r7, #20]
+ 1731 0018 D418     		adds	r4, r2, r3
+ 1732 001a F868     		ldr	r0, [r7, #12]
+ 1733 001c FFF7FEFF 		bl	RingBufReadOne
+ 1734 0020 0346     		mov	r3, r0
+ 1735 0022 2370     		strb	r3, [r4, #0]
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     for(ulTemp = 0; ulTemp < ulLength; ulTemp++)
+ 1736              		.loc 1 460 0 discriminator 2
+ 1737 0024 7B69     		ldr	r3, [r7, #20]
+ 1738 0026 03F10103 		add	r3, r3, #1
+ 1739 002a 7B61     		str	r3, [r7, #20]
+ 1740              	.L24:
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     for(ulTemp = 0; ulTemp < ulLength; ulTemp++)
+ 1741              		.loc 1 460 0 is_stmt 0 discriminator 1
+ 1742 002c 7A69     		ldr	r2, [r7, #20]
+ 1743 002e 7B68     		ldr	r3, [r7, #4]
+ 1744 0030 9A42     		cmp	r2, r3
+ 1745 0032 EFD3     		bcc	.L25
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     }
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1746              		.loc 1 464 0 is_stmt 1
+ 1747 0034 07F11C07 		add	r7, r7, #28
+ 1748 0038 BD46     		mov	sp, r7
+ 1749 003a 90BD     		pop	{r4, r7, pc}
+ 1750              		.cfi_endproc
+ 1751              	.LFE10:
+ 1753              		.section	.text.RingBufAdvanceRead,"ax",%progbits
+ 1754              		.align	2
+ 1755              		.global	RingBufAdvanceRead
+ 1756              		.thumb
+ 1757              		.thumb_func
+ 1759              	RingBufAdvanceRead:
+ 1760              	.LFB11:
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Remove bytes from the ring buffer by advancing the read index.
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf points to the ring buffer from which bytes are to be
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! removed.
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ulNumBytes is the number of bytes to be removed from the buffer.
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function advances the ring buffer read index by a given number of
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! bytes, removing that number of bytes of data from the buffer. If \e
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! ulNumBytes is larger than the number of bytes currently in the buffer, the
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! buffer is emptied.
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return None.
+ 480:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 481:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 482:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** void
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufAdvanceRead(tRingBufObject *ptRingBuf,
+ 484:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****                       unsigned long ulNumBytes)
+ 485:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1761              		.loc 1 485 0
+ 1762              		.cfi_startproc
+ 1763              		@ args = 0, pretend = 0, frame = 16
+ 1764              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1765 0000 80B5     		push	{r7, lr}
+ 1766              	.LCFI33:
+ 1767              		.cfi_def_cfa_offset 8
+ 1768 0002 84B0     		sub	sp, sp, #16
+ 1769              	.LCFI34:
+ 1770              		.cfi_def_cfa_offset 24
+ 1771 0004 00AF     		add	r7, sp, #0
+ 1772              		.cfi_offset 14, -4
+ 1773              		.cfi_offset 7, -8
+ 1774              	.LCFI35:
+ 1775              		.cfi_def_cfa_register 7
+ 1776 0006 7860     		str	r0, [r7, #4]
+ 1777 0008 3960     		str	r1, [r7, #0]
+ 486:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulCount;
+ 487:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 488:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 489:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 490:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 491:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 492:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 493:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 494:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Make sure that we are not being asked to remove more data than is
+ 495:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // there to be removed.
+ 496:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 497:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ulCount = RingBufUsed(ptRingBuf);
+ 1778              		.loc 1 497 0
+ 1779 000a 7868     		ldr	r0, [r7, #4]
+ 1780 000c FFF7FEFF 		bl	RingBufUsed
+ 1781 0010 F860     		str	r0, [r7, #12]
+ 498:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ulCount =  (ulCount < ulNumBytes) ? ulCount : ulNumBytes;
+ 1782              		.loc 1 498 0
+ 1783 0012 FA68     		ldr	r2, [r7, #12]
+ 1784 0014 3B68     		ldr	r3, [r7, #0]
+ 1785 0016 9A42     		cmp	r2, r3
+ 1786 0018 38BF     		it	cc
+ 1787 001a 1346     		movcc	r3, r2
+ 1788 001c FB60     		str	r3, [r7, #12]
+ 499:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 500:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 501:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Advance the buffer read index by the required number of bytes.
+ 502:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     UpdateIndexAtomic(&ptRingBuf->ulReadIndex, ulCount,
+ 1789              		.loc 1 503 0
+ 1790 001e 7B68     		ldr	r3, [r7, #4]
+ 1791 0020 03F10802 		add	r2, r3, #8
+ 504:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****                       ptRingBuf->ulSize);
+ 1792              		.loc 1 504 0
+ 1793 0024 7B68     		ldr	r3, [r7, #4]
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     UpdateIndexAtomic(&ptRingBuf->ulReadIndex, ulCount,
+ 1794              		.loc 1 503 0
+ 1795 0026 1B68     		ldr	r3, [r3, #0]
+ 1796 0028 1046     		mov	r0, r2
+ 1797 002a F968     		ldr	r1, [r7, #12]
+ 1798 002c 1A46     		mov	r2, r3
+ 1799 002e FFF7FEFF 		bl	UpdateIndexAtomic
+ 505:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1800              		.loc 1 505 0
+ 1801 0032 07F11007 		add	r7, r7, #16
+ 1802 0036 BD46     		mov	sp, r7
+ 1803 0038 80BD     		pop	{r7, pc}
+ 1804              		.cfi_endproc
+ 1805              	.LFE11:
+ 1807 003a 00BF     		.section	.text.RingBufAdvanceWrite,"ax",%progbits
+ 1808              		.align	2
+ 1809              		.global	RingBufAdvanceWrite
+ 1810              		.thumb
+ 1811              		.thumb_func
+ 1813              	RingBufAdvanceWrite:
+ 1814              	.LFB12:
+ 506:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 507:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 508:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 509:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Add bytes to the ring buffer by advancing the write index.
+ 510:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 511:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf points to the ring buffer to which bytes have been added.
+ 512:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ulNumBytes is the number of bytes added to the buffer.
+ 513:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 514:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function should be used by clients who wish to add data to the buffer
+ 515:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! directly rather than via calls to RingBufWrite() or RingBufWriteOne(). It
+ 516:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! advances the write index by a given number of bytes.  If the \e ulNumBytes
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! parameter is larger than the amount of free space in the buffer, the
+ 518:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! read pointer will be advanced to cater for the addition.  Note that this
+ 519:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! will result in some of the oldest data in the buffer being discarded.
+ 520:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 521:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return None.
+ 522:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 523:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 524:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** void
+ 525:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufAdvanceWrite(tRingBufObject *ptRingBuf,
+ 526:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****                        unsigned long ulNumBytes)
+ 527:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1815              		.loc 1 527 0
+ 1816              		.cfi_startproc
+ 1817              		@ args = 0, pretend = 0, frame = 16
+ 1818              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1819 0000 80B5     		push	{r7, lr}
+ 1820              	.LCFI36:
+ 1821              		.cfi_def_cfa_offset 8
+ 1822 0002 84B0     		sub	sp, sp, #16
+ 1823              	.LCFI37:
+ 1824              		.cfi_def_cfa_offset 24
+ 1825 0004 00AF     		add	r7, sp, #0
+ 1826              		.cfi_offset 14, -4
+ 1827              		.cfi_offset 7, -8
+ 1828              	.LCFI38:
+ 1829              		.cfi_def_cfa_register 7
+ 1830 0006 7860     		str	r0, [r7, #4]
+ 1831 0008 3960     		str	r1, [r7, #0]
+ 528:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulCount;
+ 529:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     tBoolean bIntsOff;
+ 530:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 531:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 532:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 533:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 534:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 535:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 536:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 537:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Make sure we were not asked to add a silly number of bytes.
+ 538:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 539:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ulNumBytes <= ptRingBuf->ulSize);
+ 540:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 541:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 542:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Determine how much free space we currently think the buffer has.
+ 543:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 544:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ulCount = RingBufFree(ptRingBuf);
+ 1832              		.loc 1 544 0
+ 1833 000a 7868     		ldr	r0, [r7, #4]
+ 1834 000c FFF7FEFF 		bl	RingBufFree
+ 1835 0010 F860     		str	r0, [r7, #12]
+ 545:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 546:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 547:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Advance the buffer write index by the required number of bytes and
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // check that we have not run past the read index. Note that we must do
+ 549:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // this within a critical section (interrupts disabled) to prevent
+ 550:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // race conditions that could corrupt one or other of the indices.
+ 551:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 552:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     bIntsOff = IntMasterDisable();
+ 1836              		.loc 1 552 0
+ 1837 0012 FFF7FEFF 		bl	IntMasterDisable
+ 1838 0016 0346     		mov	r3, r0
+ 1839 0018 FB72     		strb	r3, [r7, #11]
+ 553:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 554:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 555:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Update the write pointer.
+ 556:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 557:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ptRingBuf->ulWriteIndex += ulNumBytes;
+ 1840              		.loc 1 557 0
+ 1841 001a 7B68     		ldr	r3, [r7, #4]
+ 1842 001c 5A68     		ldr	r2, [r3, #4]
+ 1843 001e 3B68     		ldr	r3, [r7, #0]
+ 1844 0020 D218     		adds	r2, r2, r3
+ 1845 0022 7B68     		ldr	r3, [r7, #4]
+ 1846 0024 5A60     		str	r2, [r3, #4]
+ 558:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 559:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 560:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check and correct for wrap.
+ 561:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 562:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     if(ptRingBuf->ulWriteIndex >= ptRingBuf->ulSize)
+ 1847              		.loc 1 562 0
+ 1848 0026 7B68     		ldr	r3, [r7, #4]
+ 1849 0028 5A68     		ldr	r2, [r3, #4]
+ 1850 002a 7B68     		ldr	r3, [r7, #4]
+ 1851 002c 1B68     		ldr	r3, [r3, #0]
+ 1852 002e 9A42     		cmp	r2, r3
+ 1853 0030 06D3     		bcc	.L28
+ 563:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     {
+ 564:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         ptRingBuf->ulWriteIndex -= ptRingBuf->ulSize;
+ 1854              		.loc 1 564 0
+ 1855 0032 7B68     		ldr	r3, [r7, #4]
+ 1856 0034 5A68     		ldr	r2, [r3, #4]
+ 1857 0036 7B68     		ldr	r3, [r7, #4]
+ 1858 0038 1B68     		ldr	r3, [r3, #0]
+ 1859 003a D21A     		subs	r2, r2, r3
+ 1860 003c 7B68     		ldr	r3, [r7, #4]
+ 1861 003e 5A60     		str	r2, [r3, #4]
+ 1862              	.L28:
+ 565:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     }
+ 566:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 567:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 568:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Did the client add more bytes than the buffer had free space for?
+ 569:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 570:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     if(ulCount < ulNumBytes)
+ 1863              		.loc 1 570 0
+ 1864 0040 FA68     		ldr	r2, [r7, #12]
+ 1865 0042 3B68     		ldr	r3, [r7, #0]
+ 1866 0044 9A42     		cmp	r2, r3
+ 1867 0046 12D2     		bcs	.L29
+ 571:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     {
+ 572:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         //
+ 573:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         // Yes - we need to advance the read pointer to ahead of the write
+ 574:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         // pointer to discard some of the oldest data.
+ 575:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         //
+ 576:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         ptRingBuf->ulReadIndex = ptRingBuf->ulWriteIndex + 1;
+ 1868              		.loc 1 576 0
+ 1869 0048 7B68     		ldr	r3, [r7, #4]
+ 1870 004a 5B68     		ldr	r3, [r3, #4]
+ 1871 004c 03F10102 		add	r2, r3, #1
+ 1872 0050 7B68     		ldr	r3, [r7, #4]
+ 1873 0052 9A60     		str	r2, [r3, #8]
+ 577:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 578:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         //
+ 579:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         // Correct for buffer wrap if necessary.
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         //
+ 581:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         if(ptRingBuf->ulReadIndex >= ptRingBuf->ulSize)
+ 1874              		.loc 1 581 0
+ 1875 0054 7B68     		ldr	r3, [r7, #4]
+ 1876 0056 9A68     		ldr	r2, [r3, #8]
+ 1877 0058 7B68     		ldr	r3, [r7, #4]
+ 1878 005a 1B68     		ldr	r3, [r3, #0]
+ 1879 005c 9A42     		cmp	r2, r3
+ 1880 005e 06D3     		bcc	.L29
+ 582:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         {
+ 583:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****             ptRingBuf->ulReadIndex -= ptRingBuf->ulSize;
+ 1881              		.loc 1 583 0
+ 1882 0060 7B68     		ldr	r3, [r7, #4]
+ 1883 0062 9A68     		ldr	r2, [r3, #8]
+ 1884 0064 7B68     		ldr	r3, [r7, #4]
+ 1885 0066 1B68     		ldr	r3, [r3, #0]
+ 1886 0068 D21A     		subs	r2, r2, r3
+ 1887 006a 7B68     		ldr	r3, [r7, #4]
+ 1888 006c 9A60     		str	r2, [r3, #8]
+ 1889              	.L29:
+ 584:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         }
+ 585:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     }
+ 586:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 587:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 588:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Restore interrupts if we turned them off earlier.
+ 589:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 590:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     if(!bIntsOff)
+ 1890              		.loc 1 590 0
+ 1891 006e FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1892 0070 002B     		cmp	r3, #0
+ 1893 0072 01D1     		bne	.L27
+ 591:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     {
+ 592:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         IntMasterEnable();
+ 1894              		.loc 1 592 0
+ 1895 0074 FFF7FEFF 		bl	IntMasterEnable
+ 1896              	.L27:
+ 593:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     }
+ 594:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1897              		.loc 1 594 0
+ 1898 0078 07F11007 		add	r7, r7, #16
+ 1899 007c BD46     		mov	sp, r7
+ 1900 007e 80BD     		pop	{r7, pc}
+ 1901              		.cfi_endproc
+ 1902              	.LFE12:
+ 1904              		.section	.text.RingBufWriteOne,"ax",%progbits
+ 1905              		.align	2
+ 1906              		.global	RingBufWriteOne
+ 1907              		.thumb
+ 1908              		.thumb_func
+ 1910              	RingBufWriteOne:
+ 1911              	.LFB13:
+ 595:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 596:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 597:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 598:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Writes a single byte of data to a ring buffer.
+ 599:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 600:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf points to the ring buffer to be written to.
+ 601:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ucData is the byte to be written.
+ 602:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 603:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function writes a single byte of data into a ring buffer.
+ 604:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 605:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return None.
+ 606:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 607:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 608:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** void
+ 609:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufWriteOne(tRingBufObject *ptRingBuf, unsigned char ucData)
+ 610:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1912              		.loc 1 610 0
+ 1913              		.cfi_startproc
+ 1914              		@ args = 0, pretend = 0, frame = 8
+ 1915              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1916 0000 80B5     		push	{r7, lr}
+ 1917              	.LCFI39:
+ 1918              		.cfi_def_cfa_offset 8
+ 1919 0002 82B0     		sub	sp, sp, #8
+ 1920              	.LCFI40:
+ 1921              		.cfi_def_cfa_offset 16
+ 1922 0004 00AF     		add	r7, sp, #0
+ 1923              		.cfi_offset 14, -4
+ 1924              		.cfi_offset 7, -8
+ 1925              	.LCFI41:
+ 1926              		.cfi_def_cfa_register 7
+ 1927 0006 7860     		str	r0, [r7, #4]
+ 1928 0008 0B46     		mov	r3, r1
+ 1929 000a FB70     		strb	r3, [r7, #3]
+ 611:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 612:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 613:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 614:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 615:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 616:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 617:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Verify that space is available in the buffer.
+ 618:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 619:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(RingBufFree(ptRingBuf) != 0);
+ 620:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 621:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 622:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Write the data byte.
+ 623:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 624:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ptRingBuf->pucBuf[ptRingBuf->ulWriteIndex] = ucData;
+ 1930              		.loc 1 624 0
+ 1931 000c 7B68     		ldr	r3, [r7, #4]
+ 1932 000e DA68     		ldr	r2, [r3, #12]
+ 1933 0010 7B68     		ldr	r3, [r7, #4]
+ 1934 0012 5B68     		ldr	r3, [r3, #4]
+ 1935 0014 D318     		adds	r3, r2, r3
+ 1936 0016 FA78     		ldrb	r2, [r7, #3]
+ 1937 0018 1A70     		strb	r2, [r3, #0]
+ 625:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 626:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 627:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Increment the write index.
+ 628:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 629:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     UpdateIndexAtomic(&ptRingBuf->ulWriteIndex, 1, ptRingBuf->ulSize);
+ 1938              		.loc 1 629 0
+ 1939 001a 7B68     		ldr	r3, [r7, #4]
+ 1940 001c 03F10402 		add	r2, r3, #4
+ 1941 0020 7B68     		ldr	r3, [r7, #4]
+ 1942 0022 1B68     		ldr	r3, [r3, #0]
+ 1943 0024 1046     		mov	r0, r2
+ 1944 0026 4FF00101 		mov	r1, #1
+ 1945 002a 1A46     		mov	r2, r3
+ 1946 002c FFF7FEFF 		bl	UpdateIndexAtomic
+ 630:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 1947              		.loc 1 630 0
+ 1948 0030 07F10807 		add	r7, r7, #8
+ 1949 0034 BD46     		mov	sp, r7
+ 1950 0036 80BD     		pop	{r7, pc}
+ 1951              		.cfi_endproc
+ 1952              	.LFE13:
+ 1954              		.section	.text.RingBufWrite,"ax",%progbits
+ 1955              		.align	2
+ 1956              		.global	RingBufWrite
+ 1957              		.thumb
+ 1958              		.thumb_func
+ 1960              	RingBufWrite:
+ 1961              	.LFB14:
+ 631:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 632:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 633:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 634:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Writes data to a ring buffer.
+ 635:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 636:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf points to the ring buffer to be written to.
+ 637:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param pucData points to the data to be written.
+ 638:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ulLength is the number of bytes to be written.
+ 639:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 640:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function write a sequence of bytes into a ring buffer.
+ 641:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 642:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return None.
+ 643:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 644:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 645:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** void
+ 646:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufWrite(tRingBufObject *ptRingBuf, unsigned char *pucData,
+ 647:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****                 unsigned long ulLength)
+ 648:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 1962              		.loc 1 648 0
+ 1963              		.cfi_startproc
+ 1964              		@ args = 0, pretend = 0, frame = 24
+ 1965              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1966 0000 80B5     		push	{r7, lr}
+ 1967              	.LCFI42:
+ 1968              		.cfi_def_cfa_offset 8
+ 1969 0002 86B0     		sub	sp, sp, #24
+ 1970              	.LCFI43:
+ 1971              		.cfi_def_cfa_offset 32
+ 1972 0004 00AF     		add	r7, sp, #0
+ 1973              		.cfi_offset 14, -4
+ 1974              		.cfi_offset 7, -8
+ 1975              	.LCFI44:
+ 1976              		.cfi_def_cfa_register 7
+ 1977 0006 F860     		str	r0, [r7, #12]
+ 1978 0008 B960     		str	r1, [r7, #8]
+ 1979 000a 7A60     		str	r2, [r7, #4]
+ 649:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     unsigned long ulTemp;
+ 650:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 651:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 652:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 653:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 654:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 655:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(pucData != NULL);
+ 656:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ulLength != 0);
+ 657:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 658:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 659:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Verify that space is available in the buffer.
+ 660:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 661:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ulLength <= RingBufFree(ptRingBuf));
+ 662:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 663:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 664:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Write the data into the ring buffer.
+ 665:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 666:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     for(ulTemp = 0; ulTemp < ulLength; ulTemp++)
+ 1980              		.loc 1 666 0
+ 1981 000c 4FF00003 		mov	r3, #0
+ 1982 0010 7B61     		str	r3, [r7, #20]
+ 1983 0012 0BE0     		b	.L33
+ 1984              	.L34:
+ 667:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     {
+ 668:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****         RingBufWriteOne(ptRingBuf, pucData[ulTemp]);
+ 1985              		.loc 1 668 0 discriminator 2
+ 1986 0014 BA68     		ldr	r2, [r7, #8]
+ 1987 0016 7B69     		ldr	r3, [r7, #20]
+ 1988 0018 D318     		adds	r3, r2, r3
+ 1989 001a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1990 001c F868     		ldr	r0, [r7, #12]
+ 1991 001e 1946     		mov	r1, r3
+ 1992 0020 FFF7FEFF 		bl	RingBufWriteOne
+ 666:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     for(ulTemp = 0; ulTemp < ulLength; ulTemp++)
+ 1993              		.loc 1 666 0 discriminator 2
+ 1994 0024 7B69     		ldr	r3, [r7, #20]
+ 1995 0026 03F10103 		add	r3, r3, #1
+ 1996 002a 7B61     		str	r3, [r7, #20]
+ 1997              	.L33:
+ 666:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     for(ulTemp = 0; ulTemp < ulLength; ulTemp++)
+ 1998              		.loc 1 666 0 is_stmt 0 discriminator 1
+ 1999 002c 7A69     		ldr	r2, [r7, #20]
+ 2000 002e 7B68     		ldr	r3, [r7, #4]
+ 2001 0030 9A42     		cmp	r2, r3
+ 2002 0032 EFD3     		bcc	.L34
+ 669:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     }
+ 670:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 2003              		.loc 1 670 0 is_stmt 1
+ 2004 0034 07F11807 		add	r7, r7, #24
+ 2005 0038 BD46     		mov	sp, r7
+ 2006 003a 80BD     		pop	{r7, pc}
+ 2007              		.cfi_endproc
+ 2008              	.LFE14:
+ 2010              		.section	.text.RingBufInit,"ax",%progbits
+ 2011              		.align	2
+ 2012              		.global	RingBufInit
+ 2013              		.thumb
+ 2014              		.thumb_func
+ 2016              	RingBufInit:
+ 2017              	.LFB15:
+ 671:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 672:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 673:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 674:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! Initialize a ring buffer object.
+ 675:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 676:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ptRingBuf points to the ring buffer to be initialized.
+ 677:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param pucBuf points to the data buffer to be used for the ring buffer.
+ 678:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \param ulSize is the size of the buffer in bytes.
+ 679:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 680:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! This function initializes a ring buffer object, preparing it to store data.
+ 681:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //!
+ 682:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //! \return None.
+ 683:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //
+ 684:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** //*****************************************************************************
+ 685:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** void
+ 686:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** RingBufInit(tRingBufObject *ptRingBuf, unsigned char *pucBuf,
+ 687:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****                unsigned long ulSize)
+ 688:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** {
+ 2018              		.loc 1 688 0
+ 2019              		.cfi_startproc
+ 2020              		@ args = 0, pretend = 0, frame = 16
+ 2021              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2022              		@ link register save eliminated.
+ 2023 0000 80B4     		push	{r7}
+ 2024              	.LCFI45:
+ 2025              		.cfi_def_cfa_offset 4
+ 2026 0002 85B0     		sub	sp, sp, #20
+ 2027              	.LCFI46:
+ 2028              		.cfi_def_cfa_offset 24
+ 2029 0004 00AF     		add	r7, sp, #0
+ 2030              		.cfi_offset 7, -4
+ 2031              	.LCFI47:
+ 2032              		.cfi_def_cfa_register 7
+ 2033 0006 F860     		str	r0, [r7, #12]
+ 2034 0008 B960     		str	r1, [r7, #8]
+ 2035 000a 7A60     		str	r2, [r7, #4]
+ 689:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 690:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Check the arguments.
+ 691:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 692:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ptRingBuf != NULL);
+ 693:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(pucBuf != NULL);
+ 694:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ASSERT(ulSize != 0);
+ 695:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** 
+ 696:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 697:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     // Initialize the ring buffer object.
+ 698:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     //
+ 699:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ptRingBuf->ulSize = ulSize;
+ 2036              		.loc 1 699 0
+ 2037 000c FB68     		ldr	r3, [r7, #12]
+ 2038 000e 7A68     		ldr	r2, [r7, #4]
+ 2039 0010 1A60     		str	r2, [r3, #0]
+ 700:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ptRingBuf->pucBuf = pucBuf;
+ 2040              		.loc 1 700 0
+ 2041 0012 FB68     		ldr	r3, [r7, #12]
+ 2042 0014 BA68     		ldr	r2, [r7, #8]
+ 2043 0016 DA60     		str	r2, [r3, #12]
+ 701:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c ****     ptRingBuf->ulWriteIndex = ptRingBuf->ulReadIndex = 0;
+ 2044              		.loc 1 701 0
+ 2045 0018 FB68     		ldr	r3, [r7, #12]
+ 2046 001a 4FF00002 		mov	r2, #0
+ 2047 001e 9A60     		str	r2, [r3, #8]
+ 2048 0020 FB68     		ldr	r3, [r7, #12]
+ 2049 0022 9A68     		ldr	r2, [r3, #8]
+ 2050 0024 FB68     		ldr	r3, [r7, #12]
+ 2051 0026 5A60     		str	r2, [r3, #4]
+ 702:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/ringbuf.c **** }
+ 2052              		.loc 1 702 0
+ 2053 0028 07F11407 		add	r7, r7, #20
+ 2054 002c BD46     		mov	sp, r7
+ 2055 002e 80BC     		pop	{r7}
+ 2056 0030 7047     		bx	lr
+ 2057              		.cfi_endproc
+ 2058              	.LFE15:
+ 2060 0032 00BF     		.text
+ 2061              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 ringbuf.c
+     /tmp/ccGr7N1P.s:1160   .text.UpdateIndexAtomic:00000000 $t
+     /tmp/ccGr7N1P.s:1164   .text.UpdateIndexAtomic:00000000 UpdateIndexAtomic
+     /tmp/ccGr7N1P.s:1227   .text.RingBufFull:00000000 $t
+     /tmp/ccGr7N1P.s:1232   .text.RingBufFull:00000000 RingBufFull
+     /tmp/ccGr7N1P.s:1282   .text.RingBufEmpty:00000000 $t
+     /tmp/ccGr7N1P.s:1287   .text.RingBufEmpty:00000000 RingBufEmpty
+     /tmp/ccGr7N1P.s:1331   .text.RingBufFlush:00000000 $t
+     /tmp/ccGr7N1P.s:1336   .text.RingBufFlush:00000000 RingBufFlush
+     /tmp/ccGr7N1P.s:1378   .text.RingBufUsed:00000000 $t
+     /tmp/ccGr7N1P.s:1383   .text.RingBufUsed:00000000 RingBufUsed
+     /tmp/ccGr7N1P.s:1439   .text.RingBufFree:00000000 $t
+     /tmp/ccGr7N1P.s:1444   .text.RingBufFree:00000000 RingBufFree
+     /tmp/ccGr7N1P.s:1480   .text.RingBufContigUsed:00000000 $t
+     /tmp/ccGr7N1P.s:1485   .text.RingBufContigUsed:00000000 RingBufContigUsed
+     /tmp/ccGr7N1P.s:1539   .text.RingBufContigFree:00000000 $t
+     /tmp/ccGr7N1P.s:1544   .text.RingBufContigFree:00000000 RingBufContigFree
+     /tmp/ccGr7N1P.s:1610   .text.RingBufSize:00000000 $t
+     /tmp/ccGr7N1P.s:1615   .text.RingBufSize:00000000 RingBufSize
+     /tmp/ccGr7N1P.s:1646   .text.RingBufReadOne:00000000 $t
+     /tmp/ccGr7N1P.s:1651   .text.RingBufReadOne:00000000 RingBufReadOne
+     /tmp/ccGr7N1P.s:1697   .text.RingBufRead:00000000 $t
+     /tmp/ccGr7N1P.s:1702   .text.RingBufRead:00000000 RingBufRead
+     /tmp/ccGr7N1P.s:1754   .text.RingBufAdvanceRead:00000000 $t
+     /tmp/ccGr7N1P.s:1759   .text.RingBufAdvanceRead:00000000 RingBufAdvanceRead
+     /tmp/ccGr7N1P.s:1808   .text.RingBufAdvanceWrite:00000000 $t
+     /tmp/ccGr7N1P.s:1813   .text.RingBufAdvanceWrite:00000000 RingBufAdvanceWrite
+     /tmp/ccGr7N1P.s:1905   .text.RingBufWriteOne:00000000 $t
+     /tmp/ccGr7N1P.s:1910   .text.RingBufWriteOne:00000000 RingBufWriteOne
+     /tmp/ccGr7N1P.s:1955   .text.RingBufWrite:00000000 $t
+     /tmp/ccGr7N1P.s:1960   .text.RingBufWrite:00000000 RingBufWrite
+     /tmp/ccGr7N1P.s:2011   .text.RingBufInit:00000000 $t
+     /tmp/ccGr7N1P.s:2016   .text.RingBufInit:00000000 RingBufInit
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IntMasterDisable
+IntMasterEnable

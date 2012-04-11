@@ -1,0 +1,2438 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"epi.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c"
+ 3037              		.align	2
+ 3038              		.global	EPIModeSet
+ 3039              		.thumb
+ 3040              		.thumb_func
+ 3042              	EPIModeSet:
+ 3043              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // epi.c - Driver for the EPI module.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // Copyright (c) 2008-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** #include "inc/hw_epi.h"
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** #include "inc/hw_ints.h"
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** #include "inc/hw_memmap.h"
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** #include "inc/hw_types.h"
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** #include "driverlib/debug.h"
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** #include "driverlib/epi.h"
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** #include "driverlib/interrupt.h"
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \addtogroup epi_api
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! @{
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Sets the usage mode of the EPI module.
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulMode is the usage mode of the EPI module.
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This functions sets the operating mode of the EPI module.  The parameter
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \e ulMode must be one of the following:
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_MODE_GENERAL - use for general-purpose mode operation
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_MODE_SDRAM - use with SDRAM device
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_MODE_HB8 - use with host-bus 8-bit interface
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_MODE_HB16 - use with host-bus 16-bit interface
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_MODE_DISABLE - disable the EPI module
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Selection of any of the above modes enables the EPI module, except
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! for \b EPI_MODE_DISABLE which should be used to disable the module.
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return None.
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIModeSet(unsigned long ulBase, unsigned long ulMode)
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3044              		.loc 1 64 0
+ 3045              		.cfi_startproc
+ 3046              		@ args = 0, pretend = 0, frame = 8
+ 3047              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3048              		@ link register save eliminated.
+ 3049 0000 80B4     		push	{r7}
+ 3050              	.LCFI0:
+ 3051              		.cfi_def_cfa_offset 4
+ 3052 0002 83B0     		sub	sp, sp, #12
+ 3053              	.LCFI1:
+ 3054              		.cfi_def_cfa_offset 16
+ 3055 0004 00AF     		add	r7, sp, #0
+ 3056              		.cfi_offset 7, -4
+ 3057              	.LCFI2:
+ 3058              		.cfi_def_cfa_register 7
+ 3059 0006 7860     		str	r0, [r7, #4]
+ 3060 0008 3960     		str	r1, [r7, #0]
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT((ulMode == EPI_MODE_GENERAL) ||
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****            (ulMode == EPI_MODE_SDRAM) ||
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****            (ulMode == EPI_MODE_HB8) ||
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****            (ulMode == EPI_MODE_HB16) ||
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****            (ulMode == EPI_MODE_DISABLE));
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Write the mode word to the register.
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_CFG) = ulMode;
+ 3061              		.loc 1 78 0
+ 3062 000a 7B68     		ldr	r3, [r7, #4]
+ 3063 000c 3A68     		ldr	r2, [r7, #0]
+ 3064 000e 1A60     		str	r2, [r3, #0]
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3065              		.loc 1 79 0
+ 3066 0010 07F10C07 		add	r7, r7, #12
+ 3067 0014 BD46     		mov	sp, r7
+ 3068 0016 80BC     		pop	{r7}
+ 3069 0018 7047     		bx	lr
+ 3070              		.cfi_endproc
+ 3071              	.LFE0:
+ 3073 001a 00BF     		.section	.text.EPIDividerSet,"ax",%progbits
+ 3074              		.align	2
+ 3075              		.global	EPIDividerSet
+ 3076              		.thumb
+ 3077              		.thumb_func
+ 3079              	EPIDividerSet:
+ 3080              	.LFB1:
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Sets the clock divider for the EPI module.
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulDivider is the value of the clock divider to be applied to
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! the external interface (0-65535).
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function sets the clock divider(s) that is used to determine the
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! clock rate of the external interface.  The \e ulDivider value is used to
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! derive the EPI clock rate from the system clock based on the following
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! formula.
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! EPIClock = (Divider == 0) ? SysClk : (SysClk / (((Divider / 2) + 1) * 2))
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! For example, a divider value of 1 results in an EPI clock rate of half
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! the system clock, value of 2 or 3 yields one quarter of the system clock and
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! a value of 4 results in one sixth of the system clock rate.
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! In cases where a dual chip select mode is in use and different clock rates
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! are required for each chip select, the \e ulDivider parameter must contain
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! two dividers.  The lower 16 bits define the divider to be used with CS0n
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! and the upper 16 bits define the divider for CS1n.
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return None.
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIDividerSet(unsigned long ulBase, unsigned long ulDivider)
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3081              		.loc 1 110 0
+ 3082              		.cfi_startproc
+ 3083              		@ args = 0, pretend = 0, frame = 8
+ 3084              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3085              		@ link register save eliminated.
+ 3086 0000 80B4     		push	{r7}
+ 3087              	.LCFI3:
+ 3088              		.cfi_def_cfa_offset 4
+ 3089 0002 83B0     		sub	sp, sp, #12
+ 3090              	.LCFI4:
+ 3091              		.cfi_def_cfa_offset 16
+ 3092 0004 00AF     		add	r7, sp, #0
+ 3093              		.cfi_offset 7, -4
+ 3094              	.LCFI5:
+ 3095              		.cfi_def_cfa_register 7
+ 3096 0006 7860     		str	r0, [r7, #4]
+ 3097 0008 3960     		str	r1, [r7, #0]
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Write the divider value to the register.
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_BAUD) = ulDivider;
+ 3098              		.loc 1 119 0
+ 3099 000a 7B68     		ldr	r3, [r7, #4]
+ 3100 000c 03F10403 		add	r3, r3, #4
+ 3101 0010 3A68     		ldr	r2, [r7, #0]
+ 3102 0012 1A60     		str	r2, [r3, #0]
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3103              		.loc 1 120 0
+ 3104 0014 07F10C07 		add	r7, r7, #12
+ 3105 0018 BD46     		mov	sp, r7
+ 3106 001a 80BC     		pop	{r7}
+ 3107 001c 7047     		bx	lr
+ 3108              		.cfi_endproc
+ 3109              	.LFE1:
+ 3111 001e 00BF     		.section	.text.EPIConfigSDRAMSet,"ax",%progbits
+ 3112              		.align	2
+ 3113              		.global	EPIConfigSDRAMSet
+ 3114              		.thumb
+ 3115              		.thumb_func
+ 3117              	EPIConfigSDRAMSet:
+ 3118              	.LFB2:
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Configures the SDRAM mode of operation.
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulConfig is the SDRAM interface configuration.
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulRefresh is the refresh count in core clocks (0-2047).
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function is used to configure the SDRAM interface, when the SDRAM
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! mode is chosen with the function EPIModeSet().  The parameter \e ulConfig
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! is the logical OR of several sets of choices:
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! The processor core frequency must be specified with one of the following:
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_SDRAM_CORE_FREQ_0_15 - core clock is 0 MHz < clk <= 15 MHz
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_SDRAM_CORE_FREQ_15_30 - core clock is 15 MHz < clk <= 30 MHz
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_SDRAM_CORE_FREQ_30_50 - core clock is 30 MHz < clk <= 50 MHz
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_SDRAM_CORE_FREQ_50_100 - core clock is 50 MHz < clk <= 100 MHz
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! The low power mode is specified with one of the following:
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_SDRAM_LOW_POWER - enter low power, self-refresh state
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_SDRAM_FULL_POWER - normal operating state
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! The SDRAM device size is specified with one of the following:
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_SDRAM_SIZE_64MBIT - 64 Mbit device (8 MB)
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_SDRAM_SIZE_128MBIT - 128 Mbit device (16 MB)
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_SDRAM_SIZE_256MBIT - 256 Mbit device (32 MB)
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_SDRAM_SIZE_512MBIT - 512 Mbit device (64 MB)
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! The parameter \e ulRefresh sets the refresh counter in units of core
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! clock ticks.  It is an 11-bit value with a range of 0 - 2047 counts.
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return None.
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIConfigSDRAMSet(unsigned long ulBase, unsigned long ulConfig,
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                   unsigned long ulRefresh)
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3119              		.loc 1 162 0
+ 3120              		.cfi_startproc
+ 3121              		@ args = 0, pretend = 0, frame = 16
+ 3122              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3123              		@ link register save eliminated.
+ 3124 0000 80B4     		push	{r7}
+ 3125              	.LCFI6:
+ 3126              		.cfi_def_cfa_offset 4
+ 3127 0002 85B0     		sub	sp, sp, #20
+ 3128              	.LCFI7:
+ 3129              		.cfi_def_cfa_offset 24
+ 3130 0004 00AF     		add	r7, sp, #0
+ 3131              		.cfi_offset 7, -4
+ 3132              	.LCFI8:
+ 3133              		.cfi_def_cfa_register 7
+ 3134 0006 F860     		str	r0, [r7, #12]
+ 3135 0008 B960     		str	r1, [r7, #8]
+ 3136 000a 7A60     		str	r2, [r7, #4]
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulRefresh < 2048);
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Fill in the refresh count field of the configuration word.
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulConfig &= ~EPI_SDRAMCFG_RFSH_M;
+ 3137              		.loc 1 172 0
+ 3138 000c BB68     		ldr	r3, [r7, #8]
+ 3139 000e 23F0FE63 		bic	r3, r3, #133169152
+ 3140 0012 23F47023 		bic	r3, r3, #983040
+ 3141 0016 BB60     		str	r3, [r7, #8]
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulConfig |= ulRefresh << EPI_SDRAMCFG_RFSH_S;
+ 3142              		.loc 1 173 0
+ 3143 0018 7B68     		ldr	r3, [r7, #4]
+ 3144 001a 4FEA0343 		lsl	r3, r3, #16
+ 3145 001e BA68     		ldr	r2, [r7, #8]
+ 3146 0020 42EA0303 		orr	r3, r2, r3
+ 3147 0024 BB60     		str	r3, [r7, #8]
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Write the SDRAM configuration register.
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_SDRAMCFG) = ulConfig;
+ 3148              		.loc 1 178 0
+ 3149 0026 FB68     		ldr	r3, [r7, #12]
+ 3150 0028 03F11003 		add	r3, r3, #16
+ 3151 002c BA68     		ldr	r2, [r7, #8]
+ 3152 002e 1A60     		str	r2, [r3, #0]
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3153              		.loc 1 179 0
+ 3154 0030 07F11407 		add	r7, r7, #20
+ 3155 0034 BD46     		mov	sp, r7
+ 3156 0036 80BC     		pop	{r7}
+ 3157 0038 7047     		bx	lr
+ 3158              		.cfi_endproc
+ 3159              	.LFE2:
+ 3161 003a 00BF     		.section	.text.EPIConfigHB8Set,"ax",%progbits
+ 3162              		.align	2
+ 3163              		.global	EPIConfigHB8Set
+ 3164              		.thumb
+ 3165              		.thumb_func
+ 3167              	EPIConfigHB8Set:
+ 3168              	.LFB3:
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Configures the interface for Host-bus 8 operation.
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulConfig is the interface configuration.
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulMaxWait is the maximum number of external clocks to wait
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! if a FIFO ready signal is holding off the transaction.
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function is used to configure the interface when used in Host-bus 8
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! operation as chosen with the function EPIModeSet().  The parameter
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \e ulConfig is the logical OR of any of the following:
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - one of \b EPI_HB8_MODE_ADMUX, \b EPI_HB8_MODE_ADDEMUX,
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_HB8_MODE_SRAM, or \b EPI_HB8_MODE_FIFO to select the HB8 mode
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_HB8_USE_TXEMPTY - enable TXEMPTY signal with FIFO
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_HB8_USE_RXFULL - enable RXFULL signal with FIFO
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_HB8_WRHIGH - use active high write strobe, otherwise it is
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! active low
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_HB8_RDHIGH - use active high read strobe, otherwise it is
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! active low
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - one of \b EPI_HB8_WRWAIT_0, \b EPI_HB8_WRWAIT_1, \b EPI_HB8_WRWAIT_2,
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! or \b EPI_HB8_WRWAIT_3 to select the number of write wait states (default
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! is 0 wait states)
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - one of \b EPI_HB8_RDWAIT_0, \b EPI_HB8_RDWAIT_1, \b EPI_HB8_RDWAIT_2,
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! or \b EPI_HB8_RDWAIT_3 to select the number of read wait states (default
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! is 0 wait states)
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_HB8_WORD_ACCESS - use Word Access mode to route bytes to the
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! correct byte lanes allowing data to be stored in bits [31:8].  If absent,
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! all data transfers use bits [7:0].
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_HB8_CSBAUD_DUAL - use different baud rates when accessing devices
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! on each CSn. CS0n uses the baud rate specified by the lower 16 bits of the
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! divider passed to EPIDividerSet() and CS1n uses the divider passed in the
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! upper 16 bits.  If this option is absent, both chip selects use the baud
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! rate resulting from the divider in the lower 16 bits of the parameter passed
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! to EPIDividerSet().
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - one of \b EPI_HB8_CSCFG_CS, \b EPI_HB8_CSCFG_ALE,
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_HB8_CSCFG_DUAL_CS or \b EPI_HB8_CSCFG_ALE_DUAL_CS.
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_HB8_CSCFG_CS sets EPI30 to operate as a Chip Select (CSn) signal.
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_HB8_CSCFG_ALE sets EPI30 to operate as an address latch (ALE).
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_HB8_CSCFG_DUAL_CS sets EPI30 to operate as CS0n and EPI27 as CS1n
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! with the asserted chip select determined from the most significant address
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! bit for the respective external address map.  \b EPI_HB8_CSCFG_ALE_DUAL_CS
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! sets EPI30 as an address latch (ALE), EPI27 as CS0n and EPI26 as CS1n with
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! the asserted chip select determined from the most significant address bit
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! for the respective external address map.
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! The parameter \e ulMaxWait is used if the FIFO mode is chosen.  If a
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! FIFO is used along with RXFULL or TXEMPTY ready signals, then this
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! parameter determines the maximum number of clocks to wait when the
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! transaction is being held off by by the FIFO using one of these ready
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! signals.  A value of 0 means to wait forever.
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return None.
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIConfigHB8Set(unsigned long ulBase, unsigned long ulConfig,
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                 unsigned long ulMaxWait)
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3169              		.loc 1 240 0
+ 3170              		.cfi_startproc
+ 3171              		@ args = 0, pretend = 0, frame = 16
+ 3172              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3173              		@ link register save eliminated.
+ 3174 0000 80B4     		push	{r7}
+ 3175              	.LCFI9:
+ 3176              		.cfi_def_cfa_offset 4
+ 3177 0002 85B0     		sub	sp, sp, #20
+ 3178              	.LCFI10:
+ 3179              		.cfi_def_cfa_offset 24
+ 3180 0004 00AF     		add	r7, sp, #0
+ 3181              		.cfi_offset 7, -4
+ 3182              	.LCFI11:
+ 3183              		.cfi_def_cfa_register 7
+ 3184 0006 F860     		str	r0, [r7, #12]
+ 3185 0008 B960     		str	r1, [r7, #8]
+ 3186 000a 7A60     		str	r2, [r7, #4]
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulMaxWait < 256);
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Determine the CS and word access modes.
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_HB8CFG2) = (((ulConfig & EPI_HB8_WORD_ACCESS) ?
+ 3187              		.loc 1 250 0
+ 3188 000c FB68     		ldr	r3, [r7, #12]
+ 3189 000e 03F11403 		add	r3, r3, #20
+ 3190 0012 1946     		mov	r1, r3
+ 3191 0014 BB68     		ldr	r3, [r7, #8]
+ 3192 0016 03F48073 		and	r3, r3, #256
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                                        EPI_HB8CFG2_WORD : 0) |
+ 3193              		.loc 1 251 0
+ 3194 001a 002B     		cmp	r3, #0
+ 3195 001c 02D0     		beq	.L5
+ 3196              		.loc 1 251 0 is_stmt 0 discriminator 1
+ 3197 001e 4FF00042 		mov	r2, #-2147483648
+ 3198 0022 01E0     		b	.L6
+ 3199              	.L5:
+ 3200              		.loc 1 251 0 discriminator 2
+ 3201 0024 4FF00002 		mov	r2, #0
+ 3202              	.L6:
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                                      ((ulConfig & EPI_HB8_CSBAUD_DUAL) ?
+ 3203              		.loc 1 252 0 is_stmt 1
+ 3204 0028 BB68     		ldr	r3, [r7, #8]
+ 3205 002a 03F40063 		and	r3, r3, #2048
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                                        EPI_HB8CFG2_CSBAUD : 0) |
+ 3206              		.loc 1 253 0
+ 3207 002e 002B     		cmp	r3, #0
+ 3208 0030 02D0     		beq	.L7
+ 3209              		.loc 1 253 0 is_stmt 0 discriminator 1
+ 3210 0032 4FF08063 		mov	r3, #67108864
+ 3211 0036 01E0     		b	.L8
+ 3212              	.L7:
+ 3213              		.loc 1 253 0 discriminator 2
+ 3214 0038 4FF00003 		mov	r3, #0
+ 3215              	.L8:
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                                        EPI_HB8CFG2_WORD : 0) |
+ 3216              		.loc 1 251 0 is_stmt 1
+ 3217 003c 1A43     		orrs	r2, r2, r3
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                                       ((ulConfig & EPI_HB8_CSCFG_MASK) << 15));
+ 3218              		.loc 1 254 0
+ 3219 003e BB68     		ldr	r3, [r7, #8]
+ 3220 0040 03F4C063 		and	r3, r3, #1536
+ 3221 0044 4FEAC333 		lsl	r3, r3, #15
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                                        EPI_HB8CFG2_CSBAUD : 0) |
+ 3222              		.loc 1 253 0
+ 3223 0048 42EA0303 		orr	r3, r2, r3
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_HB8CFG2) = (((ulConfig & EPI_HB8_WORD_ACCESS) ?
+ 3224              		.loc 1 250 0
+ 3225 004c 0B60     		str	r3, [r1, #0]
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Fill in the max wait field of the configuration word.
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulConfig &= ~EPI_HB8CFG_MAXWAIT_M;
+ 3226              		.loc 1 258 0
+ 3227 004e BB68     		ldr	r3, [r7, #8]
+ 3228 0050 23F47F43 		bic	r3, r3, #65280
+ 3229 0054 BB60     		str	r3, [r7, #8]
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulConfig |= ulMaxWait << EPI_HB8CFG_MAXWAIT_S;
+ 3230              		.loc 1 259 0
+ 3231 0056 7B68     		ldr	r3, [r7, #4]
+ 3232 0058 4FEA0323 		lsl	r3, r3, #8
+ 3233 005c BA68     		ldr	r2, [r7, #8]
+ 3234 005e 42EA0303 		orr	r3, r2, r3
+ 3235 0062 BB60     		str	r3, [r7, #8]
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Write the main HostBus8 configuration register.
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_HB8CFG)  = ulConfig;
+ 3236              		.loc 1 264 0
+ 3237 0064 FB68     		ldr	r3, [r7, #12]
+ 3238 0066 03F11003 		add	r3, r3, #16
+ 3239 006a BA68     		ldr	r2, [r7, #8]
+ 3240 006c 1A60     		str	r2, [r3, #0]
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3241              		.loc 1 265 0
+ 3242 006e 07F11407 		add	r7, r7, #20
+ 3243 0072 BD46     		mov	sp, r7
+ 3244 0074 80BC     		pop	{r7}
+ 3245 0076 7047     		bx	lr
+ 3246              		.cfi_endproc
+ 3247              	.LFE3:
+ 3249              		.section	.text.EPIConfigHB16Set,"ax",%progbits
+ 3250              		.align	2
+ 3251              		.global	EPIConfigHB16Set
+ 3252              		.thumb
+ 3253              		.thumb_func
+ 3255              	EPIConfigHB16Set:
+ 3256              	.LFB4:
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Configures the interface for Host-bus 16 operation.
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulConfig is the interface configuration.
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulMaxWait is the maximum number of external clocks to wait
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! if a FIFO ready signal is holding off the transaction.
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function is used to configure the interface when used in Host-bus 16
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! operation as chosen with the function EPIModeSet().  The parameter
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \e ulConfig is the logical OR of any of the following:
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - one of \b EPI_HB16_MODE_ADMUX, \b EPI_HB16_MODE_ADDEMUX,
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_HB16_MODE_SRAM, or \b EPI_HB16_MODE_FIFO to select the HB16 mode
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_HB16_USE_TXEMPTY - enable TXEMPTY signal with FIFO
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_HB16_USE_RXFULL - enable RXFULL signal with FIFO
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_HB16_WRHIGH - use active high write strobe, otherwise it is
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! active low
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_HB16_RDHIGH - use active high read strobe, otherwise it is
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! active low
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - one of \b EPI_HB16_WRWAIT_0, \b EPI_HB16_WRWAIT_1, \b EPI_HB16_WRWAIT_2,
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! or \b EPI_HB16_WRWAIT_3 to select the number of write wait states (default
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! is 0 wait states)
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - one of \b EPI_HB16_RDWAIT_0, \b EPI_HB16_RDWAIT_1, \b EPI_HB16_RDWAIT_2,
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! or \b EPI_HB16_RDWAIT_3 to select the number of read wait states (default
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! is 0 wait states)
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_HB16_WORD_ACCESS - use Word Access mode to route bytes to the
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! correct byte lanes allowing data to be stored in bits [31:16].  If absent,
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! all data transfers use bits [15:0].
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_HB16_BSEL - enables byte selects.  In this mode, two EPI signals
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! operate as byte selects allowing 8-bit transfers.  If this flag is not
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! specified, data must be read and written using only 16-bit transfers.
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_HB16_CSBAUD_DUAL - use different baud rates when accessing devices
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! on each CSn. CS0n uses the baud rate specified by the lower 16 bits of the
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! divider passed to EPIDividerSet() and CS1n uses the divider passed in the
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! upper 16 bits.  If this option is absent, both chip selects use the baud
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! rate resulting from the divider in the lower 16 bits of the parameter passed
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! to EPIDividerSet().
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - one of \b EPI_HB16_CSCFG_CS, \b EPI_HB16_CSCFG_ALE,
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_HB16_CSCFG_DUAL_CS or \b EPI_HB16_CSCFG_ALE_DUAL_CS.
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_HB16_CSCFG_CS sets EPI30 to operate as a Chip Select (CSn) signal.
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_HB16_CSCFG_ALE sets EPI30 to operate as an address latch (ALE).
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_HB16_CSCFG_DUAL_CS sets EPI30 to operate as CS0n and EPI27 as CS1n
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! with the asserted chip select determined from the most significant address
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! bit for the respective external address map.  \b EPI_HB16_CSCFG_ALE_DUAL_CS
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! sets EPI30 as an address latch (ALE), EPI27 as CS0n and EPI26 as CS1n with
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! the asserted chip select determined from the most significant address bit
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! for the respective external address map.
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! The parameter \e ulMaxWait is used if the FIFO mode is chosen.  If a
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! FIFO is used along with RXFULL or TXEMPTY ready signals, then this
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! parameter determines the maximum number of clocks to wait when the
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! transaction is being held off by by the FIFO using one of these ready
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! signals.  A value of 0 means to wait forever.
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return None.
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIConfigHB16Set(unsigned long ulBase, unsigned long ulConfig,
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                 unsigned long ulMaxWait)
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3257              		.loc 1 329 0
+ 3258              		.cfi_startproc
+ 3259              		@ args = 0, pretend = 0, frame = 16
+ 3260              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3261              		@ link register save eliminated.
+ 3262 0000 80B4     		push	{r7}
+ 3263              	.LCFI12:
+ 3264              		.cfi_def_cfa_offset 4
+ 3265 0002 85B0     		sub	sp, sp, #20
+ 3266              	.LCFI13:
+ 3267              		.cfi_def_cfa_offset 24
+ 3268 0004 00AF     		add	r7, sp, #0
+ 3269              		.cfi_offset 7, -4
+ 3270              	.LCFI14:
+ 3271              		.cfi_def_cfa_register 7
+ 3272 0006 F860     		str	r0, [r7, #12]
+ 3273 0008 B960     		str	r1, [r7, #8]
+ 3274 000a 7A60     		str	r2, [r7, #4]
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulMaxWait < 256);
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Determine the CS and word access modes.
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_HB16CFG2) = (((ulConfig & EPI_HB16_WORD_ACCESS) ?
+ 3275              		.loc 1 339 0
+ 3276 000c FB68     		ldr	r3, [r7, #12]
+ 3277 000e 03F11403 		add	r3, r3, #20
+ 3278 0012 1946     		mov	r1, r3
+ 3279 0014 BB68     		ldr	r3, [r7, #8]
+ 3280 0016 03F48073 		and	r3, r3, #256
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                                        EPI_HB16CFG2_WORD : 0) |
+ 3281              		.loc 1 340 0
+ 3282 001a 002B     		cmp	r3, #0
+ 3283 001c 02D0     		beq	.L10
+ 3284              		.loc 1 340 0 is_stmt 0 discriminator 1
+ 3285 001e 4FF00042 		mov	r2, #-2147483648
+ 3286 0022 01E0     		b	.L11
+ 3287              	.L10:
+ 3288              		.loc 1 340 0 discriminator 2
+ 3289 0024 4FF00002 		mov	r2, #0
+ 3290              	.L11:
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                                      ((ulConfig & EPI_HB16_CSBAUD_DUAL) ?
+ 3291              		.loc 1 341 0 is_stmt 1
+ 3292 0028 BB68     		ldr	r3, [r7, #8]
+ 3293 002a 03F40063 		and	r3, r3, #2048
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                                        EPI_HB16CFG2_CSBAUD : 0) |
+ 3294              		.loc 1 342 0
+ 3295 002e 002B     		cmp	r3, #0
+ 3296 0030 02D0     		beq	.L12
+ 3297              		.loc 1 342 0 is_stmt 0 discriminator 1
+ 3298 0032 4FF08063 		mov	r3, #67108864
+ 3299 0036 01E0     		b	.L13
+ 3300              	.L12:
+ 3301              		.loc 1 342 0 discriminator 2
+ 3302 0038 4FF00003 		mov	r3, #0
+ 3303              	.L13:
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                                        EPI_HB16CFG2_WORD : 0) |
+ 3304              		.loc 1 340 0 is_stmt 1
+ 3305 003c 1A43     		orrs	r2, r2, r3
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                                       ((ulConfig & EPI_HB16_CSCFG_MASK) << 15));
+ 3306              		.loc 1 343 0
+ 3307 003e BB68     		ldr	r3, [r7, #8]
+ 3308 0040 03F4C063 		and	r3, r3, #1536
+ 3309 0044 4FEAC333 		lsl	r3, r3, #15
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                                        EPI_HB16CFG2_CSBAUD : 0) |
+ 3310              		.loc 1 342 0
+ 3311 0048 42EA0303 		orr	r3, r2, r3
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_HB16CFG2) = (((ulConfig & EPI_HB16_WORD_ACCESS) ?
+ 3312              		.loc 1 339 0
+ 3313 004c 0B60     		str	r3, [r1, #0]
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Fill in the max wait field of the configuration word.
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulConfig &= ~EPI_HB16CFG_MAXWAIT_M;
+ 3314              		.loc 1 348 0
+ 3315 004e BB68     		ldr	r3, [r7, #8]
+ 3316 0050 23F47F43 		bic	r3, r3, #65280
+ 3317 0054 BB60     		str	r3, [r7, #8]
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulConfig |= ulMaxWait << EPI_HB16CFG_MAXWAIT_S;
+ 3318              		.loc 1 349 0
+ 3319 0056 7B68     		ldr	r3, [r7, #4]
+ 3320 0058 4FEA0323 		lsl	r3, r3, #8
+ 3321 005c BA68     		ldr	r2, [r7, #8]
+ 3322 005e 42EA0303 		orr	r3, r2, r3
+ 3323 0062 BB60     		str	r3, [r7, #8]
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Write the main HostBus16 configuration register.
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_HB16CFG)  = ulConfig;
+ 3324              		.loc 1 354 0
+ 3325 0064 FB68     		ldr	r3, [r7, #12]
+ 3326 0066 03F11003 		add	r3, r3, #16
+ 3327 006a BA68     		ldr	r2, [r7, #8]
+ 3328 006c 1A60     		str	r2, [r3, #0]
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3329              		.loc 1 355 0
+ 3330 006e 07F11407 		add	r7, r7, #20
+ 3331 0072 BD46     		mov	sp, r7
+ 3332 0074 80BC     		pop	{r7}
+ 3333 0076 7047     		bx	lr
+ 3334              		.cfi_endproc
+ 3335              	.LFE4:
+ 3337              		.section	.text.EPIConfigGPModeSet,"ax",%progbits
+ 3338              		.align	2
+ 3339              		.global	EPIConfigGPModeSet
+ 3340              		.thumb
+ 3341              		.thumb_func
+ 3343              	EPIConfigGPModeSet:
+ 3344              	.LFB5:
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Configures the interface for general-purpose mode operation.
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulConfig is the interface configuration.
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulFrameCount is the frame size in clocks, if the frame signal
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! is used (0-15).
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulMaxWait is the maximum number of external clocks to wait
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! when the external clock enable is holding off the transaction (0-255).
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function is used to configure the interface when used in
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! general-purpose operation as chosen with the function EPIModeSet().  The
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! parameter \e ulConfig is the logical OR of any of the following:
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! 
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_GPMODE_CLKPIN - interface clock is output on a pin
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_GPMODE_CLKGATE - clock is stopped when there is no transaction,
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! otherwise it is free-running
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_GPMODE_RDYEN - the external peripheral drives an iRDY signal into
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! pin EPI0S27.  If absent, the peripheral is assumed to be ready at all times.
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This flag may only be used with a free-running clock (\b EPI_GPMODE_CLKGATE
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! is absent).
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_GPMODE_FRAMEPIN - framing signal is emitted on a pin
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_GPMODE_FRAME50 - framing signal is 50/50 duty cycle, otherwise it
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! is a pulse
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_GPMODE_READWRITE - read and write strobes are emitted on pins
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_GPMODE_WRITE2CYCLE - a two-cycle write is used, otherwise a
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! single-cycle write is used
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_GPMODE_READ2CYCLE - a two-cycle read is used, otherwise a
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! single-cycle read is used
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_GPMODE_ASIZE_NONE, \b EPI_GPMODE_ASIZE_4,
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_GPMODE_ASIZE_12, or \b EPI_GPMODE_ASIZE_20 to choose no address
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! bus or an address bus size of 4, 12, or 20 bits
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_GPMODE_DSIZE_8, \b EPI_GPMODE_DSIZE_16,
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_GPMODE_DSIZE_24, or \b EPI_GPMODE_DSIZE_32 to select a data bus
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! size of 8, 16, 24, or 32 bits
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_GPMODE_WORD_ACCESS - use Word Access mode to route bytes to the
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! correct byte lanes allowing data to be stored in the upper bits of the word
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! when necessary.
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! The parameter \e ulFrameCount is the number of clocks used to form the
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! framing signal, if the framing signal is used.  The behavior depends on
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! whether the frame signal is a pulse or a 50/50 duty cycle.  This value
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! is not used if the framing signal is not enabled with the option
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_GPMODE_FRAMEPIN.
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! The parameter \e ulMaxWait is used if the external clock enable is turned
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! on with the \b EPI_GPMODE_CLKENA option is used.  In the case that
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! external clock enable is used, this parameter determines the maximum
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! number of clocks to wait when the external clock enable signal is holding
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! off a transaction.  A value of 0 means to wait forever.  If a non-zero
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! value is used and exceeded, an interrupt occurs and the transaction
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! aborted.
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return None.
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIConfigGPModeSet(unsigned long ulBase, unsigned long ulConfig,
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                    unsigned long ulFrameCount, unsigned long ulMaxWait)
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3345              		.loc 1 417 0
+ 3346              		.cfi_startproc
+ 3347              		@ args = 0, pretend = 0, frame = 16
+ 3348              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3349              		@ link register save eliminated.
+ 3350 0000 80B4     		push	{r7}
+ 3351              	.LCFI15:
+ 3352              		.cfi_def_cfa_offset 4
+ 3353 0002 85B0     		sub	sp, sp, #20
+ 3354              	.LCFI16:
+ 3355              		.cfi_def_cfa_offset 24
+ 3356 0004 00AF     		add	r7, sp, #0
+ 3357              		.cfi_offset 7, -4
+ 3358              	.LCFI17:
+ 3359              		.cfi_def_cfa_register 7
+ 3360 0006 F860     		str	r0, [r7, #12]
+ 3361 0008 B960     		str	r1, [r7, #8]
+ 3362 000a 7A60     		str	r2, [r7, #4]
+ 3363 000c 3B60     		str	r3, [r7, #0]
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulFrameCount < 16);
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulMaxWait < 256);
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Set the word access mode.
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_GPCFG2) = ((ulConfig & EPI_GPMODE_WORD_ACCESS) ?
+ 3364              		.loc 1 428 0
+ 3365 000e FB68     		ldr	r3, [r7, #12]
+ 3366 0010 03F11403 		add	r3, r3, #20
+ 3367 0014 1A46     		mov	r2, r3
+ 3368 0016 BB68     		ldr	r3, [r7, #8]
+ 3369 0018 03F48073 		and	r3, r3, #256
+ 3370 001c 002B     		cmp	r3, #0
+ 3371 001e 02D0     		beq	.L15
+ 3372              		.loc 1 428 0 is_stmt 0 discriminator 1
+ 3373 0020 4FF00043 		mov	r3, #-2147483648
+ 3374 0024 01E0     		b	.L16
+ 3375              	.L15:
+ 3376              		.loc 1 428 0 discriminator 2
+ 3377 0026 4FF00003 		mov	r3, #0
+ 3378              	.L16:
+ 3379              		.loc 1 428 0 discriminator 3
+ 3380 002a 1360     		str	r3, [r2, #0]
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                                     EPI_GPCFG2_WORD : 0);
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Fill in the frame count field of the configuration word.
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulConfig &= ~EPI_GPCFG_FRMCNT_M;
+ 3381              		.loc 1 434 0 is_stmt 1 discriminator 3
+ 3382 002c BB68     		ldr	r3, [r7, #8]
+ 3383 002e 23F07073 		bic	r3, r3, #62914560
+ 3384 0032 BB60     		str	r3, [r7, #8]
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulConfig |= ulFrameCount << EPI_GPCFG_FRMCNT_S;
+ 3385              		.loc 1 435 0 discriminator 3
+ 3386 0034 7B68     		ldr	r3, [r7, #4]
+ 3387 0036 4FEA8353 		lsl	r3, r3, #22
+ 3388 003a BA68     		ldr	r2, [r7, #8]
+ 3389 003c 42EA0303 		orr	r3, r2, r3
+ 3390 0040 BB60     		str	r3, [r7, #8]
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Fill in the max wait field of the configuration word.
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulConfig &= ~EPI_GPCFG_MAXWAIT_M;
+ 3391              		.loc 1 440 0 discriminator 3
+ 3392 0042 BB68     		ldr	r3, [r7, #8]
+ 3393 0044 23F47F43 		bic	r3, r3, #65280
+ 3394 0048 BB60     		str	r3, [r7, #8]
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulConfig |= ulMaxWait << EPI_GPCFG_MAXWAIT_S;
+ 3395              		.loc 1 441 0 discriminator 3
+ 3396 004a 3B68     		ldr	r3, [r7, #0]
+ 3397 004c 4FEA0323 		lsl	r3, r3, #8
+ 3398 0050 BA68     		ldr	r2, [r7, #8]
+ 3399 0052 42EA0303 		orr	r3, r2, r3
+ 3400 0056 BB60     		str	r3, [r7, #8]
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Write the non-moded configuration register.
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_GPCFG) = ulConfig;
+ 3401              		.loc 1 446 0 discriminator 3
+ 3402 0058 FB68     		ldr	r3, [r7, #12]
+ 3403 005a 03F11003 		add	r3, r3, #16
+ 3404 005e BA68     		ldr	r2, [r7, #8]
+ 3405 0060 1A60     		str	r2, [r3, #0]
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3406              		.loc 1 447 0 discriminator 3
+ 3407 0062 07F11407 		add	r7, r7, #20
+ 3408 0066 BD46     		mov	sp, r7
+ 3409 0068 80BC     		pop	{r7}
+ 3410 006a 7047     		bx	lr
+ 3411              		.cfi_endproc
+ 3412              	.LFE5:
+ 3414              		.section	.text.EPIAddressMapSet,"ax",%progbits
+ 3415              		.align	2
+ 3416              		.global	EPIAddressMapSet
+ 3417              		.thumb
+ 3418              		.thumb_func
+ 3420              	EPIAddressMapSet:
+ 3421              	.LFB6:
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Configures the address map for the external interface.
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulMap is the address mapping configuration.
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function is used to configure the address mapping for the external
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! interface.  This determines the base address of the external memory or
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! device within the processor peripheral and/or memory space.
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! The parameter \e ulMap is the logical OR of the following:
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_ADDR_PER_SIZE_256B, \b EPI_ADDR_PER_SIZE_64KB,
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_ADDR_PER_SIZE_16MB, or \b EPI_ADDR_PER_SIZE_512MB to choose a
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! peripheral address space of 256 bytes, 64 Kbytes, 16 Mbytes or 512 Mbytes
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_ADDR_PER_BASE_NONE, \b EPI_ADDR_PER_BASE_A, or
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_ADDR_PER_BASE_C to choose the base address of the peripheral
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! space as none, 0xA0000000, or 0xC0000000
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_ADDR_RAM_SIZE_256B, \b EPI_ADDR_RAM_SIZE_64KB,
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_ADDR_RAM_SIZE_16MB, or \b EPI_ADDR_RAM_SIZE_512MB to choose a
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! RAM address space of 256 bytes, 64 Kbytes, 16 Mbytes or 512 Mbytes
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_ADDR_RAM_BASE_NONE, \b EPI_ADDR_RAM_BASE_6, or
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_ADDR_RAM_BASE_8 to choose the base address of the RAM space
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! as none, 0x60000000, or 0x80000000
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return None.
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIAddressMapSet(unsigned long ulBase, unsigned long ulMap)
+ 480:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3422              		.loc 1 480 0
+ 3423              		.cfi_startproc
+ 3424              		@ args = 0, pretend = 0, frame = 8
+ 3425              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3426              		@ link register save eliminated.
+ 3427 0000 80B4     		push	{r7}
+ 3428              	.LCFI18:
+ 3429              		.cfi_def_cfa_offset 4
+ 3430 0002 83B0     		sub	sp, sp, #12
+ 3431              	.LCFI19:
+ 3432              		.cfi_def_cfa_offset 16
+ 3433 0004 00AF     		add	r7, sp, #0
+ 3434              		.cfi_offset 7, -4
+ 3435              	.LCFI20:
+ 3436              		.cfi_def_cfa_register 7
+ 3437 0006 7860     		str	r0, [r7, #4]
+ 3438 0008 3960     		str	r1, [r7, #0]
+ 481:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 482:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 484:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 485:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulMap < 0x100);
+ 486:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 487:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 488:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Set the value of the address mapping register.
+ 489:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 490:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_ADDRMAP) = ulMap;
+ 3439              		.loc 1 490 0
+ 3440 000a 7B68     		ldr	r3, [r7, #4]
+ 3441 000c 03F11C03 		add	r3, r3, #28
+ 3442 0010 3A68     		ldr	r2, [r7, #0]
+ 3443 0012 1A60     		str	r2, [r3, #0]
+ 491:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3444              		.loc 1 491 0
+ 3445 0014 07F10C07 		add	r7, r7, #12
+ 3446 0018 BD46     		mov	sp, r7
+ 3447 001a 80BC     		pop	{r7}
+ 3448 001c 7047     		bx	lr
+ 3449              		.cfi_endproc
+ 3450              	.LFE6:
+ 3452 001e 00BF     		.section	.text.EPINonBlockingReadConfigure,"ax",%progbits
+ 3453              		.align	2
+ 3454              		.global	EPINonBlockingReadConfigure
+ 3455              		.thumb
+ 3456              		.thumb_func
+ 3458              	EPINonBlockingReadConfigure:
+ 3459              	.LFB7:
+ 492:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 493:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 494:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 495:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Configures a non-blocking read transaction.
+ 496:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 497:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 498:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulChannel is the read channel (0 or 1).
+ 499:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulDataSize is the size of the data items to read.
+ 500:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulAddress is the starting address to read.
+ 501:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 502:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function is used to configure a non-blocking read channel for a
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! transaction.  Two channels are available which can be used in a ping-pong
+ 504:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! method for continuous reading.  It is not necessary to use both channels
+ 505:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! to perform a non-blocking read.
+ 506:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 507:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! The parameter \e ulDataSize is one of \b EPI_NBCONFIG_SIZE_8,
+ 508:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_NBCONFIG_SIZE_16, or \b EPI_NBCONFIG_SIZE_32 for 8-bit, 16-bit,
+ 509:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! or 32-bit sized data transfers.
+ 510:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 511:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! The parameter \e ulAddress is the starting address for the read, relative
+ 512:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! to the external device.  The start of the device is address 0.
+ 513:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 514:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Once configured, the non-blocking read is started by calling
+ 515:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! EPINonBlockingReadStart().  If the addresses to be read from the device
+ 516:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! are in a sequence, it is not necessary to call this function multiple
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! times.  Until it is changed, the EPI module stores the last address
+ 518:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! that was used for a non-blocking read (per channel).
+ 519:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 520:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return None.
+ 521:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 522:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 523:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+ 524:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPINonBlockingReadConfigure(unsigned long ulBase, unsigned long ulChannel,
+ 525:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                             unsigned long ulDataSize, unsigned long ulAddress)
+ 526:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3460              		.loc 1 526 0
+ 3461              		.cfi_startproc
+ 3462              		@ args = 0, pretend = 0, frame = 24
+ 3463              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3464              		@ link register save eliminated.
+ 3465 0000 80B4     		push	{r7}
+ 3466              	.LCFI21:
+ 3467              		.cfi_def_cfa_offset 4
+ 3468 0002 87B0     		sub	sp, sp, #28
+ 3469              	.LCFI22:
+ 3470              		.cfi_def_cfa_offset 32
+ 3471 0004 00AF     		add	r7, sp, #0
+ 3472              		.cfi_offset 7, -4
+ 3473              	.LCFI23:
+ 3474              		.cfi_def_cfa_register 7
+ 3475 0006 F860     		str	r0, [r7, #12]
+ 3476 0008 B960     		str	r1, [r7, #8]
+ 3477 000a 7A60     		str	r2, [r7, #4]
+ 3478 000c 3B60     		str	r3, [r7, #0]
+ 527:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     unsigned long ulOffset;
+ 528:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 529:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 530:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 531:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 532:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 533:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulChannel < 2);
+ 534:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulDataSize < 4);
+ 535:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulAddress < 0x20000000);
+ 536:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 537:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 538:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Compute the offset needed to select the correct channel regs.
+ 539:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 540:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulOffset = ulChannel * (EPI_O_RSIZE1 - EPI_O_RSIZE0);
+ 3479              		.loc 1 540 0
+ 3480 000e BB68     		ldr	r3, [r7, #8]
+ 3481 0010 4FEA0313 		lsl	r3, r3, #4
+ 3482 0014 7B61     		str	r3, [r7, #20]
+ 541:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 542:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 543:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Write the data size register for the channel.
+ 544:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 545:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_RSIZE0 + ulOffset) = ulDataSize;
+ 3483              		.loc 1 545 0
+ 3484 0016 FA68     		ldr	r2, [r7, #12]
+ 3485 0018 7B69     		ldr	r3, [r7, #20]
+ 3486 001a D318     		adds	r3, r2, r3
+ 3487 001c 03F12003 		add	r3, r3, #32
+ 3488 0020 7A68     		ldr	r2, [r7, #4]
+ 3489 0022 1A60     		str	r2, [r3, #0]
+ 546:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 547:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Write the starting address register for the channel.
+ 549:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 550:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_RADDR0 + ulOffset) = ulAddress;
+ 3490              		.loc 1 550 0
+ 3491 0024 FA68     		ldr	r2, [r7, #12]
+ 3492 0026 7B69     		ldr	r3, [r7, #20]
+ 3493 0028 D318     		adds	r3, r2, r3
+ 3494 002a 03F12403 		add	r3, r3, #36
+ 3495 002e 3A68     		ldr	r2, [r7, #0]
+ 3496 0030 1A60     		str	r2, [r3, #0]
+ 551:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3497              		.loc 1 551 0
+ 3498 0032 07F11C07 		add	r7, r7, #28
+ 3499 0036 BD46     		mov	sp, r7
+ 3500 0038 80BC     		pop	{r7}
+ 3501 003a 7047     		bx	lr
+ 3502              		.cfi_endproc
+ 3503              	.LFE7:
+ 3505              		.section	.text.EPINonBlockingReadStart,"ax",%progbits
+ 3506              		.align	2
+ 3507              		.global	EPINonBlockingReadStart
+ 3508              		.thumb
+ 3509              		.thumb_func
+ 3511              	EPINonBlockingReadStart:
+ 3512              	.LFB8:
+ 552:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 553:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 554:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 555:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Starts a non-blocking read transaction.
+ 556:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 557:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 558:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulChannel is the read channel (0 or 1).
+ 559:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulCount is the number of items to read (1-4095).
+ 560:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 561:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function starts a non-blocking read that was previously configured
+ 562:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! with the function EPINonBlockingReadConfigure().  Once this function is
+ 563:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! called, the EPI module begins reading data from the external device
+ 564:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! into the read FIFO.  The EPI stops reading when the FIFO fills up
+ 565:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! and resumes reading when the application drains the FIFO, until the
+ 566:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! total specified count of data items has been read.
+ 567:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 568:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Once a read transaction is completed and the FIFO drained, another
+ 569:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! transaction can be started from the next address by calling this
+ 570:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! function again.
+ 571:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 572:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return None.
+ 573:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 574:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 575:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+ 576:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPINonBlockingReadStart(unsigned long ulBase, unsigned long ulChannel,
+ 577:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                         unsigned long ulCount)
+ 578:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3513              		.loc 1 578 0
+ 3514              		.cfi_startproc
+ 3515              		@ args = 0, pretend = 0, frame = 24
+ 3516              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3517              		@ link register save eliminated.
+ 3518 0000 80B4     		push	{r7}
+ 3519              	.LCFI24:
+ 3520              		.cfi_def_cfa_offset 4
+ 3521 0002 87B0     		sub	sp, sp, #28
+ 3522              	.LCFI25:
+ 3523              		.cfi_def_cfa_offset 32
+ 3524 0004 00AF     		add	r7, sp, #0
+ 3525              		.cfi_offset 7, -4
+ 3526              	.LCFI26:
+ 3527              		.cfi_def_cfa_register 7
+ 3528 0006 F860     		str	r0, [r7, #12]
+ 3529 0008 B960     		str	r1, [r7, #8]
+ 3530 000a 7A60     		str	r2, [r7, #4]
+ 579:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     unsigned long ulOffset;
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 581:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 582:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 583:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 584:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 585:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulChannel < 2);
+ 586:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulCount < 4096);
+ 587:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 588:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 589:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Compute the offset needed to select the correct channel regs.
+ 590:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 591:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulOffset = ulChannel * (EPI_O_RPSTD1 - EPI_O_RPSTD0);
+ 3531              		.loc 1 591 0
+ 3532 000c BB68     		ldr	r3, [r7, #8]
+ 3533 000e 4FEA0313 		lsl	r3, r3, #4
+ 3534 0012 7B61     		str	r3, [r7, #20]
+ 592:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 593:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 594:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Write to the read count register.
+ 595:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 596:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_RPSTD0 + ulOffset) = ulCount;
+ 3535              		.loc 1 596 0
+ 3536 0014 FA68     		ldr	r2, [r7, #12]
+ 3537 0016 7B69     		ldr	r3, [r7, #20]
+ 3538 0018 D318     		adds	r3, r2, r3
+ 3539 001a 03F12803 		add	r3, r3, #40
+ 3540 001e 7A68     		ldr	r2, [r7, #4]
+ 3541 0020 1A60     		str	r2, [r3, #0]
+ 597:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3542              		.loc 1 597 0
+ 3543 0022 07F11C07 		add	r7, r7, #28
+ 3544 0026 BD46     		mov	sp, r7
+ 3545 0028 80BC     		pop	{r7}
+ 3546 002a 7047     		bx	lr
+ 3547              		.cfi_endproc
+ 3548              	.LFE8:
+ 3550              		.section	.text.EPINonBlockingReadStop,"ax",%progbits
+ 3551              		.align	2
+ 3552              		.global	EPINonBlockingReadStop
+ 3553              		.thumb
+ 3554              		.thumb_func
+ 3556              	EPINonBlockingReadStop:
+ 3557              	.LFB9:
+ 598:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 599:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 600:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 601:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Stops a non-blocking read transaction.
+ 602:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 603:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 604:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulChannel is the read channel (0 or 1).
+ 605:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 606:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function cancels a non-blocking read transaction that is already
+ 607:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! in progress.
+ 608:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 609:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return None.
+ 610:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 611:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 612:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+ 613:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPINonBlockingReadStop(unsigned long ulBase, unsigned long ulChannel)
+ 614:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3558              		.loc 1 614 0
+ 3559              		.cfi_startproc
+ 3560              		@ args = 0, pretend = 0, frame = 16
+ 3561              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3562              		@ link register save eliminated.
+ 3563 0000 80B4     		push	{r7}
+ 3564              	.LCFI27:
+ 3565              		.cfi_def_cfa_offset 4
+ 3566 0002 85B0     		sub	sp, sp, #20
+ 3567              	.LCFI28:
+ 3568              		.cfi_def_cfa_offset 24
+ 3569 0004 00AF     		add	r7, sp, #0
+ 3570              		.cfi_offset 7, -4
+ 3571              	.LCFI29:
+ 3572              		.cfi_def_cfa_register 7
+ 3573 0006 7860     		str	r0, [r7, #4]
+ 3574 0008 3960     		str	r1, [r7, #0]
+ 615:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     unsigned long ulOffset;
+ 616:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 617:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 618:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 619:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 620:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 621:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulChannel < 2);
+ 622:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 623:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 624:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Compute the offset needed to select the correct channel regs.
+ 625:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 626:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulOffset = ulChannel * (EPI_O_RPSTD1 - EPI_O_RPSTD0);
+ 3575              		.loc 1 626 0
+ 3576 000a 3B68     		ldr	r3, [r7, #0]
+ 3577 000c 4FEA0313 		lsl	r3, r3, #4
+ 3578 0010 FB60     		str	r3, [r7, #12]
+ 627:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 628:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 629:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Write a 0 to the read count register, which cancels the transaction.
+ 630:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 631:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_RPSTD0 + ulOffset) = 0;
+ 3579              		.loc 1 631 0
+ 3580 0012 7A68     		ldr	r2, [r7, #4]
+ 3581 0014 FB68     		ldr	r3, [r7, #12]
+ 3582 0016 D318     		adds	r3, r2, r3
+ 3583 0018 03F12803 		add	r3, r3, #40
+ 3584 001c 4FF00002 		mov	r2, #0
+ 3585 0020 1A60     		str	r2, [r3, #0]
+ 632:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3586              		.loc 1 632 0
+ 3587 0022 07F11407 		add	r7, r7, #20
+ 3588 0026 BD46     		mov	sp, r7
+ 3589 0028 80BC     		pop	{r7}
+ 3590 002a 7047     		bx	lr
+ 3591              		.cfi_endproc
+ 3592              	.LFE9:
+ 3594              		.section	.text.EPINonBlockingReadCount,"ax",%progbits
+ 3595              		.align	2
+ 3596              		.global	EPINonBlockingReadCount
+ 3597              		.thumb
+ 3598              		.thumb_func
+ 3600              	EPINonBlockingReadCount:
+ 3601              	.LFB10:
+ 633:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 634:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 635:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 636:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Get the count remaining for a non-blocking transaction.
+ 637:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 638:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 639:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulChannel is the read channel (0 or 1).
+ 640:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 641:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function gets the remaining count of items for a non-blocking read
+ 642:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! transaction.
+ 643:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 644:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return The number of items remaining in the non-blocking read transaction.
+ 645:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 646:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 647:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** unsigned long
+ 648:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPINonBlockingReadCount(unsigned long ulBase, unsigned long ulChannel)
+ 649:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3602              		.loc 1 649 0
+ 3603              		.cfi_startproc
+ 3604              		@ args = 0, pretend = 0, frame = 16
+ 3605              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3606              		@ link register save eliminated.
+ 3607 0000 80B4     		push	{r7}
+ 3608              	.LCFI30:
+ 3609              		.cfi_def_cfa_offset 4
+ 3610 0002 85B0     		sub	sp, sp, #20
+ 3611              	.LCFI31:
+ 3612              		.cfi_def_cfa_offset 24
+ 3613 0004 00AF     		add	r7, sp, #0
+ 3614              		.cfi_offset 7, -4
+ 3615              	.LCFI32:
+ 3616              		.cfi_def_cfa_register 7
+ 3617 0006 7860     		str	r0, [r7, #4]
+ 3618 0008 3960     		str	r1, [r7, #0]
+ 650:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     unsigned long ulOffset;
+ 651:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 652:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 653:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 654:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 655:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 656:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulChannel < 2);
+ 657:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 658:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 659:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Compute the offset needed to select the correct channel regs.
+ 660:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 661:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ulOffset = ulChannel * (EPI_O_RPSTD1 - EPI_O_RPSTD0);
+ 3619              		.loc 1 661 0
+ 3620 000a 3B68     		ldr	r3, [r7, #0]
+ 3621 000c 4FEA0313 		lsl	r3, r3, #4
+ 3622 0010 FB60     		str	r3, [r7, #12]
+ 662:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 663:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 664:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Read the count remaining and return the value to the caller.
+ 665:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 666:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     return(HWREG(ulBase + EPI_O_RPSTD0 + ulOffset));
+ 3623              		.loc 1 666 0
+ 3624 0012 7A68     		ldr	r2, [r7, #4]
+ 3625 0014 FB68     		ldr	r3, [r7, #12]
+ 3626 0016 D318     		adds	r3, r2, r3
+ 3627 0018 03F12803 		add	r3, r3, #40
+ 3628 001c 1B68     		ldr	r3, [r3, #0]
+ 667:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3629              		.loc 1 667 0
+ 3630 001e 1846     		mov	r0, r3
+ 3631 0020 07F11407 		add	r7, r7, #20
+ 3632 0024 BD46     		mov	sp, r7
+ 3633 0026 80BC     		pop	{r7}
+ 3634 0028 7047     		bx	lr
+ 3635              		.cfi_endproc
+ 3636              	.LFE10:
+ 3638 002a 00BF     		.section	.text.EPINonBlockingReadAvail,"ax",%progbits
+ 3639              		.align	2
+ 3640              		.global	EPINonBlockingReadAvail
+ 3641              		.thumb
+ 3642              		.thumb_func
+ 3644              	EPINonBlockingReadAvail:
+ 3645              	.LFB11:
+ 668:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 669:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 670:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 671:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Get the count of items available in the read FIFO.
+ 672:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 673:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 674:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 675:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function gets the number of items that are available to read in
+ 676:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! the read FIFO.  The read FIFO is filled by a non-blocking read transaction
+ 677:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! which is configured by the functions EPINonBlockingReadConfigure() and
+ 678:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! EPINonBlockingReadStart().
+ 679:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 680:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return The number of items available to read in the read FIFO.
+ 681:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 682:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 683:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** unsigned long
+ 684:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPINonBlockingReadAvail(unsigned long ulBase)
+ 685:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3646              		.loc 1 685 0
+ 3647              		.cfi_startproc
+ 3648              		@ args = 0, pretend = 0, frame = 8
+ 3649              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3650              		@ link register save eliminated.
+ 3651 0000 80B4     		push	{r7}
+ 3652              	.LCFI33:
+ 3653              		.cfi_def_cfa_offset 4
+ 3654 0002 83B0     		sub	sp, sp, #12
+ 3655              	.LCFI34:
+ 3656              		.cfi_def_cfa_offset 16
+ 3657 0004 00AF     		add	r7, sp, #0
+ 3658              		.cfi_offset 7, -4
+ 3659              	.LCFI35:
+ 3660              		.cfi_def_cfa_register 7
+ 3661 0006 7860     		str	r0, [r7, #4]
+ 686:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 687:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 688:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 689:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 690:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 691:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 692:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Read the FIFO count and return it to the caller.
+ 693:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 694:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     return(HWREG(ulBase + EPI_O_RFIFOCNT));
+ 3662              		.loc 1 694 0
+ 3663 0008 7B68     		ldr	r3, [r7, #4]
+ 3664 000a 03F16C03 		add	r3, r3, #108
+ 3665 000e 1B68     		ldr	r3, [r3, #0]
+ 695:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3666              		.loc 1 695 0
+ 3667 0010 1846     		mov	r0, r3
+ 3668 0012 07F10C07 		add	r7, r7, #12
+ 3669 0016 BD46     		mov	sp, r7
+ 3670 0018 80BC     		pop	{r7}
+ 3671 001a 7047     		bx	lr
+ 3672              		.cfi_endproc
+ 3673              	.LFE11:
+ 3675              		.section	.text.EPINonBlockingReadGet32,"ax",%progbits
+ 3676              		.align	2
+ 3677              		.global	EPINonBlockingReadGet32
+ 3678              		.thumb
+ 3679              		.thumb_func
+ 3681              	EPINonBlockingReadGet32:
+ 3682              	.LFB12:
+ 696:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 697:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 698:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 699:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Read available data from the read FIFO, as 32-bit data items.
+ 700:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 701:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 702:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulCount is the maximum count of items to read.
+ 703:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param pulBuf is the caller supplied buffer where the read data should
+ 704:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! be stored.
+ 705:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 706:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function reads 32-bit data items from the read FIFO and stores
+ 707:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! the values in a caller-supplied buffer.  The function reads and stores
+ 708:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! data from the FIFO until there is no more data in the FIFO or the maximum
+ 709:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! count is reached as specified in the parameter \e ulCount.  The actual
+ 710:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! count of items is returned.
+ 711:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 712:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return The number of items read from the FIFO.
+ 713:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 714:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 715:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** unsigned long
+ 716:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPINonBlockingReadGet32(unsigned long ulBase, unsigned long ulCount,
+ 717:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                         unsigned long *pulBuf)
+ 718:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3683              		.loc 1 718 0
+ 3684              		.cfi_startproc
+ 3685              		@ args = 0, pretend = 0, frame = 24
+ 3686              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3687              		@ link register save eliminated.
+ 3688 0000 80B4     		push	{r7}
+ 3689              	.LCFI36:
+ 3690              		.cfi_def_cfa_offset 4
+ 3691 0002 87B0     		sub	sp, sp, #28
+ 3692              	.LCFI37:
+ 3693              		.cfi_def_cfa_offset 32
+ 3694 0004 00AF     		add	r7, sp, #0
+ 3695              		.cfi_offset 7, -4
+ 3696              	.LCFI38:
+ 3697              		.cfi_def_cfa_register 7
+ 3698 0006 F860     		str	r0, [r7, #12]
+ 3699 0008 B960     		str	r1, [r7, #8]
+ 3700 000a 7A60     		str	r2, [r7, #4]
+ 719:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     unsigned long ulCountRead = 0;
+ 3701              		.loc 1 719 0
+ 3702 000c 4FF00003 		mov	r3, #0
+ 3703 0010 7B61     		str	r3, [r7, #20]
+ 720:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 721:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 722:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 723:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 724:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 725:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulCount < 4096);
+ 726:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(pulBuf);
+ 727:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 728:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 729:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Read from the FIFO while there are any items to read and
+ 730:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // the caller's specified count is not exceeded.
+ 731:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 732:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     while(HWREG(ulBase + EPI_O_RFIFOCNT) && ulCount--)
+ 3704              		.loc 1 732 0
+ 3705 0012 0DE0     		b	.L24
+ 3706              	.L26:
+ 733:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     {
+ 734:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         //
+ 735:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         // Read from the FIFO and store in the caller supplied buffer.
+ 736:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         //
+ 737:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         *pulBuf = HWREG(ulBase + EPI_O_READFIFO);
+ 3707              		.loc 1 737 0
+ 3708 0014 FB68     		ldr	r3, [r7, #12]
+ 3709 0016 03F17003 		add	r3, r3, #112
+ 3710 001a 1A68     		ldr	r2, [r3, #0]
+ 3711 001c 7B68     		ldr	r3, [r7, #4]
+ 3712 001e 1A60     		str	r2, [r3, #0]
+ 738:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 739:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         //
+ 740:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         // Update the caller's buffer pointer and the count of items read.
+ 741:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         //
+ 742:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         pulBuf++;
+ 3713              		.loc 1 742 0
+ 3714 0020 7B68     		ldr	r3, [r7, #4]
+ 3715 0022 03F10403 		add	r3, r3, #4
+ 3716 0026 7B60     		str	r3, [r7, #4]
+ 743:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         ulCountRead++;
+ 3717              		.loc 1 743 0
+ 3718 0028 7B69     		ldr	r3, [r7, #20]
+ 3719 002a 03F10103 		add	r3, r3, #1
+ 3720 002e 7B61     		str	r3, [r7, #20]
+ 3721              	.L24:
+ 732:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     while(HWREG(ulBase + EPI_O_RFIFOCNT) && ulCount--)
+ 3722              		.loc 1 732 0 discriminator 1
+ 3723 0030 FB68     		ldr	r3, [r7, #12]
+ 3724 0032 03F16C03 		add	r3, r3, #108
+ 3725 0036 1B68     		ldr	r3, [r3, #0]
+ 3726 0038 002B     		cmp	r3, #0
+ 3727 003a 0BD0     		beq	.L25
+ 732:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     while(HWREG(ulBase + EPI_O_RFIFOCNT) && ulCount--)
+ 3728              		.loc 1 732 0 is_stmt 0 discriminator 2
+ 3729 003c BB68     		ldr	r3, [r7, #8]
+ 3730 003e 002B     		cmp	r3, #0
+ 3731 0040 0CBF     		ite	eq
+ 3732 0042 0023     		moveq	r3, #0
+ 3733 0044 0123     		movne	r3, #1
+ 3734 0046 DBB2     		uxtb	r3, r3
+ 3735 0048 BA68     		ldr	r2, [r7, #8]
+ 3736 004a 02F1FF32 		add	r2, r2, #-1
+ 3737 004e BA60     		str	r2, [r7, #8]
+ 3738 0050 002B     		cmp	r3, #0
+ 3739 0052 DFD1     		bne	.L26
+ 3740              	.L25:
+ 744:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     }
+ 745:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 746:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 747:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Return the count of items read to the caller.
+ 748:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 749:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     return(ulCountRead);
+ 3741              		.loc 1 749 0 is_stmt 1
+ 3742 0054 7B69     		ldr	r3, [r7, #20]
+ 750:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3743              		.loc 1 750 0
+ 3744 0056 1846     		mov	r0, r3
+ 3745 0058 07F11C07 		add	r7, r7, #28
+ 3746 005c BD46     		mov	sp, r7
+ 3747 005e 80BC     		pop	{r7}
+ 3748 0060 7047     		bx	lr
+ 3749              		.cfi_endproc
+ 3750              	.LFE12:
+ 3752 0062 00BF     		.section	.text.EPINonBlockingReadGet16,"ax",%progbits
+ 3753              		.align	2
+ 3754              		.global	EPINonBlockingReadGet16
+ 3755              		.thumb
+ 3756              		.thumb_func
+ 3758              	EPINonBlockingReadGet16:
+ 3759              	.LFB13:
+ 751:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 752:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 753:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 754:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Read available data from the read FIFO, as 16-bit data items.
+ 755:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 756:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 757:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulCount is the maximum count of items to read.
+ 758:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param pusBuf is the caller-supplied buffer where the read data should
+ 759:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! be stored.
+ 760:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 761:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function reads 16-bit data items from the read FIFO and stores
+ 762:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! the values in a caller-supplied buffer.  The function reads and stores
+ 763:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! data from the FIFO until there is no more data in the FIFO or the maximum
+ 764:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! count is reached as specified in the parameter \e ulCount.  The actual
+ 765:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! count of items is returned.
+ 766:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 767:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return The number of items read from the FIFO.
+ 768:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 769:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 770:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** unsigned long
+ 771:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPINonBlockingReadGet16(unsigned long ulBase, unsigned long ulCount,
+ 772:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                         unsigned short *pusBuf)
+ 773:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3760              		.loc 1 773 0
+ 3761              		.cfi_startproc
+ 3762              		@ args = 0, pretend = 0, frame = 24
+ 3763              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3764              		@ link register save eliminated.
+ 3765 0000 80B4     		push	{r7}
+ 3766              	.LCFI39:
+ 3767              		.cfi_def_cfa_offset 4
+ 3768 0002 87B0     		sub	sp, sp, #28
+ 3769              	.LCFI40:
+ 3770              		.cfi_def_cfa_offset 32
+ 3771 0004 00AF     		add	r7, sp, #0
+ 3772              		.cfi_offset 7, -4
+ 3773              	.LCFI41:
+ 3774              		.cfi_def_cfa_register 7
+ 3775 0006 F860     		str	r0, [r7, #12]
+ 3776 0008 B960     		str	r1, [r7, #8]
+ 3777 000a 7A60     		str	r2, [r7, #4]
+ 774:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     unsigned long ulCountRead = 0;
+ 3778              		.loc 1 774 0
+ 3779 000c 4FF00003 		mov	r3, #0
+ 3780 0010 7B61     		str	r3, [r7, #20]
+ 775:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 776:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 777:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 778:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 779:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 780:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulCount < 4096);
+ 781:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(pusBuf);
+ 782:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 783:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 784:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Read from the FIFO while there are any items to read, and
+ 785:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // the caller's specified count is not exceeded.
+ 786:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 787:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     while(HWREG(ulBase + EPI_O_RFIFOCNT) && ulCount--)
+ 3781              		.loc 1 787 0
+ 3782 0012 0EE0     		b	.L28
+ 3783              	.L30:
+ 788:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     {
+ 789:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         //
+ 790:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         // Read from the FIFO and store in the caller-supplied buffer.
+ 791:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         //
+ 792:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         *pusBuf = (unsigned short)HWREG(ulBase + EPI_O_READFIFO);
+ 3784              		.loc 1 792 0
+ 3785 0014 FB68     		ldr	r3, [r7, #12]
+ 3786 0016 03F17003 		add	r3, r3, #112
+ 3787 001a 1B68     		ldr	r3, [r3, #0]
+ 3788 001c 9AB2     		uxth	r2, r3
+ 3789 001e 7B68     		ldr	r3, [r7, #4]
+ 3790 0020 1A80     		strh	r2, [r3, #0]	@ movhi
+ 793:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 794:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         //
+ 795:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         // Update the caller's buffer pointer and the count of items read.
+ 796:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         //
+ 797:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         pusBuf++;
+ 3791              		.loc 1 797 0
+ 3792 0022 7B68     		ldr	r3, [r7, #4]
+ 3793 0024 03F10203 		add	r3, r3, #2
+ 3794 0028 7B60     		str	r3, [r7, #4]
+ 798:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         ulCountRead++;
+ 3795              		.loc 1 798 0
+ 3796 002a 7B69     		ldr	r3, [r7, #20]
+ 3797 002c 03F10103 		add	r3, r3, #1
+ 3798 0030 7B61     		str	r3, [r7, #20]
+ 3799              	.L28:
+ 787:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     while(HWREG(ulBase + EPI_O_RFIFOCNT) && ulCount--)
+ 3800              		.loc 1 787 0 discriminator 1
+ 3801 0032 FB68     		ldr	r3, [r7, #12]
+ 3802 0034 03F16C03 		add	r3, r3, #108
+ 3803 0038 1B68     		ldr	r3, [r3, #0]
+ 3804 003a 002B     		cmp	r3, #0
+ 3805 003c 0BD0     		beq	.L29
+ 787:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     while(HWREG(ulBase + EPI_O_RFIFOCNT) && ulCount--)
+ 3806              		.loc 1 787 0 is_stmt 0 discriminator 2
+ 3807 003e BB68     		ldr	r3, [r7, #8]
+ 3808 0040 002B     		cmp	r3, #0
+ 3809 0042 0CBF     		ite	eq
+ 3810 0044 0023     		moveq	r3, #0
+ 3811 0046 0123     		movne	r3, #1
+ 3812 0048 DBB2     		uxtb	r3, r3
+ 3813 004a BA68     		ldr	r2, [r7, #8]
+ 3814 004c 02F1FF32 		add	r2, r2, #-1
+ 3815 0050 BA60     		str	r2, [r7, #8]
+ 3816 0052 002B     		cmp	r3, #0
+ 3817 0054 DED1     		bne	.L30
+ 3818              	.L29:
+ 799:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     }
+ 800:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 801:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 802:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Return the count of items read to the caller.
+ 803:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 804:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     return(ulCountRead);
+ 3819              		.loc 1 804 0 is_stmt 1
+ 3820 0056 7B69     		ldr	r3, [r7, #20]
+ 805:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3821              		.loc 1 805 0
+ 3822 0058 1846     		mov	r0, r3
+ 3823 005a 07F11C07 		add	r7, r7, #28
+ 3824 005e BD46     		mov	sp, r7
+ 3825 0060 80BC     		pop	{r7}
+ 3826 0062 7047     		bx	lr
+ 3827              		.cfi_endproc
+ 3828              	.LFE13:
+ 3830              		.section	.text.EPINonBlockingReadGet8,"ax",%progbits
+ 3831              		.align	2
+ 3832              		.global	EPINonBlockingReadGet8
+ 3833              		.thumb
+ 3834              		.thumb_func
+ 3836              	EPINonBlockingReadGet8:
+ 3837              	.LFB14:
+ 806:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 807:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 808:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 809:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Read available data from the read FIFO, as 8-bit data items.
+ 810:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 811:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 812:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulCount is the maximum count of items to read.
+ 813:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param pucBuf is the caller-supplied buffer where the read data should
+ 814:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! be stored.
+ 815:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 816:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function reads 8-bit data items from the read FIFO and stores
+ 817:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! the values in a caller-supplied buffer.  The function reads and stores
+ 818:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! data from the FIFO until there is no more data in the FIFO or the maximum
+ 819:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! count is reached as specified in the parameter \e ulCount.  The actual
+ 820:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! count of items is returned.
+ 821:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 822:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return The number of items read from the FIFO.
+ 823:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 824:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 825:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** unsigned long
+ 826:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPINonBlockingReadGet8(unsigned long ulBase, unsigned long ulCount,
+ 827:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****                        unsigned char *pucBuf)
+ 828:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3838              		.loc 1 828 0
+ 3839              		.cfi_startproc
+ 3840              		@ args = 0, pretend = 0, frame = 24
+ 3841              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3842              		@ link register save eliminated.
+ 3843 0000 80B4     		push	{r7}
+ 3844              	.LCFI42:
+ 3845              		.cfi_def_cfa_offset 4
+ 3846 0002 87B0     		sub	sp, sp, #28
+ 3847              	.LCFI43:
+ 3848              		.cfi_def_cfa_offset 32
+ 3849 0004 00AF     		add	r7, sp, #0
+ 3850              		.cfi_offset 7, -4
+ 3851              	.LCFI44:
+ 3852              		.cfi_def_cfa_register 7
+ 3853 0006 F860     		str	r0, [r7, #12]
+ 3854 0008 B960     		str	r1, [r7, #8]
+ 3855 000a 7A60     		str	r2, [r7, #4]
+ 829:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     unsigned long ulCountRead = 0;
+ 3856              		.loc 1 829 0
+ 3857 000c 4FF00003 		mov	r3, #0
+ 3858 0010 7B61     		str	r3, [r7, #20]
+ 830:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 831:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 832:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 833:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 834:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 835:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulCount < 4096);
+ 836:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(pucBuf);
+ 837:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 838:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 839:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Read from the FIFO while there are any items to read, and
+ 840:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // the caller's specified count is not exceeded.
+ 841:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 842:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     while(HWREG(ulBase + EPI_O_RFIFOCNT) && ulCount--)
+ 3859              		.loc 1 842 0
+ 3860 0012 0EE0     		b	.L32
+ 3861              	.L34:
+ 843:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     {
+ 844:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         //
+ 845:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         // Read from the FIFO and store in the caller supplied buffer.
+ 846:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         //
+ 847:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         *pucBuf = (unsigned char)HWREG(ulBase + EPI_O_READFIFO);
+ 3862              		.loc 1 847 0
+ 3863 0014 FB68     		ldr	r3, [r7, #12]
+ 3864 0016 03F17003 		add	r3, r3, #112
+ 3865 001a 1B68     		ldr	r3, [r3, #0]
+ 3866 001c DAB2     		uxtb	r2, r3
+ 3867 001e 7B68     		ldr	r3, [r7, #4]
+ 3868 0020 1A70     		strb	r2, [r3, #0]
+ 848:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 849:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         //
+ 850:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         // Update the caller's buffer pointer and the count of items read.
+ 851:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         //
+ 852:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         pucBuf++;
+ 3869              		.loc 1 852 0
+ 3870 0022 7B68     		ldr	r3, [r7, #4]
+ 3871 0024 03F10103 		add	r3, r3, #1
+ 3872 0028 7B60     		str	r3, [r7, #4]
+ 853:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         ulCountRead++;
+ 3873              		.loc 1 853 0
+ 3874 002a 7B69     		ldr	r3, [r7, #20]
+ 3875 002c 03F10103 		add	r3, r3, #1
+ 3876 0030 7B61     		str	r3, [r7, #20]
+ 3877              	.L32:
+ 842:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     while(HWREG(ulBase + EPI_O_RFIFOCNT) && ulCount--)
+ 3878              		.loc 1 842 0 discriminator 1
+ 3879 0032 FB68     		ldr	r3, [r7, #12]
+ 3880 0034 03F16C03 		add	r3, r3, #108
+ 3881 0038 1B68     		ldr	r3, [r3, #0]
+ 3882 003a 002B     		cmp	r3, #0
+ 3883 003c 0BD0     		beq	.L33
+ 842:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     while(HWREG(ulBase + EPI_O_RFIFOCNT) && ulCount--)
+ 3884              		.loc 1 842 0 is_stmt 0 discriminator 2
+ 3885 003e BB68     		ldr	r3, [r7, #8]
+ 3886 0040 002B     		cmp	r3, #0
+ 3887 0042 0CBF     		ite	eq
+ 3888 0044 0023     		moveq	r3, #0
+ 3889 0046 0123     		movne	r3, #1
+ 3890 0048 DBB2     		uxtb	r3, r3
+ 3891 004a BA68     		ldr	r2, [r7, #8]
+ 3892 004c 02F1FF32 		add	r2, r2, #-1
+ 3893 0050 BA60     		str	r2, [r7, #8]
+ 3894 0052 002B     		cmp	r3, #0
+ 3895 0054 DED1     		bne	.L34
+ 3896              	.L33:
+ 854:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     }
+ 855:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 856:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 857:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Return the count of items read to the caller.
+ 858:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 859:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     return(ulCountRead);
+ 3897              		.loc 1 859 0 is_stmt 1
+ 3898 0056 7B69     		ldr	r3, [r7, #20]
+ 860:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3899              		.loc 1 860 0
+ 3900 0058 1846     		mov	r0, r3
+ 3901 005a 07F11C07 		add	r7, r7, #28
+ 3902 005e BD46     		mov	sp, r7
+ 3903 0060 80BC     		pop	{r7}
+ 3904 0062 7047     		bx	lr
+ 3905              		.cfi_endproc
+ 3906              	.LFE14:
+ 3908              		.section	.text.EPIFIFOConfig,"ax",%progbits
+ 3909              		.align	2
+ 3910              		.global	EPIFIFOConfig
+ 3911              		.thumb
+ 3912              		.thumb_func
+ 3914              	EPIFIFOConfig:
+ 3915              	.LFB15:
+ 861:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 862:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 863:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 864:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Configures the read FIFO.
+ 865:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 866:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 867:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulConfig is the FIFO configuration.
+ 868:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 869:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function configures the FIFO trigger levels and error
+ 870:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! generation.  The parameter \e ulConfig is the logical OR of the
+ 871:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! following:
+ 872:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 873:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_FIFO_CONFIG_WTFULLERR - enables an error interrupt when a write is
+ 874:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! attempted and the write FIFO is full
+ 875:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_FIFO_CONFIG_RSTALLERR - enables an error interrupt when a read is
+ 876:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! stalled due to an interleaved write or other reason
+ 877:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_FIFO_CONFIG_TX_EMPTY, \b EPI_FIFO_CONFIG_TX_1_4,
+ 878:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_FIFO_CONFIG_TX_1_2, or \b EPI_FIFO_CONFIG_TX_3_4 to set the
+ 879:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! TX FIFO trigger level to empty, 1/4, 1/2, or 3/4 level
+ 880:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_FIFO_CONFIG_RX_1_8, \b EPI_FIFO_CONFIG_RX_1_4,
+ 881:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_FIFO_CONFIG_RX_1_2, \b EPI_FIFO_CONFIG_RX_3_4,
+ 882:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_FIFO_CONFIG_RX_7_8, or \b EPI_FIFO_CONFIG_RX_FULL to set the
+ 883:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! RX FIFO trigger level to 1/8, 1/4, 1/2, 3/4, 7/8 or full level
+ 884:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 885:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return None.
+ 886:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 887:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 888:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+ 889:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIFIFOConfig(unsigned long ulBase, unsigned long ulConfig)
+ 890:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3916              		.loc 1 890 0
+ 3917              		.cfi_startproc
+ 3918              		@ args = 0, pretend = 0, frame = 8
+ 3919              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3920              		@ link register save eliminated.
+ 3921 0000 80B4     		push	{r7}
+ 3922              	.LCFI45:
+ 3923              		.cfi_def_cfa_offset 4
+ 3924 0002 83B0     		sub	sp, sp, #12
+ 3925              	.LCFI46:
+ 3926              		.cfi_def_cfa_offset 16
+ 3927 0004 00AF     		add	r7, sp, #0
+ 3928              		.cfi_offset 7, -4
+ 3929              	.LCFI47:
+ 3930              		.cfi_def_cfa_register 7
+ 3931 0006 7860     		str	r0, [r7, #4]
+ 3932 0008 3960     		str	r1, [r7, #0]
+ 891:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 892:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 893:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 894:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 895:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulConfig == (ulConfig & 0x00030077));
+ 896:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 897:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 898:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Load the configuration into the FIFO config reg.
+ 899:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 900:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_FIFOLVL) = ulConfig;
+ 3933              		.loc 1 900 0
+ 3934 000a 7B68     		ldr	r3, [r7, #4]
+ 3935 000c 03F50073 		add	r3, r3, #512
+ 3936 0010 3A68     		ldr	r2, [r7, #0]
+ 3937 0012 1A60     		str	r2, [r3, #0]
+ 901:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3938              		.loc 1 901 0
+ 3939 0014 07F10C07 		add	r7, r7, #12
+ 3940 0018 BD46     		mov	sp, r7
+ 3941 001a 80BC     		pop	{r7}
+ 3942 001c 7047     		bx	lr
+ 3943              		.cfi_endproc
+ 3944              	.LFE15:
+ 3946 001e 00BF     		.section	.text.EPIWriteFIFOCountGet,"ax",%progbits
+ 3947              		.align	2
+ 3948              		.global	EPIWriteFIFOCountGet
+ 3949              		.thumb
+ 3950              		.thumb_func
+ 3952              	EPIWriteFIFOCountGet:
+ 3953              	.LFB16:
+ 902:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 903:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 904:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 905:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Reads the number of empty slots in the write transaction FIFO.
+ 906:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 907:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 908:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 909:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function returns the number of slots available in the transaction
+ 910:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! FIFO.  It can be used in a polling method to avoid attempting a write
+ 911:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! that would stall.
+ 912:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 913:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return The number of empty slots in the transaction FIFO.
+ 914:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 915:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 916:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** unsigned long
+ 917:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIWriteFIFOCountGet(unsigned long ulBase)
+ 918:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3954              		.loc 1 918 0
+ 3955              		.cfi_startproc
+ 3956              		@ args = 0, pretend = 0, frame = 8
+ 3957              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3958              		@ link register save eliminated.
+ 3959 0000 80B4     		push	{r7}
+ 3960              	.LCFI48:
+ 3961              		.cfi_def_cfa_offset 4
+ 3962 0002 83B0     		sub	sp, sp, #12
+ 3963              	.LCFI49:
+ 3964              		.cfi_def_cfa_offset 16
+ 3965 0004 00AF     		add	r7, sp, #0
+ 3966              		.cfi_offset 7, -4
+ 3967              	.LCFI50:
+ 3968              		.cfi_def_cfa_register 7
+ 3969 0006 7860     		str	r0, [r7, #4]
+ 919:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 920:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 921:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 922:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 923:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 924:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 925:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Read the FIFO count and return it to the caller.
+ 926:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 927:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     return(HWREG(ulBase + EPI_O_WFIFOCNT));
+ 3970              		.loc 1 927 0
+ 3971 0008 7B68     		ldr	r3, [r7, #4]
+ 3972 000a 03F50173 		add	r3, r3, #516
+ 3973 000e 1B68     		ldr	r3, [r3, #0]
+ 928:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 3974              		.loc 1 928 0
+ 3975 0010 1846     		mov	r0, r3
+ 3976 0012 07F10C07 		add	r7, r7, #12
+ 3977 0016 BD46     		mov	sp, r7
+ 3978 0018 80BC     		pop	{r7}
+ 3979 001a 7047     		bx	lr
+ 3980              		.cfi_endproc
+ 3981              	.LFE16:
+ 3983              		.section	.text.EPIIntEnable,"ax",%progbits
+ 3984              		.align	2
+ 3985              		.global	EPIIntEnable
+ 3986              		.thumb
+ 3987              		.thumb_func
+ 3989              	EPIIntEnable:
+ 3990              	.LFB17:
+ 929:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 930:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 931:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 932:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Enables EPI interrupt sources.
+ 933:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 934:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 935:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be enabled.
+ 936:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 937:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function enables the specified EPI sources to generate interrupts.
+ 938:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! The \e ulIntFlags parameter can be the logical OR of any of the following
+ 939:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! values:
+ 940:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 941:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_INT_TXREQ - transmit FIFO is below the trigger level
+ 942:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_INT_RXREQ - read FIFO is above the trigger level
+ 943:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_INT_ERR - an error condition occurred
+ 944:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 945:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return Returns None.
+ 946:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 947:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 948:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+ 949:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIIntEnable(unsigned long ulBase, unsigned long ulIntFlags)
+ 950:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 3991              		.loc 1 950 0
+ 3992              		.cfi_startproc
+ 3993              		@ args = 0, pretend = 0, frame = 8
+ 3994              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3995              		@ link register save eliminated.
+ 3996 0000 80B4     		push	{r7}
+ 3997              	.LCFI51:
+ 3998              		.cfi_def_cfa_offset 4
+ 3999 0002 83B0     		sub	sp, sp, #12
+ 4000              	.LCFI52:
+ 4001              		.cfi_def_cfa_offset 16
+ 4002 0004 00AF     		add	r7, sp, #0
+ 4003              		.cfi_offset 7, -4
+ 4004              	.LCFI53:
+ 4005              		.cfi_def_cfa_register 7
+ 4006 0006 7860     		str	r0, [r7, #4]
+ 4007 0008 3960     		str	r1, [r7, #0]
+ 951:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 952:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 953:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 954:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 955:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulIntFlags < 16);
+ 956:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 957:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 958:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Write the interrupt flags mask to the mask register.
+ 959:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 960:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_IM) |= ulIntFlags;
+ 4008              		.loc 1 960 0
+ 4009 000a 7B68     		ldr	r3, [r7, #4]
+ 4010 000c 03F50473 		add	r3, r3, #528
+ 4011 0010 7A68     		ldr	r2, [r7, #4]
+ 4012 0012 02F50472 		add	r2, r2, #528
+ 4013 0016 1168     		ldr	r1, [r2, #0]
+ 4014 0018 3A68     		ldr	r2, [r7, #0]
+ 4015 001a 41EA0202 		orr	r2, r1, r2
+ 4016 001e 1A60     		str	r2, [r3, #0]
+ 961:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 4017              		.loc 1 961 0
+ 4018 0020 07F10C07 		add	r7, r7, #12
+ 4019 0024 BD46     		mov	sp, r7
+ 4020 0026 80BC     		pop	{r7}
+ 4021 0028 7047     		bx	lr
+ 4022              		.cfi_endproc
+ 4023              	.LFE17:
+ 4025 002a 00BF     		.section	.text.EPIIntDisable,"ax",%progbits
+ 4026              		.align	2
+ 4027              		.global	EPIIntDisable
+ 4028              		.thumb
+ 4029              		.thumb_func
+ 4031              	EPIIntDisable:
+ 4032              	.LFB18:
+ 962:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 963:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 964:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 965:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Disables EPI interrupt sources.
+ 966:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 967:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 968:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be disabled.
+ 969:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 970:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function disables the specified EPI sources for interrupt
+ 971:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! generation.  The \e ulIntFlags parameter can be the logical OR
+ 972:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! of any of the following values: \b EPI_INT_RXREQ, \b EPI_INT_TXREQ, or
+ 973:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b I2S_INT_ERR.
+ 974:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 975:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return Returns None.
+ 976:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 977:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 978:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+ 979:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIIntDisable(unsigned long ulBase, unsigned long ulIntFlags)
+ 980:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 4033              		.loc 1 980 0
+ 4034              		.cfi_startproc
+ 4035              		@ args = 0, pretend = 0, frame = 8
+ 4036              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4037              		@ link register save eliminated.
+ 4038 0000 80B4     		push	{r7}
+ 4039              	.LCFI54:
+ 4040              		.cfi_def_cfa_offset 4
+ 4041 0002 83B0     		sub	sp, sp, #12
+ 4042              	.LCFI55:
+ 4043              		.cfi_def_cfa_offset 16
+ 4044 0004 00AF     		add	r7, sp, #0
+ 4045              		.cfi_offset 7, -4
+ 4046              	.LCFI56:
+ 4047              		.cfi_def_cfa_register 7
+ 4048 0006 7860     		str	r0, [r7, #4]
+ 4049 0008 3960     		str	r1, [r7, #0]
+ 981:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 982:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+ 983:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 984:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+ 985:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulIntFlags < 16);
+ 986:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 987:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 988:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Write the interrupt flags mask to the mask register.
+ 989:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+ 990:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_IM) &= ~ulIntFlags;
+ 4050              		.loc 1 990 0
+ 4051 000a 7B68     		ldr	r3, [r7, #4]
+ 4052 000c 03F50473 		add	r3, r3, #528
+ 4053 0010 7A68     		ldr	r2, [r7, #4]
+ 4054 0012 02F50472 		add	r2, r2, #528
+ 4055 0016 1168     		ldr	r1, [r2, #0]
+ 4056 0018 3A68     		ldr	r2, [r7, #0]
+ 4057 001a 6FEA0202 		mvn	r2, r2
+ 4058 001e 01EA0202 		and	r2, r1, r2
+ 4059 0022 1A60     		str	r2, [r3, #0]
+ 991:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 4060              		.loc 1 991 0
+ 4061 0024 07F10C07 		add	r7, r7, #12
+ 4062 0028 BD46     		mov	sp, r7
+ 4063 002a 80BC     		pop	{r7}
+ 4064 002c 7047     		bx	lr
+ 4065              		.cfi_endproc
+ 4066              	.LFE18:
+ 4068 002e 00BF     		.section	.text.EPIIntStatus,"ax",%progbits
+ 4069              		.align	2
+ 4070              		.global	EPIIntStatus
+ 4071              		.thumb
+ 4072              		.thumb_func
+ 4074              	EPIIntStatus:
+ 4075              	.LFB19:
+ 992:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+ 993:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+ 994:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+ 995:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Gets the EPI interrupt status.
+ 996:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+ 997:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+ 998:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param bMasked is set \b true to get the masked interrupt status, or
+ 999:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b false to get the raw interrupt status.
+1000:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1001:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function returns the EPI interrupt status.  It can return either
+1002:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! the raw or masked interrupt status.
+1003:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1004:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return Returns the masked or raw EPI interrupt status, as a bit field
+1005:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! of any of the following values: \b EPI_INT_TXREQ, \b EPI_INT_RXREQ,
+1006:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! or \b EPI_INT_ERR
+1007:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+1008:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+1009:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** unsigned long
+1010:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIIntStatus(unsigned long ulBase, tBoolean bMasked)
+1011:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 4076              		.loc 1 1011 0
+ 4077              		.cfi_startproc
+ 4078              		@ args = 0, pretend = 0, frame = 8
+ 4079              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4080              		@ link register save eliminated.
+ 4081 0000 80B4     		push	{r7}
+ 4082              	.LCFI57:
+ 4083              		.cfi_def_cfa_offset 4
+ 4084 0002 83B0     		sub	sp, sp, #12
+ 4085              	.LCFI58:
+ 4086              		.cfi_def_cfa_offset 16
+ 4087 0004 00AF     		add	r7, sp, #0
+ 4088              		.cfi_offset 7, -4
+ 4089              	.LCFI59:
+ 4090              		.cfi_def_cfa_register 7
+ 4091 0006 7860     		str	r0, [r7, #4]
+ 4092 0008 0B46     		mov	r3, r1
+ 4093 000a FB70     		strb	r3, [r7, #3]
+1012:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1013:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+1014:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1015:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+1016:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+1017:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1018:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Return either the interrupt status or the raw interrupt status as
+1019:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // requested.
+1020:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1021:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     if(bMasked)
+ 4094              		.loc 1 1021 0
+ 4095 000c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 4096 000e 002B     		cmp	r3, #0
+ 4097 0010 04D0     		beq	.L40
+1022:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     {
+1023:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         return(HWREG(ulBase + EPI_O_MIS));
+ 4098              		.loc 1 1023 0
+ 4099 0012 7B68     		ldr	r3, [r7, #4]
+ 4100 0014 03F50673 		add	r3, r3, #536
+ 4101 0018 1B68     		ldr	r3, [r3, #0]
+ 4102 001a 03E0     		b	.L41
+ 4103              	.L40:
+1024:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     }
+1025:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     else
+1026:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     {
+1027:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****         return(HWREG(ulBase + EPI_O_RIS));
+ 4104              		.loc 1 1027 0
+ 4105 001c 7B68     		ldr	r3, [r7, #4]
+ 4106 001e 03F50573 		add	r3, r3, #532
+ 4107 0022 1B68     		ldr	r3, [r3, #0]
+ 4108              	.L41:
+1028:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     }
+1029:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 4109              		.loc 1 1029 0
+ 4110 0024 1846     		mov	r0, r3
+ 4111 0026 07F10C07 		add	r7, r7, #12
+ 4112 002a BD46     		mov	sp, r7
+ 4113 002c 80BC     		pop	{r7}
+ 4114 002e 7047     		bx	lr
+ 4115              		.cfi_endproc
+ 4116              	.LFE19:
+ 4118              		.section	.text.EPIIntErrorStatus,"ax",%progbits
+ 4119              		.align	2
+ 4120              		.global	EPIIntErrorStatus
+ 4121              		.thumb
+ 4122              		.thumb_func
+ 4124              	EPIIntErrorStatus:
+ 4125              	.LFB20:
+1030:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+1031:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+1032:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+1033:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Gets the EPI error interrupt status.
+1034:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1035:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+1036:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1037:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function returns the error status of the EPI.  If the return value of
+1038:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! the function EPIIntStatus() has the flag \b EPI_INT_ERR set, then this
+1039:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! function can be used to determine the cause of the error.
+1040:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1041:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function returns a bit mask of error flags, which can be the logical
+1042:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! OR of any of the following:
+1043:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1044:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_INT_ERR_WTFULL - occurs when a write stalled when the transaction
+1045:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! FIFO was full
+1046:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_INT_ERR_RSTALL - occurs when a read stalled
+1047:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! - \b EPI_INT_ERR_TIMEOUT - occurs when the external clock enable held
+1048:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! off a transaction longer than the configured maximum wait time
+1049:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1050:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return Returns the interrupt error flags as the logical OR of any of
+1051:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! the following: \b EPI_INT_ERR_WTFULL, \b EPI_INT_ERR_RSTALL, or
+1052:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_INT_ERR_TIMEOUT.
+1053:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+1054:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+1055:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** unsigned long
+1056:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIIntErrorStatus(unsigned long ulBase)
+1057:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 4126              		.loc 1 1057 0
+ 4127              		.cfi_startproc
+ 4128              		@ args = 0, pretend = 0, frame = 8
+ 4129              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4130              		@ link register save eliminated.
+ 4131 0000 80B4     		push	{r7}
+ 4132              	.LCFI60:
+ 4133              		.cfi_def_cfa_offset 4
+ 4134 0002 83B0     		sub	sp, sp, #12
+ 4135              	.LCFI61:
+ 4136              		.cfi_def_cfa_offset 16
+ 4137 0004 00AF     		add	r7, sp, #0
+ 4138              		.cfi_offset 7, -4
+ 4139              	.LCFI62:
+ 4140              		.cfi_def_cfa_register 7
+ 4141 0006 7860     		str	r0, [r7, #4]
+1058:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1059:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+1060:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1061:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+1062:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+1063:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1064:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Read the error status and return to caller.
+1065:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1066:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     return(HWREG(ulBase + EPI_O_EISC));
+ 4142              		.loc 1 1066 0
+ 4143 0008 7B68     		ldr	r3, [r7, #4]
+ 4144 000a 03F50773 		add	r3, r3, #540
+ 4145 000e 1B68     		ldr	r3, [r3, #0]
+1067:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 4146              		.loc 1 1067 0
+ 4147 0010 1846     		mov	r0, r3
+ 4148 0012 07F10C07 		add	r7, r7, #12
+ 4149 0016 BD46     		mov	sp, r7
+ 4150 0018 80BC     		pop	{r7}
+ 4151 001a 7047     		bx	lr
+ 4152              		.cfi_endproc
+ 4153              	.LFE20:
+ 4155              		.section	.text.EPIIntErrorClear,"ax",%progbits
+ 4156              		.align	2
+ 4157              		.global	EPIIntErrorClear
+ 4158              		.thumb
+ 4159              		.thumb_func
+ 4161              	EPIIntErrorClear:
+ 4162              	.LFB21:
+1068:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+1069:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+1070:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+1071:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Clears pending EPI error sources.
+1072:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1073:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+1074:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulErrFlags is a bit mask of the error sources to be cleared.
+1075:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1076:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function clears the specified pending EPI errors.  The \e ulErrFlags
+1077:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! parameter can be the logical OR of any of the following values:
+1078:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \b EPI_INT_ERR_WTFULL, \b EPI_INT_ERR_RSTALL, or \b EPI_INT_ERR_TIMEOUT.
+1079:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1080:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return Returns None.
+1081:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+1082:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+1083:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+1084:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIIntErrorClear(unsigned long ulBase, unsigned long ulErrFlags)
+1085:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 4163              		.loc 1 1085 0
+ 4164              		.cfi_startproc
+ 4165              		@ args = 0, pretend = 0, frame = 8
+ 4166              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4167              		@ link register save eliminated.
+ 4168 0000 80B4     		push	{r7}
+ 4169              	.LCFI63:
+ 4170              		.cfi_def_cfa_offset 4
+ 4171 0002 83B0     		sub	sp, sp, #12
+ 4172              	.LCFI64:
+ 4173              		.cfi_def_cfa_offset 16
+ 4174 0004 00AF     		add	r7, sp, #0
+ 4175              		.cfi_offset 7, -4
+ 4176              	.LCFI65:
+ 4177              		.cfi_def_cfa_register 7
+ 4178 0006 7860     		str	r0, [r7, #4]
+ 4179 0008 3960     		str	r1, [r7, #0]
+1086:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1087:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+1088:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1089:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+1090:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulErrFlags < 16);
+1091:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+1092:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1093:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Write the error flags to the register to clear the pending errors.
+1094:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1095:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     HWREG(ulBase + EPI_O_EISC) = ulErrFlags;
+ 4180              		.loc 1 1095 0
+ 4181 000a 7B68     		ldr	r3, [r7, #4]
+ 4182 000c 03F50773 		add	r3, r3, #540
+ 4183 0010 3A68     		ldr	r2, [r7, #0]
+ 4184 0012 1A60     		str	r2, [r3, #0]
+1096:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 4185              		.loc 1 1096 0
+ 4186 0014 07F10C07 		add	r7, r7, #12
+ 4187 0018 BD46     		mov	sp, r7
+ 4188 001a 80BC     		pop	{r7}
+ 4189 001c 7047     		bx	lr
+ 4190              		.cfi_endproc
+ 4191              	.LFE21:
+ 4193 001e 00BF     		.section	.text.EPIIntRegister,"ax",%progbits
+ 4194              		.align	2
+ 4195              		.global	EPIIntRegister
+ 4196              		.thumb
+ 4197              		.thumb_func
+ 4199              	EPIIntRegister:
+ 4200              	.LFB22:
+1097:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+1098:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+1099:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+1100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Registers an interrupt handler for the EPI module.
+1101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+1103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param pfnHandler is a pointer to the function to be called when the
+1104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! interrupt is activated.
+1105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This sets and enables the handler to be called when the EPI module
+1107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! generates an interrupt.  Specific EPI interrupts must still be enabled
+1108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! with the EPIIntEnable() function.
+1109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \sa IntRegister() for important information about registering interrupt
+1111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! handlers.
+1112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return None.
+1114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+1115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+1116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+1117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIIntRegister(unsigned long ulBase, void (*pfnHandler)(void))
+1118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 4201              		.loc 1 1118 0
+ 4202              		.cfi_startproc
+ 4203              		@ args = 0, pretend = 0, frame = 8
+ 4204              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4205 0000 80B5     		push	{r7, lr}
+ 4206              	.LCFI66:
+ 4207              		.cfi_def_cfa_offset 8
+ 4208 0002 82B0     		sub	sp, sp, #8
+ 4209              	.LCFI67:
+ 4210              		.cfi_def_cfa_offset 16
+ 4211 0004 00AF     		add	r7, sp, #0
+ 4212              		.cfi_offset 14, -4
+ 4213              		.cfi_offset 7, -8
+ 4214              	.LCFI68:
+ 4215              		.cfi_def_cfa_register 7
+ 4216 0006 7860     		str	r0, [r7, #4]
+ 4217 0008 3960     		str	r1, [r7, #0]
+1119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+1121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+1123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(pfnHandler);
+1124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+1125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Register the interrupt handler.
+1127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     IntRegister(INT_EPI0, pfnHandler);
+ 4218              		.loc 1 1128 0
+ 4219 000a 4FF04500 		mov	r0, #69
+ 4220 000e 3968     		ldr	r1, [r7, #0]
+ 4221 0010 FFF7FEFF 		bl	IntRegister
+1129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+1130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Enable the EPI interface interrupt.
+1132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     IntEnable(INT_EPI0);
+ 4222              		.loc 1 1133 0
+ 4223 0014 4FF04500 		mov	r0, #69
+ 4224 0018 FFF7FEFF 		bl	IntEnable
+1134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 4225              		.loc 1 1134 0
+ 4226 001c 07F10807 		add	r7, r7, #8
+ 4227 0020 BD46     		mov	sp, r7
+ 4228 0022 80BD     		pop	{r7, pc}
+ 4229              		.cfi_endproc
+ 4230              	.LFE22:
+ 4232              		.section	.text.EPIIntUnregister,"ax",%progbits
+ 4233              		.align	2
+ 4234              		.global	EPIIntUnregister
+ 4235              		.thumb
+ 4236              		.thumb_func
+ 4238              	EPIIntUnregister:
+ 4239              	.LFB23:
+1135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+1136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+1137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+1138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! Unregisters an interrupt handler for the EPI module.
+1139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \param ulBase is the EPI module base address.
+1141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! This function disables and clears the handler to be called when the
+1143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! EPI interrupt occurs.
+1144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \sa IntRegister() for important information about registering interrupt
+1146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! handlers.
+1147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //!
+1148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //! \return None.
+1149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //
+1150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** //*****************************************************************************
+1151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** void
+1152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** EPIIntUnregister(unsigned long ulBase)
+1153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** {
+ 4240              		.loc 1 1153 0
+ 4241              		.cfi_startproc
+ 4242              		@ args = 0, pretend = 0, frame = 8
+ 4243              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4244 0000 80B5     		push	{r7, lr}
+ 4245              	.LCFI69:
+ 4246              		.cfi_def_cfa_offset 8
+ 4247 0002 82B0     		sub	sp, sp, #8
+ 4248              	.LCFI70:
+ 4249              		.cfi_def_cfa_offset 16
+ 4250 0004 00AF     		add	r7, sp, #0
+ 4251              		.cfi_offset 14, -4
+ 4252              		.cfi_offset 7, -8
+ 4253              	.LCFI71:
+ 4254              		.cfi_def_cfa_register 7
+ 4255 0006 7860     		str	r0, [r7, #4]
+1154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Check the arguments.
+1156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     ASSERT(ulBase == EPI0_BASE);
+1158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+1159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Disable the EPI interface interrupt.
+1161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     IntDisable(INT_EPI0);
+ 4256              		.loc 1 1162 0
+ 4257 0008 4FF04500 		mov	r0, #69
+ 4258 000c FFF7FEFF 		bl	IntDisable
+1163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** 
+1164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     // Unregister the interrupt handler.
+1166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     //
+1167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c ****     IntUnregister(INT_EPI0);
+ 4259              		.loc 1 1167 0
+ 4260 0010 4FF04500 		mov	r0, #69
+ 4261 0014 FFF7FEFF 		bl	IntUnregister
+1168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/epi.c **** }
+ 4262              		.loc 1 1168 0
+ 4263 0018 07F10807 		add	r7, r7, #8
+ 4264 001c BD46     		mov	sp, r7
+ 4265 001e 80BD     		pop	{r7, pc}
+ 4266              		.cfi_endproc
+ 4267              	.LFE23:
+ 4269              		.text
+ 4270              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 epi.c
+     /tmp/ccpTHCiK.s:3037   .text.EPIModeSet:00000000 $t
+     /tmp/ccpTHCiK.s:3042   .text.EPIModeSet:00000000 EPIModeSet
+     /tmp/ccpTHCiK.s:3074   .text.EPIDividerSet:00000000 $t
+     /tmp/ccpTHCiK.s:3079   .text.EPIDividerSet:00000000 EPIDividerSet
+     /tmp/ccpTHCiK.s:3112   .text.EPIConfigSDRAMSet:00000000 $t
+     /tmp/ccpTHCiK.s:3117   .text.EPIConfigSDRAMSet:00000000 EPIConfigSDRAMSet
+     /tmp/ccpTHCiK.s:3162   .text.EPIConfigHB8Set:00000000 $t
+     /tmp/ccpTHCiK.s:3167   .text.EPIConfigHB8Set:00000000 EPIConfigHB8Set
+     /tmp/ccpTHCiK.s:3250   .text.EPIConfigHB16Set:00000000 $t
+     /tmp/ccpTHCiK.s:3255   .text.EPIConfigHB16Set:00000000 EPIConfigHB16Set
+     /tmp/ccpTHCiK.s:3338   .text.EPIConfigGPModeSet:00000000 $t
+     /tmp/ccpTHCiK.s:3343   .text.EPIConfigGPModeSet:00000000 EPIConfigGPModeSet
+     /tmp/ccpTHCiK.s:3415   .text.EPIAddressMapSet:00000000 $t
+     /tmp/ccpTHCiK.s:3420   .text.EPIAddressMapSet:00000000 EPIAddressMapSet
+     /tmp/ccpTHCiK.s:3453   .text.EPINonBlockingReadConfigure:00000000 $t
+     /tmp/ccpTHCiK.s:3458   .text.EPINonBlockingReadConfigure:00000000 EPINonBlockingReadConfigure
+     /tmp/ccpTHCiK.s:3506   .text.EPINonBlockingReadStart:00000000 $t
+     /tmp/ccpTHCiK.s:3511   .text.EPINonBlockingReadStart:00000000 EPINonBlockingReadStart
+     /tmp/ccpTHCiK.s:3551   .text.EPINonBlockingReadStop:00000000 $t
+     /tmp/ccpTHCiK.s:3556   .text.EPINonBlockingReadStop:00000000 EPINonBlockingReadStop
+     /tmp/ccpTHCiK.s:3595   .text.EPINonBlockingReadCount:00000000 $t
+     /tmp/ccpTHCiK.s:3600   .text.EPINonBlockingReadCount:00000000 EPINonBlockingReadCount
+     /tmp/ccpTHCiK.s:3639   .text.EPINonBlockingReadAvail:00000000 $t
+     /tmp/ccpTHCiK.s:3644   .text.EPINonBlockingReadAvail:00000000 EPINonBlockingReadAvail
+     /tmp/ccpTHCiK.s:3676   .text.EPINonBlockingReadGet32:00000000 $t
+     /tmp/ccpTHCiK.s:3681   .text.EPINonBlockingReadGet32:00000000 EPINonBlockingReadGet32
+     /tmp/ccpTHCiK.s:3753   .text.EPINonBlockingReadGet16:00000000 $t
+     /tmp/ccpTHCiK.s:3758   .text.EPINonBlockingReadGet16:00000000 EPINonBlockingReadGet16
+     /tmp/ccpTHCiK.s:3831   .text.EPINonBlockingReadGet8:00000000 $t
+     /tmp/ccpTHCiK.s:3836   .text.EPINonBlockingReadGet8:00000000 EPINonBlockingReadGet8
+     /tmp/ccpTHCiK.s:3909   .text.EPIFIFOConfig:00000000 $t
+     /tmp/ccpTHCiK.s:3914   .text.EPIFIFOConfig:00000000 EPIFIFOConfig
+     /tmp/ccpTHCiK.s:3947   .text.EPIWriteFIFOCountGet:00000000 $t
+     /tmp/ccpTHCiK.s:3952   .text.EPIWriteFIFOCountGet:00000000 EPIWriteFIFOCountGet
+     /tmp/ccpTHCiK.s:3984   .text.EPIIntEnable:00000000 $t
+     /tmp/ccpTHCiK.s:3989   .text.EPIIntEnable:00000000 EPIIntEnable
+     /tmp/ccpTHCiK.s:4026   .text.EPIIntDisable:00000000 $t
+     /tmp/ccpTHCiK.s:4031   .text.EPIIntDisable:00000000 EPIIntDisable
+     /tmp/ccpTHCiK.s:4069   .text.EPIIntStatus:00000000 $t
+     /tmp/ccpTHCiK.s:4074   .text.EPIIntStatus:00000000 EPIIntStatus
+     /tmp/ccpTHCiK.s:4119   .text.EPIIntErrorStatus:00000000 $t
+     /tmp/ccpTHCiK.s:4124   .text.EPIIntErrorStatus:00000000 EPIIntErrorStatus
+     /tmp/ccpTHCiK.s:4156   .text.EPIIntErrorClear:00000000 $t
+     /tmp/ccpTHCiK.s:4161   .text.EPIIntErrorClear:00000000 EPIIntErrorClear
+     /tmp/ccpTHCiK.s:4194   .text.EPIIntRegister:00000000 $t
+     /tmp/ccpTHCiK.s:4199   .text.EPIIntRegister:00000000 EPIIntRegister
+     /tmp/ccpTHCiK.s:4233   .text.EPIIntUnregister:00000000 $t
+     /tmp/ccpTHCiK.s:4238   .text.EPIIntUnregister:00000000 EPIIntUnregister
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister

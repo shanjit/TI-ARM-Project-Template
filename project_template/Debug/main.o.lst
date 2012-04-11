@@ -1,0 +1,177 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"main.c"
+  23              	.Ltext0:
+  24              		.file 1 "../main.c"
+ 2874              		.align	2
+ 2875              		.global	main
+ 2876              		.thumb
+ 2877              		.thumb_func
+ 2879              	main:
+ 2880              	.LFB0:
+   1:../main.c     **** /*
+   2:../main.c     ****  * Program : Hello Blinky, Register Level Access. 
+   3:../main.c     ****  * 
+   4:../main.c     ****  * Centre for Electronic Design and Technology, NSIT, New Delhi
+   5:../main.c     ****  * 
+   6:../main.c     ****  * Dhananjay V Gadre, dhananjay.gadre@gmail.com
+   7:../main.c     ****  * Rohit Dureja, rohit.dureja@gmail.com
+   8:../main.c     ****  * Shanjit Singh Jajmann, shanjitsingh@gmail.com
+   9:../main.c     ****  * 
+  10:../main.c     ****  */ 
+  11:../main.c     **** 
+  12:../main.c     **** /* Defines the base address of the memories and peripherals */
+  13:../main.c     **** #include "hw_memmap.h"
+  14:../main.c     **** 
+  15:../main.c     **** /* Defines the common types and macros */
+  16:../main.c     **** #include "hw_types.h"
+  17:../main.c     **** 
+  18:../main.c     **** /* Defines and Macros for GPIO API */
+  19:../main.c     **** #include "gpio.h"
+  20:../main.c     **** 
+  21:../main.c     **** /* Prototypes for the system control driver */
+  22:../main.c     **** #include "sysctl.h"
+  23:../main.c     **** 
+  24:../main.c     **** 
+  25:../main.c     **** int main(void)
+  26:../main.c     **** {
+ 2881              		.loc 1 26 0
+ 2882              		.cfi_startproc
+ 2883              		@ args = 0, pretend = 0, frame = 8
+ 2884              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2885 0000 80B5     		push	{r7, lr}
+ 2886              	.LCFI0:
+ 2887              		.cfi_def_cfa_offset 8
+ 2888 0002 82B0     		sub	sp, sp, #8
+ 2889              	.LCFI1:
+ 2890              		.cfi_def_cfa_offset 16
+ 2891 0004 00AF     		add	r7, sp, #0
+ 2892              		.cfi_offset 14, -4
+ 2893              		.cfi_offset 7, -8
+ 2894              	.LCFI2:
+ 2895              		.cfi_def_cfa_register 7
+  27:../main.c     **** 
+  28:../main.c     **** 	/* Set the clocking to directly run from the crystal at 7.37MHz */
+  29:../main.c     **** 	SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_7_37MHZ);
+ 2896              		.loc 1 29 0
+ 2897 0006 1C48     		ldr	r0, .L7
+ 2898 0008 FFF7FEFF 		bl	SysCtlClockSet
+  30:../main.c     **** 
+  31:../main.c     **** 	/* Set the clock for the GPIO Port C */
+  32:../main.c     **** 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+ 2899              		.loc 1 32 0
+ 2900 000c 1B48     		ldr	r0, .L7+4
+ 2901 000e FFF7FEFF 		bl	SysCtlPeripheralEnable
+  33:../main.c     **** 
+  34:../main.c     **** 	/* Set the type of the GPIO Pin */
+  35:../main.c     **** 	GPIOPinTypeGPIOOutput(GPIO_PORTC_BASE, GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7);
+ 2902              		.loc 1 35 0
+ 2903 0012 1B48     		ldr	r0, .L7+8
+ 2904 0014 4FF0E001 		mov	r1, #224
+ 2905 0018 FFF7FEFF 		bl	GPIOPinTypeGPIOOutput
+  36:../main.c     **** 	
+  37:../main.c     **** 	/* GPIO Pins 5, 6, 7 on PORT C initialised to 0 */
+  38:../main.c     **** 	GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7, 0);
+ 2906              		.loc 1 38 0
+ 2907 001c 1848     		ldr	r0, .L7+8
+ 2908 001e 4FF0E001 		mov	r1, #224
+ 2909 0022 4FF00002 		mov	r2, #0
+ 2910 0026 FFF7FEFF 		bl	GPIOPinWrite
+ 2911              	.L6:
+  39:../main.c     **** 	
+  40:../main.c     **** 	volatile unsigned long count;
+  41:../main.c     **** 	
+  42:../main.c     **** 	//int count;
+  43:../main.c     **** 	
+  44:../main.c     **** 	while(1)
+  45:../main.c     ****     {
+  46:../main.c     **** 		
+  47:../main.c     **** 		
+  48:../main.c     ****         GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_5, 0);
+ 2912              		.loc 1 48 0
+ 2913 002a 1548     		ldr	r0, .L7+8
+ 2914 002c 4FF02001 		mov	r1, #32
+ 2915 0030 4FF00002 		mov	r2, #0
+ 2916 0034 FFF7FEFF 		bl	GPIOPinWrite
+  49:../main.c     ****         
+  50:../main.c     ****         for(count=0;count<200000;count++)
+ 2917              		.loc 1 50 0
+ 2918 0038 4FF00003 		mov	r3, #0
+ 2919 003c 7B60     		str	r3, [r7, #4]
+ 2920 003e 03E0     		b	.L2
+ 2921              	.L3:
+ 2922              		.loc 1 50 0 is_stmt 0 discriminator 2
+ 2923 0040 7B68     		ldr	r3, [r7, #4]
+ 2924 0042 03F10103 		add	r3, r3, #1
+ 2925 0046 7B60     		str	r3, [r7, #4]
+ 2926              	.L2:
+ 2927              		.loc 1 50 0 discriminator 1
+ 2928 0048 7A68     		ldr	r2, [r7, #4]
+ 2929 004a 0E4B     		ldr	r3, .L7+12
+ 2930 004c 9A42     		cmp	r2, r3
+ 2931 004e F7D9     		bls	.L3
+  51:../main.c     ****         {
+  52:../main.c     **** 		}
+  53:../main.c     **** 		
+  54:../main.c     **** 		GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_5, GPIO_PIN_5); 
+ 2932              		.loc 1 54 0 is_stmt 1
+ 2933 0050 0B48     		ldr	r0, .L7+8
+ 2934 0052 4FF02001 		mov	r1, #32
+ 2935 0056 4FF02002 		mov	r2, #32
+ 2936 005a FFF7FEFF 		bl	GPIOPinWrite
+  55:../main.c     **** 		
+  56:../main.c     **** 		for(count=0;count<200000;count++)
+ 2937              		.loc 1 56 0
+ 2938 005e 4FF00003 		mov	r3, #0
+ 2939 0062 7B60     		str	r3, [r7, #4]
+ 2940 0064 03E0     		b	.L4
+ 2941              	.L5:
+ 2942              		.loc 1 56 0 is_stmt 0 discriminator 2
+ 2943 0066 7B68     		ldr	r3, [r7, #4]
+ 2944 0068 03F10103 		add	r3, r3, #1
+ 2945 006c 7B60     		str	r3, [r7, #4]
+ 2946              	.L4:
+ 2947              		.loc 1 56 0 discriminator 1
+ 2948 006e 7A68     		ldr	r2, [r7, #4]
+ 2949 0070 044B     		ldr	r3, .L7+12
+ 2950 0072 9A42     		cmp	r2, r3
+ 2951 0074 F7D9     		bls	.L5
+  57:../main.c     **** 		{
+  58:../main.c     **** 		}
+  59:../main.c     **** 		
+  60:../main.c     ****     }
+ 2952              		.loc 1 60 0 is_stmt 1
+ 2953 0076 D8E7     		b	.L6
+ 2954              	.L8:
+ 2955              		.align	2
+ 2956              	.L7:
+ 2957 0078 403B8007 		.word	125844288
+ 2958 007c 04000020 		.word	536870916
+ 2959 0080 00600040 		.word	1073766400
+ 2960 0084 3F0D0300 		.word	199999
+ 2961              		.cfi_endproc
+ 2962              	.LFE0:
+ 2964              		.text
+ 2965              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+     /tmp/ccU7QeUw.s:2874   .text.main:00000000 $t
+     /tmp/ccU7QeUw.s:2879   .text.main:00000000 main
+     /tmp/ccU7QeUw.s:2957   .text.main:00000078 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+SysCtlClockSet
+SysCtlPeripheralEnable
+GPIOPinTypeGPIOOutput
+GPIOPinWrite

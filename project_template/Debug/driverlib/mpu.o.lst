@@ -1,0 +1,857 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"mpu.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c"
+ 4686              		.align	2
+ 4687              		.global	MPUEnable
+ 4688              		.thumb
+ 4689              		.thumb_func
+ 4691              	MPUEnable:
+ 4692              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // mpu.c - Driver for the Cortex-M3 memory protection unit (MPU).
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // Copyright (c) 2007-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \addtogroup mpu_api
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! @{
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** #include "inc/hw_ints.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** #include "inc/hw_nvic.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** #include "inc/hw_types.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** #include "driverlib/debug.h"
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** #include "driverlib/interrupt.h"
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** #include "driverlib/mpu.h"
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! Enables and configures the MPU for use.
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \param ulMPUConfig is the logical OR of the possible configurations.
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! This function enables the Cortex-M memory protection unit.  It also
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! configures the default behavior when in privileged mode and while handling
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! a hard fault or NMI.  Prior to enabling the MPU, at least one region must
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! be set by calling MPURegionSet() or else by enabling the default region for
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! privileged mode by passing the \b MPU_CONFIG_PRIV_DEFAULT flag to
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! MPUEnable().  Once the MPU is enabled, a memory management fault is
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! generated for memory access violations.
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! The \e ulMPUConfig parameter should be the logical OR of any of the
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! following:
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_CONFIG_PRIV_DEFAULT enables the default memory map when in
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! privileged mode and when no other regions are defined.  If this option
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! is not enabled, then there must be at least one valid region already
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! defined when the MPU is enabled.
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_CONFIG_HARDFLT_NMI enables the MPU while in a hard fault or NMI
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! exception handler.  If this option is not enabled, then the MPU is
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! disabled while in one of these exception handlers and the default
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! memory map is applied.
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_CONFIG_NONE chooses none of the above options.  In this case,
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! no default memory map is provided in privileged mode, and the MPU isl
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! not enabled in the fault handlers.
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \return None.
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** void
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** MPUEnable(unsigned long ulMPUConfig)
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** {
+ 4693              		.loc 1 73 0
+ 4694              		.cfi_startproc
+ 4695              		@ args = 0, pretend = 0, frame = 8
+ 4696              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4697              		@ link register save eliminated.
+ 4698 0000 80B4     		push	{r7}
+ 4699              	.LCFI0:
+ 4700              		.cfi_def_cfa_offset 4
+ 4701 0002 83B0     		sub	sp, sp, #12
+ 4702              	.LCFI1:
+ 4703              		.cfi_def_cfa_offset 16
+ 4704 0004 00AF     		add	r7, sp, #0
+ 4705              		.cfi_offset 7, -4
+ 4706              	.LCFI2:
+ 4707              		.cfi_def_cfa_register 7
+ 4708 0006 7860     		str	r0, [r7, #4]
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Check the arguments.
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     ASSERT(!(ulMPUConfig & ~(MPU_CONFIG_PRIV_DEFAULT |
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****                              MPU_CONFIG_HARDFLT_NMI)));
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Set the MPU control bits according to the flags passed by the user,
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // and also set the enable bit.
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     HWREG(NVIC_MPU_CTRL) = ulMPUConfig | NVIC_MPU_CTRL_ENABLE;
+ 4709              		.loc 1 84 0
+ 4710 0008 044B     		ldr	r3, .L2
+ 4711 000a 7A68     		ldr	r2, [r7, #4]
+ 4712 000c 42F00102 		orr	r2, r2, #1
+ 4713 0010 1A60     		str	r2, [r3, #0]
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** }
+ 4714              		.loc 1 85 0
+ 4715 0012 07F10C07 		add	r7, r7, #12
+ 4716 0016 BD46     		mov	sp, r7
+ 4717 0018 80BC     		pop	{r7}
+ 4718 001a 7047     		bx	lr
+ 4719              	.L3:
+ 4720              		.align	2
+ 4721              	.L2:
+ 4722 001c 94ED00E0 		.word	-536810092
+ 4723              		.cfi_endproc
+ 4724              	.LFE0:
+ 4726              		.section	.text.MPUDisable,"ax",%progbits
+ 4727              		.align	2
+ 4728              		.global	MPUDisable
+ 4729              		.thumb
+ 4730              		.thumb_func
+ 4732              	MPUDisable:
+ 4733              	.LFB1:
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! Disables the MPU for use.
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! This function disables the Cortex-M memory protection unit.  When the
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! MPU is disabled, the default memory map is used and memory management
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! faults are not generated.
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \return None.
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** void
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** MPUDisable(void)
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** {
+ 4734              		.loc 1 100 0
+ 4735              		.cfi_startproc
+ 4736              		@ args = 0, pretend = 0, frame = 0
+ 4737              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4738              		@ link register save eliminated.
+ 4739 0000 80B4     		push	{r7}
+ 4740              	.LCFI3:
+ 4741              		.cfi_def_cfa_offset 4
+ 4742 0002 00AF     		add	r7, sp, #0
+ 4743              		.cfi_offset 7, -4
+ 4744              	.LCFI4:
+ 4745              		.cfi_def_cfa_register 7
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Turn off the MPU enable bit.
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     HWREG(NVIC_MPU_CTRL) &= ~NVIC_MPU_CTRL_ENABLE;
+ 4746              		.loc 1 104 0
+ 4747 0004 044B     		ldr	r3, .L5
+ 4748 0006 044A     		ldr	r2, .L5
+ 4749 0008 1268     		ldr	r2, [r2, #0]
+ 4750 000a 22F00102 		bic	r2, r2, #1
+ 4751 000e 1A60     		str	r2, [r3, #0]
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** }
+ 4752              		.loc 1 105 0
+ 4753 0010 BD46     		mov	sp, r7
+ 4754 0012 80BC     		pop	{r7}
+ 4755 0014 7047     		bx	lr
+ 4756              	.L6:
+ 4757 0016 00BF     		.align	2
+ 4758              	.L5:
+ 4759 0018 94ED00E0 		.word	-536810092
+ 4760              		.cfi_endproc
+ 4761              	.LFE1:
+ 4763              		.section	.text.MPURegionCountGet,"ax",%progbits
+ 4764              		.align	2
+ 4765              		.global	MPURegionCountGet
+ 4766              		.thumb
+ 4767              		.thumb_func
+ 4769              	MPURegionCountGet:
+ 4770              	.LFB2:
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! Gets the count of regions supported by the MPU.
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! This function is used to get the total number of regions that are supported 
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! by the MPU, including regions that are already programmed.
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \return The number of memory protection regions that are available
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! for programming using MPURegionSet().
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** unsigned long
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** MPURegionCountGet(void)
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** {
+ 4771              		.loc 1 120 0
+ 4772              		.cfi_startproc
+ 4773              		@ args = 0, pretend = 0, frame = 0
+ 4774              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4775              		@ link register save eliminated.
+ 4776 0000 80B4     		push	{r7}
+ 4777              	.LCFI5:
+ 4778              		.cfi_def_cfa_offset 4
+ 4779 0002 00AF     		add	r7, sp, #0
+ 4780              		.cfi_offset 7, -4
+ 4781              	.LCFI6:
+ 4782              		.cfi_def_cfa_register 7
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Read the DREGION field of the MPU type register and mask off
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // the bits of interest to get the count of regions.
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     return((HWREG(NVIC_MPU_TYPE) & NVIC_MPU_TYPE_DREGION_M)
+ 4783              		.loc 1 125 0
+ 4784 0004 044B     		ldr	r3, .L8
+ 4785 0006 1B68     		ldr	r3, [r3, #0]
+ 4786 0008 03F47F43 		and	r3, r3, #65280
+ 4787 000c 4FEA1323 		lsr	r3, r3, #8
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****             >> NVIC_MPU_TYPE_DREGION_S);
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** }
+ 4788              		.loc 1 127 0
+ 4789 0010 1846     		mov	r0, r3
+ 4790 0012 BD46     		mov	sp, r7
+ 4791 0014 80BC     		pop	{r7}
+ 4792 0016 7047     		bx	lr
+ 4793              	.L9:
+ 4794              		.align	2
+ 4795              	.L8:
+ 4796 0018 90ED00E0 		.word	-536810096
+ 4797              		.cfi_endproc
+ 4798              	.LFE2:
+ 4800              		.section	.text.MPURegionEnable,"ax",%progbits
+ 4801              		.align	2
+ 4802              		.global	MPURegionEnable
+ 4803              		.thumb
+ 4804              		.thumb_func
+ 4806              	MPURegionEnable:
+ 4807              	.LFB3:
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! Enables a specific region.
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \param ulRegion is the region number to enable.
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! This function is used to enable a memory protection region.  The region
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! should already be configured with the MPURegionSet() function.  Once 
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! enabled, the memory protection rules of the region are applied and access 
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! violations cause a memory management fault.
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \return None.
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** void
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** MPURegionEnable(unsigned long ulRegion)
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** {
+ 4808              		.loc 1 145 0
+ 4809              		.cfi_startproc
+ 4810              		@ args = 0, pretend = 0, frame = 8
+ 4811              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4812              		@ link register save eliminated.
+ 4813 0000 80B4     		push	{r7}
+ 4814              	.LCFI7:
+ 4815              		.cfi_def_cfa_offset 4
+ 4816 0002 83B0     		sub	sp, sp, #12
+ 4817              	.LCFI8:
+ 4818              		.cfi_def_cfa_offset 16
+ 4819 0004 00AF     		add	r7, sp, #0
+ 4820              		.cfi_offset 7, -4
+ 4821              	.LCFI9:
+ 4822              		.cfi_def_cfa_register 7
+ 4823 0006 7860     		str	r0, [r7, #4]
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Check the arguments.
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     ASSERT(ulRegion < 8);
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Select the region to modify.
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     HWREG(NVIC_MPU_NUMBER) = ulRegion;
+ 4824              		.loc 1 154 0
+ 4825 0008 064B     		ldr	r3, .L11
+ 4826 000a 7A68     		ldr	r2, [r7, #4]
+ 4827 000c 1A60     		str	r2, [r3, #0]
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Modify the enable bit in the region attributes.
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     HWREG(NVIC_MPU_ATTR) |= NVIC_MPU_ATTR_ENABLE;
+ 4828              		.loc 1 159 0
+ 4829 000e 064B     		ldr	r3, .L11+4
+ 4830 0010 054A     		ldr	r2, .L11+4
+ 4831 0012 1268     		ldr	r2, [r2, #0]
+ 4832 0014 42F00102 		orr	r2, r2, #1
+ 4833 0018 1A60     		str	r2, [r3, #0]
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** }
+ 4834              		.loc 1 160 0
+ 4835 001a 07F10C07 		add	r7, r7, #12
+ 4836 001e BD46     		mov	sp, r7
+ 4837 0020 80BC     		pop	{r7}
+ 4838 0022 7047     		bx	lr
+ 4839              	.L12:
+ 4840              		.align	2
+ 4841              	.L11:
+ 4842 0024 98ED00E0 		.word	-536810088
+ 4843 0028 A0ED00E0 		.word	-536810080
+ 4844              		.cfi_endproc
+ 4845              	.LFE3:
+ 4847              		.section	.text.MPURegionDisable,"ax",%progbits
+ 4848              		.align	2
+ 4849              		.global	MPURegionDisable
+ 4850              		.thumb
+ 4851              		.thumb_func
+ 4853              	MPURegionDisable:
+ 4854              	.LFB4:
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! Disables a specific region.
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \param ulRegion is the region number to disable.
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! This function is used to disable a previously enabled memory protection
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! region.  The region remains configured if it is not overwritten with
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! another call to MPURegionSet(), and can be enabled again by calling
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! MPURegionEnable().
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \return None.
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** void
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** MPURegionDisable(unsigned long ulRegion)
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** {
+ 4855              		.loc 1 178 0
+ 4856              		.cfi_startproc
+ 4857              		@ args = 0, pretend = 0, frame = 8
+ 4858              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4859              		@ link register save eliminated.
+ 4860 0000 80B4     		push	{r7}
+ 4861              	.LCFI10:
+ 4862              		.cfi_def_cfa_offset 4
+ 4863 0002 83B0     		sub	sp, sp, #12
+ 4864              	.LCFI11:
+ 4865              		.cfi_def_cfa_offset 16
+ 4866 0004 00AF     		add	r7, sp, #0
+ 4867              		.cfi_offset 7, -4
+ 4868              	.LCFI12:
+ 4869              		.cfi_def_cfa_register 7
+ 4870 0006 7860     		str	r0, [r7, #4]
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Check the arguments.
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     ASSERT(ulRegion < 8);
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Select the region to modify.
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     HWREG(NVIC_MPU_NUMBER) = ulRegion;
+ 4871              		.loc 1 187 0
+ 4872 0008 064B     		ldr	r3, .L14
+ 4873 000a 7A68     		ldr	r2, [r7, #4]
+ 4874 000c 1A60     		str	r2, [r3, #0]
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Modify the enable bit in the region attributes.
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     HWREG(NVIC_MPU_ATTR) &= ~NVIC_MPU_ATTR_ENABLE;
+ 4875              		.loc 1 192 0
+ 4876 000e 064B     		ldr	r3, .L14+4
+ 4877 0010 054A     		ldr	r2, .L14+4
+ 4878 0012 1268     		ldr	r2, [r2, #0]
+ 4879 0014 22F00102 		bic	r2, r2, #1
+ 4880 0018 1A60     		str	r2, [r3, #0]
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** }
+ 4881              		.loc 1 193 0
+ 4882 001a 07F10C07 		add	r7, r7, #12
+ 4883 001e BD46     		mov	sp, r7
+ 4884 0020 80BC     		pop	{r7}
+ 4885 0022 7047     		bx	lr
+ 4886              	.L15:
+ 4887              		.align	2
+ 4888              	.L14:
+ 4889 0024 98ED00E0 		.word	-536810088
+ 4890 0028 A0ED00E0 		.word	-536810080
+ 4891              		.cfi_endproc
+ 4892              	.LFE4:
+ 4894              		.section	.text.MPURegionSet,"ax",%progbits
+ 4895              		.align	2
+ 4896              		.global	MPURegionSet
+ 4897              		.thumb
+ 4898              		.thumb_func
+ 4900              	MPURegionSet:
+ 4901              	.LFB5:
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! Sets up the access rules for a specific region.
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \param ulRegion is the region number to set up.
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \param ulAddr is the base address of the region.  It must be aligned
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! according to the size of the region specified in ulFlags.
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \param ulFlags is a set of flags to define the attributes of the region.
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! This function sets up the protection rules for a region.  The region has
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! a base address and a set of attributes including the size. The base 
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! address parameter, \e ulAddr, must be aligned according to the size, and 
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! the size must be a power of 2. 
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! The \e ulFlags parameter is the logical OR of all of the attributes
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! of the region.  It is a combination of choices for region size,
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! execute permission, read/write permissions, disabled sub-regions,
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! and a flag to determine if the region is enabled.
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! The size flag determines the size of a region and must be one of the
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! following:
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_32B
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_64B
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_128B
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_256B
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_512B
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_1K
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_2K
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_4K
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_8K
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_16K
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_32K
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_64K
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_128K
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_256K
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_512K
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_1M
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_2M
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_4M
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_8M
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_16M
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_32M
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_64M
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_128M
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_256M
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_512M
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_1G
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_2G
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_SIZE_4G
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! The execute permission flag must be one of the following:
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_PERM_EXEC enables the region for execution of code
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_PERM_NOEXEC disables the region for execution of code
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! The read/write access permissions are applied separately for the
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! privileged and user modes.  The read/write access flags must be one
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! of the following:
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_PERM_PRV_NO_USR_NO - no access in privileged or user mode
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_PERM_PRV_RW_USR_NO - privileged read/write, user no access
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_PERM_PRV_RW_USR_RO - privileged read/write, user read-only
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_PERM_PRV_RW_USR_RW - privileged read/write, user read/write
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_PERM_PRV_RO_USR_NO - privileged read-only, user no access
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_PERM_PRV_RO_USR_RO - privileged read-only, user read-only
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! The region is automatically divided into 8 equally-sized sub-regions by
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! the MPU.  Sub-regions can only be used in regions of size 256 bytes
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! or larger.  Any of these 8 sub-regions can be disabled, allowing for
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! creation of ``holes'' in a region which can be left open, or overlaid
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! by another region with different attributes.  Any of the 8 sub-regions
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! can be disabled with a logical OR of any of the following flags:
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_SUB_RGN_DISABLE_0
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_SUB_RGN_DISABLE_1
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_SUB_RGN_DISABLE_2
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_SUB_RGN_DISABLE_3
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_SUB_RGN_DISABLE_4
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_SUB_RGN_DISABLE_5
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_SUB_RGN_DISABLE_6
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_SUB_RGN_DISABLE_7
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! Finally, the region can be initially enabled or disabled with one of
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! the following flags:
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_ENABLE
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! - \b MPU_RGN_DISABLE
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! As an example, to set a region with the following attributes: size of
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! 32 KB, execution enabled, read-only for both privileged and user, one
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! sub-region disabled, and initially enabled; the \e ulFlags parameter would
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! have the following value:
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! <code>
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! (MPU_RG_SIZE_32K | MPU_RGN_PERM_EXEC | MPU_RGN_PERM_PRV_RO_USR_RO |
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!  MPU_SUB_RGN_DISABLE_2 | MPU_RGN_ENABLE)
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! </code>
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \note This function writes to multiple registers and is not protected
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! from interrupts.  It is possible that an interrupt which accesses a
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! region may occur while that region is in the process of being changed.
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! The safest way to handle this is to disable a region before changing it.
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! Refer to the discussion of this in the API Detailed Description section.
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \return None.
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** void
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** MPURegionSet(unsigned long ulRegion, unsigned long ulAddr,
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****              unsigned long ulFlags)
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** {
+ 4902              		.loc 1 306 0
+ 4903              		.cfi_startproc
+ 4904              		@ args = 0, pretend = 0, frame = 16
+ 4905              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4906              		@ link register save eliminated.
+ 4907 0000 80B4     		push	{r7}
+ 4908              	.LCFI13:
+ 4909              		.cfi_def_cfa_offset 4
+ 4910 0002 85B0     		sub	sp, sp, #20
+ 4911              	.LCFI14:
+ 4912              		.cfi_def_cfa_offset 24
+ 4913 0004 00AF     		add	r7, sp, #0
+ 4914              		.cfi_offset 7, -4
+ 4915              	.LCFI15:
+ 4916              		.cfi_def_cfa_register 7
+ 4917 0006 F860     		str	r0, [r7, #12]
+ 4918 0008 B960     		str	r1, [r7, #8]
+ 4919 000a 7A60     		str	r2, [r7, #4]
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Check the arguments.
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     ASSERT(ulRegion < 8);
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     ASSERT((ulAddr & ~0 << (((ulFlags & NVIC_MPU_ATTR_SIZE_M) >> 1) + 1))
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****             == ulAddr);
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Program the base address, use the region field to select the
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // region at the same time.
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     HWREG(NVIC_MPU_BASE) = ulAddr | ulRegion | NVIC_MPU_BASE_VALID;
+ 4920              		.loc 1 318 0
+ 4921 000c 094B     		ldr	r3, .L17
+ 4922 000e B968     		ldr	r1, [r7, #8]
+ 4923 0010 FA68     		ldr	r2, [r7, #12]
+ 4924 0012 41EA0202 		orr	r2, r1, r2
+ 4925 0016 42F01002 		orr	r2, r2, #16
+ 4926 001a 1A60     		str	r2, [r3, #0]
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Program the region attributes.  Set the TEX field and the S, C,
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // and B bits to fixed values that are suitable for all Stellaris
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // memory.
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     HWREG(NVIC_MPU_ATTR) = (ulFlags & ~(NVIC_MPU_ATTR_TEX_M |
+ 4927              		.loc 1 325 0
+ 4928 001c 064B     		ldr	r3, .L17+4
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****                                        NVIC_MPU_ATTR_CACHEABLE)) |
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****                             NVIC_MPU_ATTR_SHAREABLE |
+ 4929              		.loc 1 327 0
+ 4930 001e 7A68     		ldr	r2, [r7, #4]
+ 4931 0020 22F47C12 		bic	r2, r2, #4128768
+ 4932 0024 42F4A022 		orr	r2, r2, #327680
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     HWREG(NVIC_MPU_ATTR) = (ulFlags & ~(NVIC_MPU_ATTR_TEX_M |
+ 4933              		.loc 1 325 0
+ 4934 0028 1A60     		str	r2, [r3, #0]
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****                             NVIC_MPU_ATTR_BUFFRABLE;
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** }
+ 4935              		.loc 1 329 0
+ 4936 002a 07F11407 		add	r7, r7, #20
+ 4937 002e BD46     		mov	sp, r7
+ 4938 0030 80BC     		pop	{r7}
+ 4939 0032 7047     		bx	lr
+ 4940              	.L18:
+ 4941              		.align	2
+ 4942              	.L17:
+ 4943 0034 9CED00E0 		.word	-536810084
+ 4944 0038 A0ED00E0 		.word	-536810080
+ 4945              		.cfi_endproc
+ 4946              	.LFE5:
+ 4948              		.section	.text.MPURegionGet,"ax",%progbits
+ 4949              		.align	2
+ 4950              		.global	MPURegionGet
+ 4951              		.thumb
+ 4952              		.thumb_func
+ 4954              	MPURegionGet:
+ 4955              	.LFB6:
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! Gets the current settings for a specific region.
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \param ulRegion is the region number to get.
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \param pulAddr points to storage for the base address of the region.
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \param pulFlags points to the attribute flags for the region.
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! This function retrieves the configuration of a specific region.  The
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! meanings and format of the parameters is the same as that of the
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! MPURegionSet() function.
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! This function can be used to save the configuration of a region for later
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! use with the MPURegionSet() function.  The region's enable state is
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! preserved in the attributes that are saved.
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \return None.
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** void
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** MPURegionGet(unsigned long ulRegion, unsigned long *pulAddr,
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****              unsigned long *pulFlags)
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** {
+ 4956              		.loc 1 353 0
+ 4957              		.cfi_startproc
+ 4958              		@ args = 0, pretend = 0, frame = 16
+ 4959              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4960              		@ link register save eliminated.
+ 4961 0000 80B4     		push	{r7}
+ 4962              	.LCFI16:
+ 4963              		.cfi_def_cfa_offset 4
+ 4964 0002 85B0     		sub	sp, sp, #20
+ 4965              	.LCFI17:
+ 4966              		.cfi_def_cfa_offset 24
+ 4967 0004 00AF     		add	r7, sp, #0
+ 4968              		.cfi_offset 7, -4
+ 4969              	.LCFI18:
+ 4970              		.cfi_def_cfa_register 7
+ 4971 0006 F860     		str	r0, [r7, #12]
+ 4972 0008 B960     		str	r1, [r7, #8]
+ 4973 000a 7A60     		str	r2, [r7, #4]
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Check the arguments.
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     ASSERT(ulRegion < 8);
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     ASSERT(pulAddr);
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     ASSERT(pulFlags);
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Select the region to get.
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     HWREG(NVIC_MPU_NUMBER) = ulRegion;
+ 4974              		.loc 1 364 0
+ 4975 000c 074B     		ldr	r3, .L20
+ 4976 000e FA68     		ldr	r2, [r7, #12]
+ 4977 0010 1A60     		str	r2, [r3, #0]
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Read and store the base address for the region.
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     *pulAddr = HWREG(NVIC_MPU_BASE);
+ 4978              		.loc 1 369 0
+ 4979 0012 074B     		ldr	r3, .L20+4
+ 4980 0014 1A68     		ldr	r2, [r3, #0]
+ 4981 0016 BB68     		ldr	r3, [r7, #8]
+ 4982 0018 1A60     		str	r2, [r3, #0]
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Read and store the region attributes.
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     *pulFlags = HWREG(NVIC_MPU_ATTR);
+ 4983              		.loc 1 374 0
+ 4984 001a 064B     		ldr	r3, .L20+8
+ 4985 001c 1A68     		ldr	r2, [r3, #0]
+ 4986 001e 7B68     		ldr	r3, [r7, #4]
+ 4987 0020 1A60     		str	r2, [r3, #0]
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** }
+ 4988              		.loc 1 375 0
+ 4989 0022 07F11407 		add	r7, r7, #20
+ 4990 0026 BD46     		mov	sp, r7
+ 4991 0028 80BC     		pop	{r7}
+ 4992 002a 7047     		bx	lr
+ 4993              	.L21:
+ 4994              		.align	2
+ 4995              	.L20:
+ 4996 002c 98ED00E0 		.word	-536810088
+ 4997 0030 9CED00E0 		.word	-536810084
+ 4998 0034 A0ED00E0 		.word	-536810080
+ 4999              		.cfi_endproc
+ 5000              	.LFE6:
+ 5002              		.section	.text.MPUIntRegister,"ax",%progbits
+ 5003              		.align	2
+ 5004              		.global	MPUIntRegister
+ 5005              		.thumb
+ 5006              		.thumb_func
+ 5008              	MPUIntRegister:
+ 5009              	.LFB7:
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! Registers an interrupt handler for the memory management fault.
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \param pfnHandler is a pointer to the function to be called when the
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! memory management fault occurs.
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! This function sets and enables the handler to be called when the MPU 
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! generates a memory management fault due to a protection region access 
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! violation.
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \sa IntRegister() for important information about registering interrupt
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! handlers.
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \return None.
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** void
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** MPUIntRegister(void (*pfnHandler)(void))
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** {
+ 5010              		.loc 1 396 0
+ 5011              		.cfi_startproc
+ 5012              		@ args = 0, pretend = 0, frame = 8
+ 5013              		@ frame_needed = 1, uses_anonymous_args = 0
+ 5014 0000 80B5     		push	{r7, lr}
+ 5015              	.LCFI19:
+ 5016              		.cfi_def_cfa_offset 8
+ 5017 0002 82B0     		sub	sp, sp, #8
+ 5018              	.LCFI20:
+ 5019              		.cfi_def_cfa_offset 16
+ 5020 0004 00AF     		add	r7, sp, #0
+ 5021              		.cfi_offset 14, -4
+ 5022              		.cfi_offset 7, -8
+ 5023              	.LCFI21:
+ 5024              		.cfi_def_cfa_register 7
+ 5025 0006 7860     		str	r0, [r7, #4]
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Check the arguments.
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     ASSERT(pfnHandler);
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Register the interrupt handler.
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     IntRegister(FAULT_MPU, pfnHandler);
+ 5026              		.loc 1 405 0
+ 5027 0008 4FF00400 		mov	r0, #4
+ 5028 000c 7968     		ldr	r1, [r7, #4]
+ 5029 000e FFF7FEFF 		bl	IntRegister
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Enable the memory management fault.
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     IntEnable(FAULT_MPU);
+ 5030              		.loc 1 410 0
+ 5031 0012 4FF00400 		mov	r0, #4
+ 5032 0016 FFF7FEFF 		bl	IntEnable
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** }
+ 5033              		.loc 1 411 0
+ 5034 001a 07F10807 		add	r7, r7, #8
+ 5035 001e BD46     		mov	sp, r7
+ 5036 0020 80BD     		pop	{r7, pc}
+ 5037              		.cfi_endproc
+ 5038              	.LFE7:
+ 5040 0022 00BF     		.section	.text.MPUIntUnregister,"ax",%progbits
+ 5041              		.align	2
+ 5042              		.global	MPUIntUnregister
+ 5043              		.thumb
+ 5044              		.thumb_func
+ 5046              	MPUIntUnregister:
+ 5047              	.LFB8:
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! Unregisters an interrupt handler for the memory management fault.
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! This function disables and clears the handler to be called when a
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! memory management fault occurs.
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \sa IntRegister() for important information about registering interrupt
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! handlers.
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //!
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //! \return None.
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** //*****************************************************************************
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** void
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** MPUIntUnregister(void)
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** {
+ 5048              		.loc 1 428 0
+ 5049              		.cfi_startproc
+ 5050              		@ args = 0, pretend = 0, frame = 0
+ 5051              		@ frame_needed = 1, uses_anonymous_args = 0
+ 5052 0000 80B5     		push	{r7, lr}
+ 5053              	.LCFI22:
+ 5054              		.cfi_def_cfa_offset 8
+ 5055 0002 00AF     		add	r7, sp, #0
+ 5056              		.cfi_offset 14, -4
+ 5057              		.cfi_offset 7, -8
+ 5058              	.LCFI23:
+ 5059              		.cfi_def_cfa_register 7
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Disable the interrupt.
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     IntDisable(FAULT_MPU);
+ 5060              		.loc 1 432 0
+ 5061 0004 4FF00400 		mov	r0, #4
+ 5062 0008 FFF7FEFF 		bl	IntDisable
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** 
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     // Unregister the interrupt handler.
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     //
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c ****     IntUnregister(FAULT_MPU);
+ 5063              		.loc 1 437 0
+ 5064 000c 4FF00400 		mov	r0, #4
+ 5065 0010 FFF7FEFF 		bl	IntUnregister
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/mpu.c **** }
+ 5066              		.loc 1 438 0
+ 5067 0014 80BD     		pop	{r7, pc}
+ 5068              		.cfi_endproc
+ 5069              	.LFE8:
+ 5071 0016 00BF     		.text
+ 5072              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 mpu.c
+     /tmp/ccP9WIn9.s:4686   .text.MPUEnable:00000000 $t
+     /tmp/ccP9WIn9.s:4691   .text.MPUEnable:00000000 MPUEnable
+     /tmp/ccP9WIn9.s:4722   .text.MPUEnable:0000001c $d
+     /tmp/ccP9WIn9.s:4727   .text.MPUDisable:00000000 $t
+     /tmp/ccP9WIn9.s:4732   .text.MPUDisable:00000000 MPUDisable
+     /tmp/ccP9WIn9.s:4759   .text.MPUDisable:00000018 $d
+     /tmp/ccP9WIn9.s:4764   .text.MPURegionCountGet:00000000 $t
+     /tmp/ccP9WIn9.s:4769   .text.MPURegionCountGet:00000000 MPURegionCountGet
+     /tmp/ccP9WIn9.s:4796   .text.MPURegionCountGet:00000018 $d
+     /tmp/ccP9WIn9.s:4801   .text.MPURegionEnable:00000000 $t
+     /tmp/ccP9WIn9.s:4806   .text.MPURegionEnable:00000000 MPURegionEnable
+     /tmp/ccP9WIn9.s:4842   .text.MPURegionEnable:00000024 $d
+     /tmp/ccP9WIn9.s:4848   .text.MPURegionDisable:00000000 $t
+     /tmp/ccP9WIn9.s:4853   .text.MPURegionDisable:00000000 MPURegionDisable
+     /tmp/ccP9WIn9.s:4889   .text.MPURegionDisable:00000024 $d
+     /tmp/ccP9WIn9.s:4895   .text.MPURegionSet:00000000 $t
+     /tmp/ccP9WIn9.s:4900   .text.MPURegionSet:00000000 MPURegionSet
+     /tmp/ccP9WIn9.s:4943   .text.MPURegionSet:00000034 $d
+     /tmp/ccP9WIn9.s:4949   .text.MPURegionGet:00000000 $t
+     /tmp/ccP9WIn9.s:4954   .text.MPURegionGet:00000000 MPURegionGet
+     /tmp/ccP9WIn9.s:4996   .text.MPURegionGet:0000002c $d
+     /tmp/ccP9WIn9.s:5003   .text.MPUIntRegister:00000000 $t
+     /tmp/ccP9WIn9.s:5008   .text.MPUIntRegister:00000000 MPUIntRegister
+     /tmp/ccP9WIn9.s:5041   .text.MPUIntUnregister:00000000 $t
+     /tmp/ccP9WIn9.s:5046   .text.MPUIntUnregister:00000000 MPUIntUnregister
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister

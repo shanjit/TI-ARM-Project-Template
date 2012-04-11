@@ -1,0 +1,628 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"systick.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c"
+ 4539              		.align	2
+ 4540              		.global	SysTickEnable
+ 4541              		.thumb
+ 4542              		.thumb_func
+ 4544              	SysTickEnable:
+ 4545              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // systick.c - Driver for the SysTick timer in NVIC.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // Copyright (c) 2005-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \addtogroup systick_api
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! @{
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** #include "inc/hw_ints.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** #include "inc/hw_nvic.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** #include "inc/hw_types.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** #include "driverlib/debug.h"
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** #include "driverlib/interrupt.h"
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** #include "driverlib/systick.h"
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! Enables the SysTick counter.
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! This function starts the SysTick counter.  If an interrupt handler has been
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! registered, it is called when the SysTick counter rolls over.
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \note Calling this function causes the SysTick counter to (re)commence
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! counting from its current value.  The counter is not automatically reloaded
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! with the period as specified in a previous call to SysTickPeriodSet().  If
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! an immediate reload is required, the \b NVIC_ST_CURRENT register must be
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! written to force the reload.  Any write to this register clears the SysTick
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! counter to 0 and causes a reload with the supplied period on the next
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! clock.
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \return None.
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** void
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** SysTickEnable(void)
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** {
+ 4546              		.loc 1 59 0
+ 4547              		.cfi_startproc
+ 4548              		@ args = 0, pretend = 0, frame = 0
+ 4549              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4550              		@ link register save eliminated.
+ 4551 0000 80B4     		push	{r7}
+ 4552              	.LCFI0:
+ 4553              		.cfi_def_cfa_offset 4
+ 4554 0002 00AF     		add	r7, sp, #0
+ 4555              		.cfi_offset 7, -4
+ 4556              	.LCFI1:
+ 4557              		.cfi_def_cfa_register 7
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     // Enable SysTick.
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     HWREG(NVIC_ST_CTRL) |= NVIC_ST_CTRL_CLK_SRC | NVIC_ST_CTRL_ENABLE;
+ 4558              		.loc 1 63 0
+ 4559 0004 044B     		ldr	r3, .L2
+ 4560 0006 044A     		ldr	r2, .L2
+ 4561 0008 1268     		ldr	r2, [r2, #0]
+ 4562 000a 42F00502 		orr	r2, r2, #5
+ 4563 000e 1A60     		str	r2, [r3, #0]
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** }
+ 4564              		.loc 1 64 0
+ 4565 0010 BD46     		mov	sp, r7
+ 4566 0012 80BC     		pop	{r7}
+ 4567 0014 7047     		bx	lr
+ 4568              	.L3:
+ 4569 0016 00BF     		.align	2
+ 4570              	.L2:
+ 4571 0018 10E000E0 		.word	-536813552
+ 4572              		.cfi_endproc
+ 4573              	.LFE0:
+ 4575              		.section	.text.SysTickDisable,"ax",%progbits
+ 4576              		.align	2
+ 4577              		.global	SysTickDisable
+ 4578              		.thumb
+ 4579              		.thumb_func
+ 4581              	SysTickDisable:
+ 4582              	.LFB1:
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! Disables the SysTick counter.
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! This function stops the SysTick counter.  If an interrupt handler has been
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! registered, it is not called until SysTick is restarted.
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \return None.
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** void
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** SysTickDisable(void)
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** {
+ 4583              		.loc 1 78 0
+ 4584              		.cfi_startproc
+ 4585              		@ args = 0, pretend = 0, frame = 0
+ 4586              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4587              		@ link register save eliminated.
+ 4588 0000 80B4     		push	{r7}
+ 4589              	.LCFI2:
+ 4590              		.cfi_def_cfa_offset 4
+ 4591 0002 00AF     		add	r7, sp, #0
+ 4592              		.cfi_offset 7, -4
+ 4593              	.LCFI3:
+ 4594              		.cfi_def_cfa_register 7
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     // Disable SysTick.
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     HWREG(NVIC_ST_CTRL) &= ~(NVIC_ST_CTRL_ENABLE);
+ 4595              		.loc 1 82 0
+ 4596 0004 044B     		ldr	r3, .L5
+ 4597 0006 044A     		ldr	r2, .L5
+ 4598 0008 1268     		ldr	r2, [r2, #0]
+ 4599 000a 22F00102 		bic	r2, r2, #1
+ 4600 000e 1A60     		str	r2, [r3, #0]
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** }
+ 4601              		.loc 1 83 0
+ 4602 0010 BD46     		mov	sp, r7
+ 4603 0012 80BC     		pop	{r7}
+ 4604 0014 7047     		bx	lr
+ 4605              	.L6:
+ 4606 0016 00BF     		.align	2
+ 4607              	.L5:
+ 4608 0018 10E000E0 		.word	-536813552
+ 4609              		.cfi_endproc
+ 4610              	.LFE1:
+ 4612              		.section	.text.SysTickIntRegister,"ax",%progbits
+ 4613              		.align	2
+ 4614              		.global	SysTickIntRegister
+ 4615              		.thumb
+ 4616              		.thumb_func
+ 4618              	SysTickIntRegister:
+ 4619              	.LFB2:
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! Registers an interrupt handler for the SysTick interrupt.
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \param pfnHandler is a pointer to the function to be called when the
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! SysTick interrupt occurs.
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! This function registers the handler to be called when a SysTick interrupt 
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! occurs.
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \sa IntRegister() for important information about registering interrupt
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! handlers.
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \return None.
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** void
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** SysTickIntRegister(void (*pfnHandler)(void))
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** {
+ 4620              		.loc 1 103 0
+ 4621              		.cfi_startproc
+ 4622              		@ args = 0, pretend = 0, frame = 8
+ 4623              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4624 0000 80B5     		push	{r7, lr}
+ 4625              	.LCFI4:
+ 4626              		.cfi_def_cfa_offset 8
+ 4627 0002 82B0     		sub	sp, sp, #8
+ 4628              	.LCFI5:
+ 4629              		.cfi_def_cfa_offset 16
+ 4630 0004 00AF     		add	r7, sp, #0
+ 4631              		.cfi_offset 14, -4
+ 4632              		.cfi_offset 7, -8
+ 4633              	.LCFI6:
+ 4634              		.cfi_def_cfa_register 7
+ 4635 0006 7860     		str	r0, [r7, #4]
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     // Register the interrupt handler, returning an error if an error occurs.
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     IntRegister(FAULT_SYSTICK, pfnHandler);
+ 4636              		.loc 1 107 0
+ 4637 0008 4FF00F00 		mov	r0, #15
+ 4638 000c 7968     		ldr	r1, [r7, #4]
+ 4639 000e FFF7FEFF 		bl	IntRegister
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     // Enable the SysTick interrupt.
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     HWREG(NVIC_ST_CTRL) |= NVIC_ST_CTRL_INTEN;
+ 4640              		.loc 1 112 0
+ 4641 0012 054B     		ldr	r3, .L8
+ 4642 0014 044A     		ldr	r2, .L8
+ 4643 0016 1268     		ldr	r2, [r2, #0]
+ 4644 0018 42F00202 		orr	r2, r2, #2
+ 4645 001c 1A60     		str	r2, [r3, #0]
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** }
+ 4646              		.loc 1 113 0
+ 4647 001e 07F10807 		add	r7, r7, #8
+ 4648 0022 BD46     		mov	sp, r7
+ 4649 0024 80BD     		pop	{r7, pc}
+ 4650              	.L9:
+ 4651 0026 00BF     		.align	2
+ 4652              	.L8:
+ 4653 0028 10E000E0 		.word	-536813552
+ 4654              		.cfi_endproc
+ 4655              	.LFE2:
+ 4657              		.section	.text.SysTickIntUnregister,"ax",%progbits
+ 4658              		.align	2
+ 4659              		.global	SysTickIntUnregister
+ 4660              		.thumb
+ 4661              		.thumb_func
+ 4663              	SysTickIntUnregister:
+ 4664              	.LFB3:
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! Unregisters the interrupt handler for the SysTick interrupt.
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! This function unregisters the handler to be called when a SysTick interrupt
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! occurs.
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \sa IntRegister() for important information about registering interrupt
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! handlers.
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \return None.
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** void
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** SysTickIntUnregister(void)
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** {
+ 4665              		.loc 1 130 0
+ 4666              		.cfi_startproc
+ 4667              		@ args = 0, pretend = 0, frame = 0
+ 4668              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4669 0000 80B5     		push	{r7, lr}
+ 4670              	.LCFI7:
+ 4671              		.cfi_def_cfa_offset 8
+ 4672 0002 00AF     		add	r7, sp, #0
+ 4673              		.cfi_offset 14, -4
+ 4674              		.cfi_offset 7, -8
+ 4675              	.LCFI8:
+ 4676              		.cfi_def_cfa_register 7
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     // Disable the SysTick interrupt.
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     HWREG(NVIC_ST_CTRL) &= ~(NVIC_ST_CTRL_INTEN);
+ 4677              		.loc 1 134 0
+ 4678 0004 054B     		ldr	r3, .L11
+ 4679 0006 054A     		ldr	r2, .L11
+ 4680 0008 1268     		ldr	r2, [r2, #0]
+ 4681 000a 22F00202 		bic	r2, r2, #2
+ 4682 000e 1A60     		str	r2, [r3, #0]
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     // Unregister the interrupt handler.
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     IntUnregister(FAULT_SYSTICK);
+ 4683              		.loc 1 139 0
+ 4684 0010 4FF00F00 		mov	r0, #15
+ 4685 0014 FFF7FEFF 		bl	IntUnregister
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** }
+ 4686              		.loc 1 140 0
+ 4687 0018 80BD     		pop	{r7, pc}
+ 4688              	.L12:
+ 4689 001a 00BF     		.align	2
+ 4690              	.L11:
+ 4691 001c 10E000E0 		.word	-536813552
+ 4692              		.cfi_endproc
+ 4693              	.LFE3:
+ 4695              		.section	.text.SysTickIntEnable,"ax",%progbits
+ 4696              		.align	2
+ 4697              		.global	SysTickIntEnable
+ 4698              		.thumb
+ 4699              		.thumb_func
+ 4701              	SysTickIntEnable:
+ 4702              	.LFB4:
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! Enables the SysTick interrupt.
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! This function enables the SysTick interrupt, allowing it to be
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! reflected to the processor.
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \note The SysTick interrupt handler is not required to clear the SysTick
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! interrupt source because it is cleared automatically by the NVIC when the 
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! interrupt handler is called.
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \return None.
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** void
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** SysTickIntEnable(void)
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** {
+ 4703              		.loc 1 158 0
+ 4704              		.cfi_startproc
+ 4705              		@ args = 0, pretend = 0, frame = 0
+ 4706              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4707              		@ link register save eliminated.
+ 4708 0000 80B4     		push	{r7}
+ 4709              	.LCFI9:
+ 4710              		.cfi_def_cfa_offset 4
+ 4711 0002 00AF     		add	r7, sp, #0
+ 4712              		.cfi_offset 7, -4
+ 4713              	.LCFI10:
+ 4714              		.cfi_def_cfa_register 7
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     // Enable the SysTick interrupt.
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     HWREG(NVIC_ST_CTRL) |= NVIC_ST_CTRL_INTEN;
+ 4715              		.loc 1 162 0
+ 4716 0004 044B     		ldr	r3, .L14
+ 4717 0006 044A     		ldr	r2, .L14
+ 4718 0008 1268     		ldr	r2, [r2, #0]
+ 4719 000a 42F00202 		orr	r2, r2, #2
+ 4720 000e 1A60     		str	r2, [r3, #0]
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** }
+ 4721              		.loc 1 163 0
+ 4722 0010 BD46     		mov	sp, r7
+ 4723 0012 80BC     		pop	{r7}
+ 4724 0014 7047     		bx	lr
+ 4725              	.L15:
+ 4726 0016 00BF     		.align	2
+ 4727              	.L14:
+ 4728 0018 10E000E0 		.word	-536813552
+ 4729              		.cfi_endproc
+ 4730              	.LFE4:
+ 4732              		.section	.text.SysTickIntDisable,"ax",%progbits
+ 4733              		.align	2
+ 4734              		.global	SysTickIntDisable
+ 4735              		.thumb
+ 4736              		.thumb_func
+ 4738              	SysTickIntDisable:
+ 4739              	.LFB5:
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! Disables the SysTick interrupt.
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! This function disables the SysTick interrupt, preventing it from being
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! reflected to the processor.
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \return None.
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** void
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** SysTickIntDisable(void)
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** {
+ 4740              		.loc 1 177 0
+ 4741              		.cfi_startproc
+ 4742              		@ args = 0, pretend = 0, frame = 0
+ 4743              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4744              		@ link register save eliminated.
+ 4745 0000 80B4     		push	{r7}
+ 4746              	.LCFI11:
+ 4747              		.cfi_def_cfa_offset 4
+ 4748 0002 00AF     		add	r7, sp, #0
+ 4749              		.cfi_offset 7, -4
+ 4750              	.LCFI12:
+ 4751              		.cfi_def_cfa_register 7
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     // Disable the SysTick interrupt.
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     HWREG(NVIC_ST_CTRL) &= ~(NVIC_ST_CTRL_INTEN);
+ 4752              		.loc 1 181 0
+ 4753 0004 044B     		ldr	r3, .L17
+ 4754 0006 044A     		ldr	r2, .L17
+ 4755 0008 1268     		ldr	r2, [r2, #0]
+ 4756 000a 22F00202 		bic	r2, r2, #2
+ 4757 000e 1A60     		str	r2, [r3, #0]
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** }
+ 4758              		.loc 1 182 0
+ 4759 0010 BD46     		mov	sp, r7
+ 4760 0012 80BC     		pop	{r7}
+ 4761 0014 7047     		bx	lr
+ 4762              	.L18:
+ 4763 0016 00BF     		.align	2
+ 4764              	.L17:
+ 4765 0018 10E000E0 		.word	-536813552
+ 4766              		.cfi_endproc
+ 4767              	.LFE5:
+ 4769              		.section	.text.SysTickPeriodSet,"ax",%progbits
+ 4770              		.align	2
+ 4771              		.global	SysTickPeriodSet
+ 4772              		.thumb
+ 4773              		.thumb_func
+ 4775              	SysTickPeriodSet:
+ 4776              	.LFB6:
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! Sets the period of the SysTick counter.
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \param ulPeriod is the number of clock ticks in each period of the SysTick
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! counter and must be between 1 and 16,777,216, inclusive.
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! This function sets the rate at which the SysTick counter wraps, which
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! equates to the number of processor clocks between interrupts.
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \note Calling this function does not cause the SysTick counter to reload
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! immediately.  If an immediate reload is required, the \b NVIC_ST_CURRENT
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! register must be written.  Any write to this register clears the SysTick
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! counter to 0 and causes a reload with the \e ulPeriod supplied here on
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! the next clock after SysTick is enabled.
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \return None.
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** void
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** SysTickPeriodSet(unsigned long ulPeriod)
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** {
+ 4777              		.loc 1 205 0
+ 4778              		.cfi_startproc
+ 4779              		@ args = 0, pretend = 0, frame = 8
+ 4780              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4781              		@ link register save eliminated.
+ 4782 0000 80B4     		push	{r7}
+ 4783              	.LCFI13:
+ 4784              		.cfi_def_cfa_offset 4
+ 4785 0002 83B0     		sub	sp, sp, #12
+ 4786              	.LCFI14:
+ 4787              		.cfi_def_cfa_offset 16
+ 4788 0004 00AF     		add	r7, sp, #0
+ 4789              		.cfi_offset 7, -4
+ 4790              	.LCFI15:
+ 4791              		.cfi_def_cfa_register 7
+ 4792 0006 7860     		str	r0, [r7, #4]
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     // Check the arguments.
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     ASSERT((ulPeriod > 0) && (ulPeriod <= 16777216));
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     // Set the period of the SysTick counter.
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     HWREG(NVIC_ST_RELOAD) = ulPeriod - 1;
+ 4793              		.loc 1 214 0
+ 4794 0008 044B     		ldr	r3, .L20
+ 4795 000a 7A68     		ldr	r2, [r7, #4]
+ 4796 000c 02F1FF32 		add	r2, r2, #-1
+ 4797 0010 1A60     		str	r2, [r3, #0]
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** }
+ 4798              		.loc 1 215 0
+ 4799 0012 07F10C07 		add	r7, r7, #12
+ 4800 0016 BD46     		mov	sp, r7
+ 4801 0018 80BC     		pop	{r7}
+ 4802 001a 7047     		bx	lr
+ 4803              	.L21:
+ 4804              		.align	2
+ 4805              	.L20:
+ 4806 001c 14E000E0 		.word	-536813548
+ 4807              		.cfi_endproc
+ 4808              	.LFE6:
+ 4810              		.section	.text.SysTickPeriodGet,"ax",%progbits
+ 4811              		.align	2
+ 4812              		.global	SysTickPeriodGet
+ 4813              		.thumb
+ 4814              		.thumb_func
+ 4816              	SysTickPeriodGet:
+ 4817              	.LFB7:
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! Gets the period of the SysTick counter.
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! This function returns the rate at which the SysTick counter wraps, which
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! equates to the number of processor clocks between interrupts.
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \return Returns the period of the SysTick counter.
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** unsigned long
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** SysTickPeriodGet(void)
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** {
+ 4818              		.loc 1 229 0
+ 4819              		.cfi_startproc
+ 4820              		@ args = 0, pretend = 0, frame = 0
+ 4821              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4822              		@ link register save eliminated.
+ 4823 0000 80B4     		push	{r7}
+ 4824              	.LCFI16:
+ 4825              		.cfi_def_cfa_offset 4
+ 4826 0002 00AF     		add	r7, sp, #0
+ 4827              		.cfi_offset 7, -4
+ 4828              	.LCFI17:
+ 4829              		.cfi_def_cfa_register 7
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     // Return the period of the SysTick counter.
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     return(HWREG(NVIC_ST_RELOAD) + 1);
+ 4830              		.loc 1 233 0
+ 4831 0004 034B     		ldr	r3, .L23
+ 4832 0006 1B68     		ldr	r3, [r3, #0]
+ 4833 0008 03F10103 		add	r3, r3, #1
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** }
+ 4834              		.loc 1 234 0
+ 4835 000c 1846     		mov	r0, r3
+ 4836 000e BD46     		mov	sp, r7
+ 4837 0010 80BC     		pop	{r7}
+ 4838 0012 7047     		bx	lr
+ 4839              	.L24:
+ 4840              		.align	2
+ 4841              	.L23:
+ 4842 0014 14E000E0 		.word	-536813548
+ 4843              		.cfi_endproc
+ 4844              	.LFE7:
+ 4846              		.section	.text.SysTickValueGet,"ax",%progbits
+ 4847              		.align	2
+ 4848              		.global	SysTickValueGet
+ 4849              		.thumb
+ 4850              		.thumb_func
+ 4852              	SysTickValueGet:
+ 4853              	.LFB8:
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** 
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! Gets the current value of the SysTick counter.
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! This function returns the current value of the SysTick counter, which is
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! a value between the period - 1 and zero, inclusive.
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //!
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //! \return Returns the current value of the SysTick counter.
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** //*****************************************************************************
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** unsigned long
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** SysTickValueGet(void)
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** {
+ 4854              		.loc 1 248 0
+ 4855              		.cfi_startproc
+ 4856              		@ args = 0, pretend = 0, frame = 0
+ 4857              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4858              		@ link register save eliminated.
+ 4859 0000 80B4     		push	{r7}
+ 4860              	.LCFI18:
+ 4861              		.cfi_def_cfa_offset 4
+ 4862 0002 00AF     		add	r7, sp, #0
+ 4863              		.cfi_offset 7, -4
+ 4864              	.LCFI19:
+ 4865              		.cfi_def_cfa_register 7
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     // Return the current value of the SysTick counter.
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     //
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c ****     return(HWREG(NVIC_ST_CURRENT));
+ 4866              		.loc 1 252 0
+ 4867 0004 024B     		ldr	r3, .L26
+ 4868 0006 1B68     		ldr	r3, [r3, #0]
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/systick.c **** }
+ 4869              		.loc 1 253 0
+ 4870 0008 1846     		mov	r0, r3
+ 4871 000a BD46     		mov	sp, r7
+ 4872 000c 80BC     		pop	{r7}
+ 4873 000e 7047     		bx	lr
+ 4874              	.L27:
+ 4875              		.align	2
+ 4876              	.L26:
+ 4877 0010 18E000E0 		.word	-536813544
+ 4878              		.cfi_endproc
+ 4879              	.LFE8:
+ 4881              		.text
+ 4882              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 systick.c
+     /tmp/ccz7lnBw.s:4539   .text.SysTickEnable:00000000 $t
+     /tmp/ccz7lnBw.s:4544   .text.SysTickEnable:00000000 SysTickEnable
+     /tmp/ccz7lnBw.s:4571   .text.SysTickEnable:00000018 $d
+     /tmp/ccz7lnBw.s:4576   .text.SysTickDisable:00000000 $t
+     /tmp/ccz7lnBw.s:4581   .text.SysTickDisable:00000000 SysTickDisable
+     /tmp/ccz7lnBw.s:4608   .text.SysTickDisable:00000018 $d
+     /tmp/ccz7lnBw.s:4613   .text.SysTickIntRegister:00000000 $t
+     /tmp/ccz7lnBw.s:4618   .text.SysTickIntRegister:00000000 SysTickIntRegister
+     /tmp/ccz7lnBw.s:4653   .text.SysTickIntRegister:00000028 $d
+     /tmp/ccz7lnBw.s:4658   .text.SysTickIntUnregister:00000000 $t
+     /tmp/ccz7lnBw.s:4663   .text.SysTickIntUnregister:00000000 SysTickIntUnregister
+     /tmp/ccz7lnBw.s:4691   .text.SysTickIntUnregister:0000001c $d
+     /tmp/ccz7lnBw.s:4696   .text.SysTickIntEnable:00000000 $t
+     /tmp/ccz7lnBw.s:4701   .text.SysTickIntEnable:00000000 SysTickIntEnable
+     /tmp/ccz7lnBw.s:4728   .text.SysTickIntEnable:00000018 $d
+     /tmp/ccz7lnBw.s:4733   .text.SysTickIntDisable:00000000 $t
+     /tmp/ccz7lnBw.s:4738   .text.SysTickIntDisable:00000000 SysTickIntDisable
+     /tmp/ccz7lnBw.s:4765   .text.SysTickIntDisable:00000018 $d
+     /tmp/ccz7lnBw.s:4770   .text.SysTickPeriodSet:00000000 $t
+     /tmp/ccz7lnBw.s:4775   .text.SysTickPeriodSet:00000000 SysTickPeriodSet
+     /tmp/ccz7lnBw.s:4806   .text.SysTickPeriodSet:0000001c $d
+     /tmp/ccz7lnBw.s:4811   .text.SysTickPeriodGet:00000000 $t
+     /tmp/ccz7lnBw.s:4816   .text.SysTickPeriodGet:00000000 SysTickPeriodGet
+     /tmp/ccz7lnBw.s:4842   .text.SysTickPeriodGet:00000014 $d
+     /tmp/ccz7lnBw.s:4847   .text.SysTickValueGet:00000000 $t
+     /tmp/ccz7lnBw.s:4852   .text.SysTickValueGet:00000000 SysTickValueGet
+     /tmp/ccz7lnBw.s:4877   .text.SysTickValueGet:00000010 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IntRegister
+IntUnregister

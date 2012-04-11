@@ -1,0 +1,229 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"isqrt.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c"
+ 999              		.align	2
+ 1000              		.global	isqrt
+ 1001              		.thumb
+ 1002              		.thumb_func
+ 1004              	isqrt:
+ 1005              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // isqrt.c - Integer square root.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // Copyright (c) 2005-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** // This is part of revision 8264 of the Stellaris Firmware Development Package.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** #include "utils/isqrt.h"
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** 
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //*****************************************************************************
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //! \addtogroup isqrt_api
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //! @{
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //*****************************************************************************
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** 
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //*****************************************************************************
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //! Compute the integer square root of an integer.
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //!
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //! \param ulValue is the value whose square root is desired.
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //!
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //! This function will compute the integer square root of the given input
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //! value.  Since the value returned is also an integer, it is actually better
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //! defined as the largest integer whose square is less than or equal to the
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //! input value.
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //!
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //! \return Returns the square root of the input value.
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** //*****************************************************************************
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** unsigned long
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** isqrt(unsigned long ulValue)
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** {
+ 1006              		.loc 1 50 0
+ 1007              		.cfi_startproc
+ 1008              		@ args = 0, pretend = 0, frame = 24
+ 1009              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1010              		@ link register save eliminated.
+ 1011 0000 80B4     		push	{r7}
+ 1012              	.LCFI0:
+ 1013              		.cfi_def_cfa_offset 4
+ 1014 0002 87B0     		sub	sp, sp, #28
+ 1015              	.LCFI1:
+ 1016              		.cfi_def_cfa_offset 32
+ 1017 0004 00AF     		add	r7, sp, #0
+ 1018              		.cfi_offset 7, -4
+ 1019              	.LCFI2:
+ 1020              		.cfi_def_cfa_register 7
+ 1021 0006 7860     		str	r0, [r7, #4]
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     unsigned long ulRem, ulRoot, ulIdx;
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** 
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     //
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     // Initialize the remainder and root to zero.
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     //
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     ulRem = 0;
+ 1022              		.loc 1 56 0
+ 1023 0008 4FF00003 		mov	r3, #0
+ 1024 000c 7B61     		str	r3, [r7, #20]
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     ulRoot = 0;
+ 1025              		.loc 1 57 0
+ 1026 000e 4FF00003 		mov	r3, #0
+ 1027 0012 3B61     		str	r3, [r7, #16]
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** 
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     //
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     // Loop over the sixteen bits in the root.
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     //
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     for(ulIdx = 0; ulIdx < 16; ulIdx++)
+ 1028              		.loc 1 62 0
+ 1029 0014 4FF00003 		mov	r3, #0
+ 1030 0018 FB60     		str	r3, [r7, #12]
+ 1031 001a 28E0     		b	.L2
+ 1032              	.L5:
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     {
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         //
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         // Shift the root up by a bit to make room for the new bit that is
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         // about to be computed.
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         //
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         ulRoot <<= 1;
+ 1033              		.loc 1 68 0
+ 1034 001c 3B69     		ldr	r3, [r7, #16]
+ 1035 001e 4FEA4303 		lsl	r3, r3, #1
+ 1036 0022 3B61     		str	r3, [r7, #16]
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** 
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         //
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         // Get two more bits from the input into the remainder.
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         //
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         ulRem = ((ulRem << 2) + (ulValue >> 30));
+ 1037              		.loc 1 73 0
+ 1038 0024 7B69     		ldr	r3, [r7, #20]
+ 1039 0026 4FEA8302 		lsl	r2, r3, #2
+ 1040 002a 7B68     		ldr	r3, [r7, #4]
+ 1041 002c 4FEA9373 		lsr	r3, r3, #30
+ 1042 0030 D318     		adds	r3, r2, r3
+ 1043 0032 7B61     		str	r3, [r7, #20]
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         ulValue <<= 2;
+ 1044              		.loc 1 74 0
+ 1045 0034 7B68     		ldr	r3, [r7, #4]
+ 1046 0036 4FEA8303 		lsl	r3, r3, #2
+ 1047 003a 7B60     		str	r3, [r7, #4]
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** 
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         //
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         // Make the test root be 2n + 1.
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         //
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         ulRoot++;
+ 1048              		.loc 1 79 0
+ 1049 003c 3B69     		ldr	r3, [r7, #16]
+ 1050 003e 03F10103 		add	r3, r3, #1
+ 1051 0042 3B61     		str	r3, [r7, #16]
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** 
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         //
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         // See if the root is greater than the remainder.
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         //
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         if(ulRoot <= ulRem)
+ 1052              		.loc 1 84 0
+ 1053 0044 3A69     		ldr	r2, [r7, #16]
+ 1054 0046 7B69     		ldr	r3, [r7, #20]
+ 1055 0048 9A42     		cmp	r2, r3
+ 1056 004a 08D8     		bhi	.L3
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         {
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****             //
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****             // Subtract the test root from the remainder.
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****             //
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****             ulRem -= ulRoot;
+ 1057              		.loc 1 89 0
+ 1058 004c 7A69     		ldr	r2, [r7, #20]
+ 1059 004e 3B69     		ldr	r3, [r7, #16]
+ 1060 0050 D31A     		subs	r3, r2, r3
+ 1061 0052 7B61     		str	r3, [r7, #20]
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** 
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****             //
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****             // Increment the root, setting the second LSB.
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****             //
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****             ulRoot++;
+ 1062              		.loc 1 94 0
+ 1063 0054 3B69     		ldr	r3, [r7, #16]
+ 1064 0056 03F10103 		add	r3, r3, #1
+ 1065 005a 3B61     		str	r3, [r7, #16]
+ 1066 005c 03E0     		b	.L4
+ 1067              	.L3:
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         }
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         else
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         {
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****             //
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****             // The root is greater than the remainder, so the new bit of the
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****             // root is actually zero.
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****             //
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****             ulRoot--;
+ 1068              		.loc 1 102 0
+ 1069 005e 3B69     		ldr	r3, [r7, #16]
+ 1070 0060 03F1FF33 		add	r3, r3, #-1
+ 1071 0064 3B61     		str	r3, [r7, #16]
+ 1072              	.L4:
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     for(ulIdx = 0; ulIdx < 16; ulIdx++)
+ 1073              		.loc 1 62 0
+ 1074 0066 FB68     		ldr	r3, [r7, #12]
+ 1075 0068 03F10103 		add	r3, r3, #1
+ 1076 006c FB60     		str	r3, [r7, #12]
+ 1077              	.L2:
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     for(ulIdx = 0; ulIdx < 16; ulIdx++)
+ 1078              		.loc 1 62 0 is_stmt 0 discriminator 1
+ 1079 006e FB68     		ldr	r3, [r7, #12]
+ 1080 0070 0F2B     		cmp	r3, #15
+ 1081 0072 D3D9     		bls	.L5
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****         }
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     }
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** 
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     //
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     // Return the computed root.
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     //
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c ****     return(ulRoot >> 1);
+ 1082              		.loc 1 109 0 is_stmt 1
+ 1083 0074 3B69     		ldr	r3, [r7, #16]
+ 1084 0076 4FEA5303 		lsr	r3, r3, #1
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/isqrt.c **** }
+ 1085              		.loc 1 110 0
+ 1086 007a 1846     		mov	r0, r3
+ 1087 007c 07F11C07 		add	r7, r7, #28
+ 1088 0080 BD46     		mov	sp, r7
+ 1089 0082 80BC     		pop	{r7}
+ 1090 0084 7047     		bx	lr
+ 1091              		.cfi_endproc
+ 1092              	.LFE0:
+ 1094 0086 00BF     		.text
+ 1095              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 isqrt.c
+     /tmp/ccBF9zTJ.s:999    .text.isqrt:00000000 $t
+     /tmp/ccBF9zTJ.s:1004   .text.isqrt:00000000 isqrt
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

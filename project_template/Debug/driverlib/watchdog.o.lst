@@ -1,0 +1,1351 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"watchdog.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c"
+ 2063              		.align	2
+ 2064              		.global	WatchdogRunning
+ 2065              		.thumb
+ 2066              		.thumb_func
+ 2068              	WatchdogRunning:
+ 2069              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // watchdog.c - Driver for the Watchdog Timer Module.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // Copyright (c) 2005-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \addtogroup watchdog_api
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! @{
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** #include "inc/hw_ints.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** #include "inc/hw_memmap.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** #include "inc/hw_types.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** #include "inc/hw_watchdog.h"
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** #include "driverlib/debug.h"
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** #include "driverlib/interrupt.h"
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** #include "driverlib/watchdog.h"
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Determines if the watchdog timer is enabled.
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function checks to see if the watchdog timer is enabled.
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return Returns \b true if the watchdog timer is enabled and \b false
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! if it is not.
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** tBoolean
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogRunning(unsigned long ulBase)
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2070              		.loc 1 54 0
+ 2071              		.cfi_startproc
+ 2072              		@ args = 0, pretend = 0, frame = 8
+ 2073              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2074              		@ link register save eliminated.
+ 2075 0000 80B4     		push	{r7}
+ 2076              	.LCFI0:
+ 2077              		.cfi_def_cfa_offset 4
+ 2078 0002 83B0     		sub	sp, sp, #12
+ 2079              	.LCFI1:
+ 2080              		.cfi_def_cfa_offset 16
+ 2081 0004 00AF     		add	r7, sp, #0
+ 2082              		.cfi_offset 7, -4
+ 2083              	.LCFI2:
+ 2084              		.cfi_def_cfa_register 7
+ 2085 0006 7860     		str	r0, [r7, #4]
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // See if the watchdog timer module is enabled, and return.
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     return(HWREG(ulBase + WDT_O_CTL) & WDT_CTL_INTEN);
+ 2086              		.loc 1 63 0
+ 2087 0008 7B68     		ldr	r3, [r7, #4]
+ 2088 000a 03F10803 		add	r3, r3, #8
+ 2089 000e 1B68     		ldr	r3, [r3, #0]
+ 2090 0010 DBB2     		uxtb	r3, r3
+ 2091 0012 03F00103 		and	r3, r3, #1
+ 2092 0016 DBB2     		uxtb	r3, r3
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2093              		.loc 1 64 0
+ 2094 0018 1846     		mov	r0, r3
+ 2095 001a 07F10C07 		add	r7, r7, #12
+ 2096 001e BD46     		mov	sp, r7
+ 2097 0020 80BC     		pop	{r7}
+ 2098 0022 7047     		bx	lr
+ 2099              		.cfi_endproc
+ 2100              	.LFE0:
+ 2102              		.section	.text.WatchdogEnable,"ax",%progbits
+ 2103              		.align	2
+ 2104              		.global	WatchdogEnable
+ 2105              		.thumb
+ 2106              		.thumb_func
+ 2108              	WatchdogEnable:
+ 2109              	.LFB1:
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Enables the watchdog timer.
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function enables the watchdog timer counter and interrupt.
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \note This function has no effect if the watchdog timer has been locked.
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \sa WatchdogLock(), WatchdogUnlock()
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** void
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogEnable(unsigned long ulBase)
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2110              		.loc 1 83 0
+ 2111              		.cfi_startproc
+ 2112              		@ args = 0, pretend = 0, frame = 8
+ 2113              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2114              		@ link register save eliminated.
+ 2115 0000 80B4     		push	{r7}
+ 2116              	.LCFI3:
+ 2117              		.cfi_def_cfa_offset 4
+ 2118 0002 83B0     		sub	sp, sp, #12
+ 2119              	.LCFI4:
+ 2120              		.cfi_def_cfa_offset 16
+ 2121 0004 00AF     		add	r7, sp, #0
+ 2122              		.cfi_offset 7, -4
+ 2123              	.LCFI5:
+ 2124              		.cfi_def_cfa_register 7
+ 2125 0006 7860     		str	r0, [r7, #4]
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Enable the watchdog timer module.
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     HWREG(ulBase + WDT_O_CTL) |= WDT_CTL_INTEN;
+ 2126              		.loc 1 92 0
+ 2127 0008 7B68     		ldr	r3, [r7, #4]
+ 2128 000a 03F10803 		add	r3, r3, #8
+ 2129 000e 7A68     		ldr	r2, [r7, #4]
+ 2130 0010 02F10802 		add	r2, r2, #8
+ 2131 0014 1268     		ldr	r2, [r2, #0]
+ 2132 0016 42F00102 		orr	r2, r2, #1
+ 2133 001a 1A60     		str	r2, [r3, #0]
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2134              		.loc 1 93 0
+ 2135 001c 07F10C07 		add	r7, r7, #12
+ 2136 0020 BD46     		mov	sp, r7
+ 2137 0022 80BC     		pop	{r7}
+ 2138 0024 7047     		bx	lr
+ 2139              		.cfi_endproc
+ 2140              	.LFE1:
+ 2142 0026 00BF     		.section	.text.WatchdogResetEnable,"ax",%progbits
+ 2143              		.align	2
+ 2144              		.global	WatchdogResetEnable
+ 2145              		.thumb
+ 2146              		.thumb_func
+ 2148              	WatchdogResetEnable:
+ 2149              	.LFB2:
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Enables the watchdog timer reset.
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function enables the capability of the watchdog timer to issue a reset 
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! to the processor after a second timeout condition.
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \note This function has no effect if the watchdog timer has been locked.
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! 
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \sa WatchdogLock(), WatchdogUnlock()
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** void
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogResetEnable(unsigned long ulBase)
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2150              		.loc 1 113 0
+ 2151              		.cfi_startproc
+ 2152              		@ args = 0, pretend = 0, frame = 8
+ 2153              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2154              		@ link register save eliminated.
+ 2155 0000 80B4     		push	{r7}
+ 2156              	.LCFI6:
+ 2157              		.cfi_def_cfa_offset 4
+ 2158 0002 83B0     		sub	sp, sp, #12
+ 2159              	.LCFI7:
+ 2160              		.cfi_def_cfa_offset 16
+ 2161 0004 00AF     		add	r7, sp, #0
+ 2162              		.cfi_offset 7, -4
+ 2163              	.LCFI8:
+ 2164              		.cfi_def_cfa_register 7
+ 2165 0006 7860     		str	r0, [r7, #4]
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Enable the watchdog reset.
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     HWREG(ulBase + WDT_O_CTL) |= WDT_CTL_RESEN;
+ 2166              		.loc 1 122 0
+ 2167 0008 7B68     		ldr	r3, [r7, #4]
+ 2168 000a 03F10803 		add	r3, r3, #8
+ 2169 000e 7A68     		ldr	r2, [r7, #4]
+ 2170 0010 02F10802 		add	r2, r2, #8
+ 2171 0014 1268     		ldr	r2, [r2, #0]
+ 2172 0016 42F00202 		orr	r2, r2, #2
+ 2173 001a 1A60     		str	r2, [r3, #0]
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2174              		.loc 1 123 0
+ 2175 001c 07F10C07 		add	r7, r7, #12
+ 2176 0020 BD46     		mov	sp, r7
+ 2177 0022 80BC     		pop	{r7}
+ 2178 0024 7047     		bx	lr
+ 2179              		.cfi_endproc
+ 2180              	.LFE2:
+ 2182 0026 00BF     		.section	.text.WatchdogResetDisable,"ax",%progbits
+ 2183              		.align	2
+ 2184              		.global	WatchdogResetDisable
+ 2185              		.thumb
+ 2186              		.thumb_func
+ 2188              	WatchdogResetDisable:
+ 2189              	.LFB3:
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Disables the watchdog timer reset.
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function disables the capability of the watchdog timer to issue a
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! reset to the processor after a second timeout condition.
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \note This function has no effect if the watchdog timer has been locked.
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \sa WatchdogLock(), WatchdogUnlock()
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** void
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogResetDisable(unsigned long ulBase)
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2190              		.loc 1 143 0
+ 2191              		.cfi_startproc
+ 2192              		@ args = 0, pretend = 0, frame = 8
+ 2193              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2194              		@ link register save eliminated.
+ 2195 0000 80B4     		push	{r7}
+ 2196              	.LCFI9:
+ 2197              		.cfi_def_cfa_offset 4
+ 2198 0002 83B0     		sub	sp, sp, #12
+ 2199              	.LCFI10:
+ 2200              		.cfi_def_cfa_offset 16
+ 2201 0004 00AF     		add	r7, sp, #0
+ 2202              		.cfi_offset 7, -4
+ 2203              	.LCFI11:
+ 2204              		.cfi_def_cfa_register 7
+ 2205 0006 7860     		str	r0, [r7, #4]
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Disable the watchdog reset.
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     HWREG(ulBase + WDT_O_CTL) &= ~(WDT_CTL_RESEN);
+ 2206              		.loc 1 152 0
+ 2207 0008 7B68     		ldr	r3, [r7, #4]
+ 2208 000a 03F10803 		add	r3, r3, #8
+ 2209 000e 7A68     		ldr	r2, [r7, #4]
+ 2210 0010 02F10802 		add	r2, r2, #8
+ 2211 0014 1268     		ldr	r2, [r2, #0]
+ 2212 0016 22F00202 		bic	r2, r2, #2
+ 2213 001a 1A60     		str	r2, [r3, #0]
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2214              		.loc 1 153 0
+ 2215 001c 07F10C07 		add	r7, r7, #12
+ 2216 0020 BD46     		mov	sp, r7
+ 2217 0022 80BC     		pop	{r7}
+ 2218 0024 7047     		bx	lr
+ 2219              		.cfi_endproc
+ 2220              	.LFE3:
+ 2222 0026 00BF     		.section	.text.WatchdogLock,"ax",%progbits
+ 2223              		.align	2
+ 2224              		.global	WatchdogLock
+ 2225              		.thumb
+ 2226              		.thumb_func
+ 2228              	WatchdogLock:
+ 2229              	.LFB4:
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Enables the watchdog timer lock mechanism.
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function locks out write access to the watchdog timer configuration
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! registers.
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** void
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogLock(unsigned long ulBase)
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2230              		.loc 1 169 0
+ 2231              		.cfi_startproc
+ 2232              		@ args = 0, pretend = 0, frame = 8
+ 2233              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2234              		@ link register save eliminated.
+ 2235 0000 80B4     		push	{r7}
+ 2236              	.LCFI12:
+ 2237              		.cfi_def_cfa_offset 4
+ 2238 0002 83B0     		sub	sp, sp, #12
+ 2239              	.LCFI13:
+ 2240              		.cfi_def_cfa_offset 16
+ 2241 0004 00AF     		add	r7, sp, #0
+ 2242              		.cfi_offset 7, -4
+ 2243              	.LCFI14:
+ 2244              		.cfi_def_cfa_register 7
+ 2245 0006 7860     		str	r0, [r7, #4]
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Lock out watchdog register writes.  Writing anything to the WDT_O_LOCK
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // register causes the lock to go into effect.
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     HWREG(ulBase + WDT_O_LOCK) = WDT_LOCK_LOCKED;
+ 2246              		.loc 1 179 0
+ 2247 0008 7B68     		ldr	r3, [r7, #4]
+ 2248 000a 03F54063 		add	r3, r3, #3072
+ 2249 000e 4FF00102 		mov	r2, #1
+ 2250 0012 1A60     		str	r2, [r3, #0]
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2251              		.loc 1 180 0
+ 2252 0014 07F10C07 		add	r7, r7, #12
+ 2253 0018 BD46     		mov	sp, r7
+ 2254 001a 80BC     		pop	{r7}
+ 2255 001c 7047     		bx	lr
+ 2256              		.cfi_endproc
+ 2257              	.LFE4:
+ 2259 001e 00BF     		.section	.text.WatchdogUnlock,"ax",%progbits
+ 2260              		.align	2
+ 2261              		.global	WatchdogUnlock
+ 2262              		.thumb
+ 2263              		.thumb_func
+ 2265              	WatchdogUnlock:
+ 2266              	.LFB5:
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Disables the watchdog timer lock mechanism.
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function enables write access to the watchdog timer configuration 
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! registers.
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** void
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogUnlock(unsigned long ulBase)
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2267              		.loc 1 196 0
+ 2268              		.cfi_startproc
+ 2269              		@ args = 0, pretend = 0, frame = 8
+ 2270              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2271              		@ link register save eliminated.
+ 2272 0000 80B4     		push	{r7}
+ 2273              	.LCFI15:
+ 2274              		.cfi_def_cfa_offset 4
+ 2275 0002 83B0     		sub	sp, sp, #12
+ 2276              	.LCFI16:
+ 2277              		.cfi_def_cfa_offset 16
+ 2278 0004 00AF     		add	r7, sp, #0
+ 2279              		.cfi_offset 7, -4
+ 2280              	.LCFI17:
+ 2281              		.cfi_def_cfa_register 7
+ 2282 0006 7860     		str	r0, [r7, #4]
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Unlock watchdog register writes.
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     HWREG(ulBase + WDT_O_LOCK) = WDT_LOCK_UNLOCK;
+ 2283              		.loc 1 205 0
+ 2284 0008 7B68     		ldr	r3, [r7, #4]
+ 2285 000a 03F54063 		add	r3, r3, #3072
+ 2286 000e 034A     		ldr	r2, .L7
+ 2287 0010 1A60     		str	r2, [r3, #0]
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2288              		.loc 1 206 0
+ 2289 0012 07F10C07 		add	r7, r7, #12
+ 2290 0016 BD46     		mov	sp, r7
+ 2291 0018 80BC     		pop	{r7}
+ 2292 001a 7047     		bx	lr
+ 2293              	.L8:
+ 2294              		.align	2
+ 2295              	.L7:
+ 2296 001c 51E5CC1A 		.word	449635665
+ 2297              		.cfi_endproc
+ 2298              	.LFE5:
+ 2300              		.section	.text.WatchdogLockState,"ax",%progbits
+ 2301              		.align	2
+ 2302              		.global	WatchdogLockState
+ 2303              		.thumb
+ 2304              		.thumb_func
+ 2306              	WatchdogLockState:
+ 2307              	.LFB6:
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Gets the state of the watchdog timer lock mechanism.
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function returns the lock state of the watchdog timer registers.
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return Returns \b true if the watchdog timer registers are locked, and
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \b false if they are not locked.
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** tBoolean
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogLockState(unsigned long ulBase)
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2308              		.loc 1 222 0
+ 2309              		.cfi_startproc
+ 2310              		@ args = 0, pretend = 0, frame = 8
+ 2311              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2312              		@ link register save eliminated.
+ 2313 0000 80B4     		push	{r7}
+ 2314              	.LCFI18:
+ 2315              		.cfi_def_cfa_offset 4
+ 2316 0002 83B0     		sub	sp, sp, #12
+ 2317              	.LCFI19:
+ 2318              		.cfi_def_cfa_offset 16
+ 2319 0004 00AF     		add	r7, sp, #0
+ 2320              		.cfi_offset 7, -4
+ 2321              	.LCFI20:
+ 2322              		.cfi_def_cfa_register 7
+ 2323 0006 7860     		str	r0, [r7, #4]
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Get the lock state.
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     return((HWREG(ulBase + WDT_O_LOCK) == WDT_LOCK_LOCKED) ? true : false);
+ 2324              		.loc 1 231 0
+ 2325 0008 7B68     		ldr	r3, [r7, #4]
+ 2326 000a 03F54063 		add	r3, r3, #3072
+ 2327 000e 1B68     		ldr	r3, [r3, #0]
+ 2328 0010 012B     		cmp	r3, #1
+ 2329 0012 14BF     		ite	ne
+ 2330 0014 0023     		movne	r3, #0
+ 2331 0016 0123     		moveq	r3, #1
+ 2332 0018 DBB2     		uxtb	r3, r3
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2333              		.loc 1 232 0
+ 2334 001a 1846     		mov	r0, r3
+ 2335 001c 07F10C07 		add	r7, r7, #12
+ 2336 0020 BD46     		mov	sp, r7
+ 2337 0022 80BC     		pop	{r7}
+ 2338 0024 7047     		bx	lr
+ 2339              		.cfi_endproc
+ 2340              	.LFE6:
+ 2342 0026 00BF     		.section	.text.WatchdogReloadSet,"ax",%progbits
+ 2343              		.align	2
+ 2344              		.global	WatchdogReloadSet
+ 2345              		.thumb
+ 2346              		.thumb_func
+ 2348              	WatchdogReloadSet:
+ 2349              	.LFB7:
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Sets the watchdog timer reload value.
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulLoadVal is the load value for the watchdog timer.
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function configures the value to load into the watchdog timer when the 
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! count reaches zero for the first time; if the watchdog timer is running 
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! when this function is called, then the value is immediately loaded into the 
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! watchdog timer counter.  If the \e ulLoadVal parameter is 0, then an 
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! interrupt is immediately generated.
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \note This function has no effect if the watchdog timer has been locked.
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \sa WatchdogLock(), WatchdogUnlock(), WatchdogReloadGet()
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** void
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogReloadSet(unsigned long ulBase, unsigned long ulLoadVal)
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2350              		.loc 1 256 0
+ 2351              		.cfi_startproc
+ 2352              		@ args = 0, pretend = 0, frame = 8
+ 2353              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2354              		@ link register save eliminated.
+ 2355 0000 80B4     		push	{r7}
+ 2356              	.LCFI21:
+ 2357              		.cfi_def_cfa_offset 4
+ 2358 0002 83B0     		sub	sp, sp, #12
+ 2359              	.LCFI22:
+ 2360              		.cfi_def_cfa_offset 16
+ 2361 0004 00AF     		add	r7, sp, #0
+ 2362              		.cfi_offset 7, -4
+ 2363              	.LCFI23:
+ 2364              		.cfi_def_cfa_register 7
+ 2365 0006 7860     		str	r0, [r7, #4]
+ 2366 0008 3960     		str	r1, [r7, #0]
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Set the load register.
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     HWREG(ulBase + WDT_O_LOAD) = ulLoadVal;
+ 2367              		.loc 1 265 0
+ 2368 000a 7B68     		ldr	r3, [r7, #4]
+ 2369 000c 3A68     		ldr	r2, [r7, #0]
+ 2370 000e 1A60     		str	r2, [r3, #0]
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2371              		.loc 1 266 0
+ 2372 0010 07F10C07 		add	r7, r7, #12
+ 2373 0014 BD46     		mov	sp, r7
+ 2374 0016 80BC     		pop	{r7}
+ 2375 0018 7047     		bx	lr
+ 2376              		.cfi_endproc
+ 2377              	.LFE7:
+ 2379 001a 00BF     		.section	.text.WatchdogReloadGet,"ax",%progbits
+ 2380              		.align	2
+ 2381              		.global	WatchdogReloadGet
+ 2382              		.thumb
+ 2383              		.thumb_func
+ 2385              	WatchdogReloadGet:
+ 2386              	.LFB8:
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Gets the watchdog timer reload value.
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function gets the value that is loaded into the watchdog timer when
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! the count reaches zero for the first time.
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \sa WatchdogReloadSet()
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** unsigned long
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogReloadGet(unsigned long ulBase)
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2387              		.loc 1 284 0
+ 2388              		.cfi_startproc
+ 2389              		@ args = 0, pretend = 0, frame = 8
+ 2390              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2391              		@ link register save eliminated.
+ 2392 0000 80B4     		push	{r7}
+ 2393              	.LCFI24:
+ 2394              		.cfi_def_cfa_offset 4
+ 2395 0002 83B0     		sub	sp, sp, #12
+ 2396              	.LCFI25:
+ 2397              		.cfi_def_cfa_offset 16
+ 2398 0004 00AF     		add	r7, sp, #0
+ 2399              		.cfi_offset 7, -4
+ 2400              	.LCFI26:
+ 2401              		.cfi_def_cfa_register 7
+ 2402 0006 7860     		str	r0, [r7, #4]
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Get the load register.
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     return(HWREG(ulBase + WDT_O_LOAD));
+ 2403              		.loc 1 293 0
+ 2404 0008 7B68     		ldr	r3, [r7, #4]
+ 2405 000a 1B68     		ldr	r3, [r3, #0]
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2406              		.loc 1 294 0
+ 2407 000c 1846     		mov	r0, r3
+ 2408 000e 07F10C07 		add	r7, r7, #12
+ 2409 0012 BD46     		mov	sp, r7
+ 2410 0014 80BC     		pop	{r7}
+ 2411 0016 7047     		bx	lr
+ 2412              		.cfi_endproc
+ 2413              	.LFE8:
+ 2415              		.section	.text.WatchdogValueGet,"ax",%progbits
+ 2416              		.align	2
+ 2417              		.global	WatchdogValueGet
+ 2418              		.thumb
+ 2419              		.thumb_func
+ 2421              	WatchdogValueGet:
+ 2422              	.LFB9:
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Gets the current watchdog timer value.
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function reads the current value of the watchdog timer.
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return Returns the current value of the watchdog timer.
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** unsigned long
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogValueGet(unsigned long ulBase)
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2423              		.loc 1 309 0
+ 2424              		.cfi_startproc
+ 2425              		@ args = 0, pretend = 0, frame = 8
+ 2426              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2427              		@ link register save eliminated.
+ 2428 0000 80B4     		push	{r7}
+ 2429              	.LCFI27:
+ 2430              		.cfi_def_cfa_offset 4
+ 2431 0002 83B0     		sub	sp, sp, #12
+ 2432              	.LCFI28:
+ 2433              		.cfi_def_cfa_offset 16
+ 2434 0004 00AF     		add	r7, sp, #0
+ 2435              		.cfi_offset 7, -4
+ 2436              	.LCFI29:
+ 2437              		.cfi_def_cfa_register 7
+ 2438 0006 7860     		str	r0, [r7, #4]
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Get the current watchdog timer register value.
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     return(HWREG(ulBase + WDT_O_VALUE));
+ 2439              		.loc 1 318 0
+ 2440 0008 7B68     		ldr	r3, [r7, #4]
+ 2441 000a 03F10403 		add	r3, r3, #4
+ 2442 000e 1B68     		ldr	r3, [r3, #0]
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2443              		.loc 1 319 0
+ 2444 0010 1846     		mov	r0, r3
+ 2445 0012 07F10C07 		add	r7, r7, #12
+ 2446 0016 BD46     		mov	sp, r7
+ 2447 0018 80BC     		pop	{r7}
+ 2448 001a 7047     		bx	lr
+ 2449              		.cfi_endproc
+ 2450              	.LFE9:
+ 2452              		.section	.text.WatchdogIntRegister,"ax",%progbits
+ 2453              		.align	2
+ 2454              		.global	WatchdogIntRegister
+ 2455              		.thumb
+ 2456              		.thumb_func
+ 2458              	WatchdogIntRegister:
+ 2459              	.LFB10:
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Registers an interrupt handler for the watchdog timer interrupt.
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param pfnHandler is a pointer to the function to be called when the
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! watchdog timer interrupt occurs.
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function does the actual registering of the interrupt handler.  This
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! function also enables the global interrupt in the interrupt controller; the 
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! watchdog timer interrupt must be enabled via WatchdogEnable().  It is the 
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! interrupt handler's responsibility to clear the interrupt source via
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! WatchdogIntClear().
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \sa IntRegister() for important information about registering interrupt
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! handlers.
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \note For parts with a watchdog timer module that has the ability to
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! generate an NMI instead of a standard interrupt, this function registers
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! the standard watchdog interrupt handler.  To register the NMI watchdog 
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! handler, use IntRegister() to register the handler for the
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \b FAULT_NMI interrupt.
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** void
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogIntRegister(unsigned long ulBase, void (*pfnHandler)(void))
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2460              		.loc 1 349 0
+ 2461              		.cfi_startproc
+ 2462              		@ args = 0, pretend = 0, frame = 8
+ 2463              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2464 0000 80B5     		push	{r7, lr}
+ 2465              	.LCFI30:
+ 2466              		.cfi_def_cfa_offset 8
+ 2467 0002 82B0     		sub	sp, sp, #8
+ 2468              	.LCFI31:
+ 2469              		.cfi_def_cfa_offset 16
+ 2470 0004 00AF     		add	r7, sp, #0
+ 2471              		.cfi_offset 14, -4
+ 2472              		.cfi_offset 7, -8
+ 2473              	.LCFI32:
+ 2474              		.cfi_def_cfa_register 7
+ 2475 0006 7860     		str	r0, [r7, #4]
+ 2476 0008 3960     		str	r1, [r7, #0]
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Register the interrupt handler.
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     IntRegister(INT_WATCHDOG, pfnHandler);
+ 2477              		.loc 1 358 0
+ 2478 000a 4FF02200 		mov	r0, #34
+ 2479 000e 3968     		ldr	r1, [r7, #0]
+ 2480 0010 FFF7FEFF 		bl	IntRegister
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Enable the watchdog timer interrupt.
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     IntEnable(INT_WATCHDOG);
+ 2481              		.loc 1 363 0
+ 2482 0014 4FF02200 		mov	r0, #34
+ 2483 0018 FFF7FEFF 		bl	IntEnable
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2484              		.loc 1 364 0
+ 2485 001c 07F10807 		add	r7, r7, #8
+ 2486 0020 BD46     		mov	sp, r7
+ 2487 0022 80BD     		pop	{r7, pc}
+ 2488              		.cfi_endproc
+ 2489              	.LFE10:
+ 2491              		.section	.text.WatchdogIntUnregister,"ax",%progbits
+ 2492              		.align	2
+ 2493              		.global	WatchdogIntUnregister
+ 2494              		.thumb
+ 2495              		.thumb_func
+ 2497              	WatchdogIntUnregister:
+ 2498              	.LFB11:
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Unregisters an interrupt handler for the watchdog timer interrupt.
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function does the actual unregistering of the interrupt handler.  This
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! function clears the handler to be called when a watchdog timer interrupt
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! occurs.  This function also masks off the interrupt in the interrupt
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! controller so that the interrupt handler no longer is called.
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \sa IntRegister() for important information about registering interrupt
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! handlers.
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \note For parts with a watchdog timer module that has the ability to
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! generate an NMI instead of a standard interrupt, this function unregisters
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! the standard watchdog interrupt handler.  To unregister the NMI watchdog
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! handler, use IntUnregister() to unregister the handler for the
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \b FAULT_NMI interrupt.
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** void
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogIntUnregister(unsigned long ulBase)
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2499              		.loc 1 391 0
+ 2500              		.cfi_startproc
+ 2501              		@ args = 0, pretend = 0, frame = 8
+ 2502              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2503 0000 80B5     		push	{r7, lr}
+ 2504              	.LCFI33:
+ 2505              		.cfi_def_cfa_offset 8
+ 2506 0002 82B0     		sub	sp, sp, #8
+ 2507              	.LCFI34:
+ 2508              		.cfi_def_cfa_offset 16
+ 2509 0004 00AF     		add	r7, sp, #0
+ 2510              		.cfi_offset 14, -4
+ 2511              		.cfi_offset 7, -8
+ 2512              	.LCFI35:
+ 2513              		.cfi_def_cfa_register 7
+ 2514 0006 7860     		str	r0, [r7, #4]
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Disable the interrupt.
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     IntDisable(INT_WATCHDOG);
+ 2515              		.loc 1 400 0
+ 2516 0008 4FF02200 		mov	r0, #34
+ 2517 000c FFF7FEFF 		bl	IntDisable
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Unregister the interrupt handler.
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     IntUnregister(INT_WATCHDOG);
+ 2518              		.loc 1 405 0
+ 2519 0010 4FF02200 		mov	r0, #34
+ 2520 0014 FFF7FEFF 		bl	IntUnregister
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2521              		.loc 1 406 0
+ 2522 0018 07F10807 		add	r7, r7, #8
+ 2523 001c BD46     		mov	sp, r7
+ 2524 001e 80BD     		pop	{r7, pc}
+ 2525              		.cfi_endproc
+ 2526              	.LFE11:
+ 2528              		.section	.text.WatchdogIntEnable,"ax",%progbits
+ 2529              		.align	2
+ 2530              		.global	WatchdogIntEnable
+ 2531              		.thumb
+ 2532              		.thumb_func
+ 2534              	WatchdogIntEnable:
+ 2535              	.LFB12:
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Enables the watchdog timer interrupt.
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function enables the watchdog timer interrupt.
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \note This function has no effect if the watchdog timer has been locked.
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \sa WatchdogLock(), WatchdogUnlock(), WatchdogEnable()
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** void
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogIntEnable(unsigned long ulBase)
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2536              		.loc 1 425 0
+ 2537              		.cfi_startproc
+ 2538              		@ args = 0, pretend = 0, frame = 8
+ 2539              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2540              		@ link register save eliminated.
+ 2541 0000 80B4     		push	{r7}
+ 2542              	.LCFI36:
+ 2543              		.cfi_def_cfa_offset 4
+ 2544 0002 83B0     		sub	sp, sp, #12
+ 2545              	.LCFI37:
+ 2546              		.cfi_def_cfa_offset 16
+ 2547 0004 00AF     		add	r7, sp, #0
+ 2548              		.cfi_offset 7, -4
+ 2549              	.LCFI38:
+ 2550              		.cfi_def_cfa_register 7
+ 2551 0006 7860     		str	r0, [r7, #4]
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Enable the watchdog interrupt.
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     HWREG(ulBase + WDT_O_CTL) |= WDT_CTL_INTEN;
+ 2552              		.loc 1 434 0
+ 2553 0008 7B68     		ldr	r3, [r7, #4]
+ 2554 000a 03F10803 		add	r3, r3, #8
+ 2555 000e 7A68     		ldr	r2, [r7, #4]
+ 2556 0010 02F10802 		add	r2, r2, #8
+ 2557 0014 1268     		ldr	r2, [r2, #0]
+ 2558 0016 42F00102 		orr	r2, r2, #1
+ 2559 001a 1A60     		str	r2, [r3, #0]
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2560              		.loc 1 435 0
+ 2561 001c 07F10C07 		add	r7, r7, #12
+ 2562 0020 BD46     		mov	sp, r7
+ 2563 0022 80BC     		pop	{r7}
+ 2564 0024 7047     		bx	lr
+ 2565              		.cfi_endproc
+ 2566              	.LFE12:
+ 2568 0026 00BF     		.section	.text.WatchdogIntStatus,"ax",%progbits
+ 2569              		.align	2
+ 2570              		.global	WatchdogIntStatus
+ 2571              		.thumb
+ 2572              		.thumb_func
+ 2574              	WatchdogIntStatus:
+ 2575              	.LFB13:
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Gets the current watchdog timer interrupt status.
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param bMasked is \b false if the raw interrupt status is required and
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \b true if the masked interrupt status is required.
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function returns the interrupt status for the watchdog timer module.  
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Either the raw interrupt status or the status of interrupt that is allowed 
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! to reflect to the processor can be returned.
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return Returns the current interrupt status, where a 1 indicates that the
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! watchdog interrupt is active, and a 0 indicates that it is not active.
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** unsigned long
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogIntStatus(unsigned long ulBase, tBoolean bMasked)
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2576              		.loc 1 455 0
+ 2577              		.cfi_startproc
+ 2578              		@ args = 0, pretend = 0, frame = 8
+ 2579              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2580              		@ link register save eliminated.
+ 2581 0000 80B4     		push	{r7}
+ 2582              	.LCFI39:
+ 2583              		.cfi_def_cfa_offset 4
+ 2584 0002 83B0     		sub	sp, sp, #12
+ 2585              	.LCFI40:
+ 2586              		.cfi_def_cfa_offset 16
+ 2587 0004 00AF     		add	r7, sp, #0
+ 2588              		.cfi_offset 7, -4
+ 2589              	.LCFI41:
+ 2590              		.cfi_def_cfa_register 7
+ 2591 0006 7860     		str	r0, [r7, #4]
+ 2592 0008 0B46     		mov	r3, r1
+ 2593 000a FB70     		strb	r3, [r7, #3]
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Return either the interrupt status or the raw interrupt status as
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // requested.
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     if(bMasked)
+ 2594              		.loc 1 465 0
+ 2595 000c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 2596 000e 002B     		cmp	r3, #0
+ 2597 0010 04D0     		beq	.L17
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     {
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****         return(HWREG(ulBase + WDT_O_MIS));
+ 2598              		.loc 1 467 0
+ 2599 0012 7B68     		ldr	r3, [r7, #4]
+ 2600 0014 03F11403 		add	r3, r3, #20
+ 2601 0018 1B68     		ldr	r3, [r3, #0]
+ 2602 001a 03E0     		b	.L18
+ 2603              	.L17:
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     }
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     else
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     {
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****         return(HWREG(ulBase + WDT_O_RIS));
+ 2604              		.loc 1 471 0
+ 2605 001c 7B68     		ldr	r3, [r7, #4]
+ 2606 001e 03F11003 		add	r3, r3, #16
+ 2607 0022 1B68     		ldr	r3, [r3, #0]
+ 2608              	.L18:
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     }
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2609              		.loc 1 473 0
+ 2610 0024 1846     		mov	r0, r3
+ 2611 0026 07F10C07 		add	r7, r7, #12
+ 2612 002a BD46     		mov	sp, r7
+ 2613 002c 80BC     		pop	{r7}
+ 2614 002e 7047     		bx	lr
+ 2615              		.cfi_endproc
+ 2616              	.LFE13:
+ 2618              		.section	.text.WatchdogIntClear,"ax",%progbits
+ 2619              		.align	2
+ 2620              		.global	WatchdogIntClear
+ 2621              		.thumb
+ 2622              		.thumb_func
+ 2624              	WatchdogIntClear:
+ 2625              	.LFB14:
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Clears the watchdog timer interrupt.
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 480:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 481:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! The watchdog timer interrupt source is cleared, so that it no longer
+ 482:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! asserts.
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 484:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \note Because there is a write buffer in the Cortex-M processor, it may
+ 485:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! take several clock cycles before the interrupt source is actually cleared.
+ 486:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Therefore, it is recommended that the interrupt source be cleared early in
+ 487:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! the interrupt handler (as opposed to the very last action) to avoid
+ 488:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! returning from the interrupt handler before the interrupt source is
+ 489:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! actually cleared.  Failure to do so may result in the interrupt handler
+ 490:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! being immediately reentered (because the interrupt controller still sees
+ 491:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! the interrupt source asserted).
+ 492:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 493:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+ 494:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 495:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 496:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** void
+ 497:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogIntClear(unsigned long ulBase)
+ 498:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2626              		.loc 1 498 0
+ 2627              		.cfi_startproc
+ 2628              		@ args = 0, pretend = 0, frame = 8
+ 2629              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2630              		@ link register save eliminated.
+ 2631 0000 80B4     		push	{r7}
+ 2632              	.LCFI42:
+ 2633              		.cfi_def_cfa_offset 4
+ 2634 0002 83B0     		sub	sp, sp, #12
+ 2635              	.LCFI43:
+ 2636              		.cfi_def_cfa_offset 16
+ 2637 0004 00AF     		add	r7, sp, #0
+ 2638              		.cfi_offset 7, -4
+ 2639              	.LCFI44:
+ 2640              		.cfi_def_cfa_register 7
+ 2641 0006 7860     		str	r0, [r7, #4]
+ 499:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 500:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 501:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 502:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 504:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 505:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Clear the interrupt source.
+ 506:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 507:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     HWREG(ulBase + WDT_O_ICR) = WDT_INT_TIMEOUT;
+ 2642              		.loc 1 507 0
+ 2643 0008 7B68     		ldr	r3, [r7, #4]
+ 2644 000a 03F10C03 		add	r3, r3, #12
+ 2645 000e 4FF00102 		mov	r2, #1
+ 2646 0012 1A60     		str	r2, [r3, #0]
+ 508:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2647              		.loc 1 508 0
+ 2648 0014 07F10C07 		add	r7, r7, #12
+ 2649 0018 BD46     		mov	sp, r7
+ 2650 001a 80BC     		pop	{r7}
+ 2651 001c 7047     		bx	lr
+ 2652              		.cfi_endproc
+ 2653              	.LFE14:
+ 2655 001e 00BF     		.section	.text.WatchdogIntTypeSet,"ax",%progbits
+ 2656              		.align	2
+ 2657              		.global	WatchdogIntTypeSet
+ 2658              		.thumb
+ 2659              		.thumb_func
+ 2661              	WatchdogIntTypeSet:
+ 2662              	.LFB15:
+ 509:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 510:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 511:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 512:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Sets the type of interrupt generated by the watchdog.
+ 513:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 514:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 515:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulType is the type of interrupt to generate.
+ 516:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function sets the type of interrupt that is generated if the watchdog
+ 518:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! timer expires.  \e ulType can be either \b WATCHDOG_INT_TYPE_INT to
+ 519:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! generate a standard interrupt (the default) or \b WATCHDOG_INT_TYPE_NMI to
+ 520:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! generate a non-maskable interrupt (NMI).
+ 521:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 522:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! When configured to generate an NMI, the watchdog interrupt must still be
+ 523:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! enabled with WatchdogIntEnable(), and it must still be cleared inside the
+ 524:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! NMI handler with WatchdogIntClear().
+ 525:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 526:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \note The ability to select an NMI interrupt varies with the Stellaris part
+ 527:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! in use.  Please consult the datasheet for the part you are using to
+ 528:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! determine whether this support is available.
+ 529:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 530:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+ 531:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 532:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 533:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** void
+ 534:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogIntTypeSet(unsigned long ulBase, unsigned long ulType)
+ 535:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2663              		.loc 1 535 0
+ 2664              		.cfi_startproc
+ 2665              		@ args = 0, pretend = 0, frame = 8
+ 2666              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2667              		@ link register save eliminated.
+ 2668 0000 80B4     		push	{r7}
+ 2669              	.LCFI45:
+ 2670              		.cfi_def_cfa_offset 4
+ 2671 0002 83B0     		sub	sp, sp, #12
+ 2672              	.LCFI46:
+ 2673              		.cfi_def_cfa_offset 16
+ 2674 0004 00AF     		add	r7, sp, #0
+ 2675              		.cfi_offset 7, -4
+ 2676              	.LCFI47:
+ 2677              		.cfi_def_cfa_register 7
+ 2678 0006 7860     		str	r0, [r7, #4]
+ 2679 0008 3960     		str	r1, [r7, #0]
+ 536:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 537:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 538:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 539:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 540:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulType == WATCHDOG_INT_TYPE_INT) ||
+ 541:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****            (ulType == WATCHDOG_INT_TYPE_NMI));
+ 542:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 543:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 544:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Set the interrupt type.
+ 545:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 546:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     HWREG(ulBase + WDT_O_CTL) =
+ 2680              		.loc 1 546 0
+ 2681 000a 7B68     		ldr	r3, [r7, #4]
+ 2682 000c 03F10803 		add	r3, r3, #8
+ 547:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****         (HWREG(ulBase + WDT_O_CTL) & ~WDT_CTL_INTTYPE) | ulType;
+ 2683              		.loc 1 547 0
+ 2684 0010 7A68     		ldr	r2, [r7, #4]
+ 2685 0012 02F10802 		add	r2, r2, #8
+ 2686 0016 1268     		ldr	r2, [r2, #0]
+ 2687 0018 22F00401 		bic	r1, r2, #4
+ 2688 001c 3A68     		ldr	r2, [r7, #0]
+ 2689 001e 41EA0202 		orr	r2, r1, r2
+ 546:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     HWREG(ulBase + WDT_O_CTL) =
+ 2690              		.loc 1 546 0
+ 2691 0022 1A60     		str	r2, [r3, #0]
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2692              		.loc 1 548 0
+ 2693 0024 07F10C07 		add	r7, r7, #12
+ 2694 0028 BD46     		mov	sp, r7
+ 2695 002a 80BC     		pop	{r7}
+ 2696 002c 7047     		bx	lr
+ 2697              		.cfi_endproc
+ 2698              	.LFE15:
+ 2700 002e 00BF     		.section	.text.WatchdogStallEnable,"ax",%progbits
+ 2701              		.align	2
+ 2702              		.global	WatchdogStallEnable
+ 2703              		.thumb
+ 2704              		.thumb_func
+ 2706              	WatchdogStallEnable:
+ 2707              	.LFB16:
+ 549:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 550:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 551:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 552:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Enables stalling of the watchdog timer during debug events.
+ 553:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 554:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 555:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 556:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function allows the watchdog timer to stop counting when the processor
+ 557:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! is stopped by the debugger.  By doing so, the watchdog is prevented from
+ 558:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! expiring (typically almost immediately from a human time perspective) and
+ 559:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! resetting the system (if reset is enabled).  The watchdog instead expires
+ 560:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! after the appropriate number of processor cycles have been executed while
+ 561:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! debugging (or at the appropriate time after the processor has been
+ 562:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! restarted).
+ 563:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 564:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+ 565:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 566:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 567:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** void
+ 568:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogStallEnable(unsigned long ulBase)
+ 569:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2708              		.loc 1 569 0
+ 2709              		.cfi_startproc
+ 2710              		@ args = 0, pretend = 0, frame = 8
+ 2711              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2712              		@ link register save eliminated.
+ 2713 0000 80B4     		push	{r7}
+ 2714              	.LCFI48:
+ 2715              		.cfi_def_cfa_offset 4
+ 2716 0002 83B0     		sub	sp, sp, #12
+ 2717              	.LCFI49:
+ 2718              		.cfi_def_cfa_offset 16
+ 2719 0004 00AF     		add	r7, sp, #0
+ 2720              		.cfi_offset 7, -4
+ 2721              	.LCFI50:
+ 2722              		.cfi_def_cfa_register 7
+ 2723 0006 7860     		str	r0, [r7, #4]
+ 570:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 571:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 572:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 573:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 574:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 575:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 576:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Enable timer stalling.
+ 577:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 578:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     HWREG(ulBase + WDT_O_TEST) |= WDT_TEST_STALL;
+ 2724              		.loc 1 578 0
+ 2725 0008 7B68     		ldr	r3, [r7, #4]
+ 2726 000a 03F58363 		add	r3, r3, #1048
+ 2727 000e 7A68     		ldr	r2, [r7, #4]
+ 2728 0010 02F58362 		add	r2, r2, #1048
+ 2729 0014 1268     		ldr	r2, [r2, #0]
+ 2730 0016 42F48072 		orr	r2, r2, #256
+ 2731 001a 1A60     		str	r2, [r3, #0]
+ 579:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2732              		.loc 1 579 0
+ 2733 001c 07F10C07 		add	r7, r7, #12
+ 2734 0020 BD46     		mov	sp, r7
+ 2735 0022 80BC     		pop	{r7}
+ 2736 0024 7047     		bx	lr
+ 2737              		.cfi_endproc
+ 2738              	.LFE16:
+ 2740 0026 00BF     		.section	.text.WatchdogStallDisable,"ax",%progbits
+ 2741              		.align	2
+ 2742              		.global	WatchdogStallDisable
+ 2743              		.thumb
+ 2744              		.thumb_func
+ 2746              	WatchdogStallDisable:
+ 2747              	.LFB17:
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 581:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 582:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 583:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! Disables stalling of the watchdog timer during debug events.
+ 584:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 585:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \param ulBase is the base address of the watchdog timer module.
+ 586:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 587:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! This function disables the debug mode stall of the watchdog timer.  By
+ 588:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! doing so, the watchdog timer continues to count regardless of the processor
+ 589:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! debug state.
+ 590:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //!
+ 591:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //! \return None.
+ 592:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //
+ 593:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** //*****************************************************************************
+ 594:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** void
+ 595:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** WatchdogStallDisable(unsigned long ulBase)
+ 596:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** {
+ 2748              		.loc 1 596 0
+ 2749              		.cfi_startproc
+ 2750              		@ args = 0, pretend = 0, frame = 8
+ 2751              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2752              		@ link register save eliminated.
+ 2753 0000 80B4     		push	{r7}
+ 2754              	.LCFI51:
+ 2755              		.cfi_def_cfa_offset 4
+ 2756 0002 83B0     		sub	sp, sp, #12
+ 2757              	.LCFI52:
+ 2758              		.cfi_def_cfa_offset 16
+ 2759 0004 00AF     		add	r7, sp, #0
+ 2760              		.cfi_offset 7, -4
+ 2761              	.LCFI53:
+ 2762              		.cfi_def_cfa_register 7
+ 2763 0006 7860     		str	r0, [r7, #4]
+ 597:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 598:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Check the arguments.
+ 599:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 600:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     ASSERT((ulBase == WATCHDOG0_BASE) || (ulBase == WATCHDOG1_BASE));
+ 601:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** 
+ 602:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 603:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     // Disable timer stalling.
+ 604:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     //
+ 605:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c ****     HWREG(ulBase + WDT_O_TEST) &= ~(WDT_TEST_STALL);
+ 2764              		.loc 1 605 0
+ 2765 0008 7B68     		ldr	r3, [r7, #4]
+ 2766 000a 03F58363 		add	r3, r3, #1048
+ 2767 000e 7A68     		ldr	r2, [r7, #4]
+ 2768 0010 02F58362 		add	r2, r2, #1048
+ 2769 0014 1268     		ldr	r2, [r2, #0]
+ 2770 0016 22F48072 		bic	r2, r2, #256
+ 2771 001a 1A60     		str	r2, [r3, #0]
+ 606:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/watchdog.c **** }
+ 2772              		.loc 1 606 0
+ 2773 001c 07F10C07 		add	r7, r7, #12
+ 2774 0020 BD46     		mov	sp, r7
+ 2775 0022 80BC     		pop	{r7}
+ 2776 0024 7047     		bx	lr
+ 2777              		.cfi_endproc
+ 2778              	.LFE17:
+ 2780 0026 00BF     		.text
+ 2781              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 watchdog.c
+     /tmp/ccrzbv5p.s:2063   .text.WatchdogRunning:00000000 $t
+     /tmp/ccrzbv5p.s:2068   .text.WatchdogRunning:00000000 WatchdogRunning
+     /tmp/ccrzbv5p.s:2103   .text.WatchdogEnable:00000000 $t
+     /tmp/ccrzbv5p.s:2108   .text.WatchdogEnable:00000000 WatchdogEnable
+     /tmp/ccrzbv5p.s:2143   .text.WatchdogResetEnable:00000000 $t
+     /tmp/ccrzbv5p.s:2148   .text.WatchdogResetEnable:00000000 WatchdogResetEnable
+     /tmp/ccrzbv5p.s:2183   .text.WatchdogResetDisable:00000000 $t
+     /tmp/ccrzbv5p.s:2188   .text.WatchdogResetDisable:00000000 WatchdogResetDisable
+     /tmp/ccrzbv5p.s:2223   .text.WatchdogLock:00000000 $t
+     /tmp/ccrzbv5p.s:2228   .text.WatchdogLock:00000000 WatchdogLock
+     /tmp/ccrzbv5p.s:2260   .text.WatchdogUnlock:00000000 $t
+     /tmp/ccrzbv5p.s:2265   .text.WatchdogUnlock:00000000 WatchdogUnlock
+     /tmp/ccrzbv5p.s:2296   .text.WatchdogUnlock:0000001c $d
+     /tmp/ccrzbv5p.s:2301   .text.WatchdogLockState:00000000 $t
+     /tmp/ccrzbv5p.s:2306   .text.WatchdogLockState:00000000 WatchdogLockState
+     /tmp/ccrzbv5p.s:2343   .text.WatchdogReloadSet:00000000 $t
+     /tmp/ccrzbv5p.s:2348   .text.WatchdogReloadSet:00000000 WatchdogReloadSet
+     /tmp/ccrzbv5p.s:2380   .text.WatchdogReloadGet:00000000 $t
+     /tmp/ccrzbv5p.s:2385   .text.WatchdogReloadGet:00000000 WatchdogReloadGet
+     /tmp/ccrzbv5p.s:2416   .text.WatchdogValueGet:00000000 $t
+     /tmp/ccrzbv5p.s:2421   .text.WatchdogValueGet:00000000 WatchdogValueGet
+     /tmp/ccrzbv5p.s:2453   .text.WatchdogIntRegister:00000000 $t
+     /tmp/ccrzbv5p.s:2458   .text.WatchdogIntRegister:00000000 WatchdogIntRegister
+     /tmp/ccrzbv5p.s:2492   .text.WatchdogIntUnregister:00000000 $t
+     /tmp/ccrzbv5p.s:2497   .text.WatchdogIntUnregister:00000000 WatchdogIntUnregister
+     /tmp/ccrzbv5p.s:2529   .text.WatchdogIntEnable:00000000 $t
+     /tmp/ccrzbv5p.s:2534   .text.WatchdogIntEnable:00000000 WatchdogIntEnable
+     /tmp/ccrzbv5p.s:2569   .text.WatchdogIntStatus:00000000 $t
+     /tmp/ccrzbv5p.s:2574   .text.WatchdogIntStatus:00000000 WatchdogIntStatus
+     /tmp/ccrzbv5p.s:2619   .text.WatchdogIntClear:00000000 $t
+     /tmp/ccrzbv5p.s:2624   .text.WatchdogIntClear:00000000 WatchdogIntClear
+     /tmp/ccrzbv5p.s:2656   .text.WatchdogIntTypeSet:00000000 $t
+     /tmp/ccrzbv5p.s:2661   .text.WatchdogIntTypeSet:00000000 WatchdogIntTypeSet
+     /tmp/ccrzbv5p.s:2701   .text.WatchdogStallEnable:00000000 $t
+     /tmp/ccrzbv5p.s:2706   .text.WatchdogStallEnable:00000000 WatchdogStallEnable
+     /tmp/ccrzbv5p.s:2741   .text.WatchdogStallDisable:00000000 $t
+     /tmp/ccrzbv5p.s:2746   .text.WatchdogStallDisable:00000000 WatchdogStallDisable
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister

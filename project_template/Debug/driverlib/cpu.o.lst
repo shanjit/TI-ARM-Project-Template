@@ -1,0 +1,571 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"cpu.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c"
+ 999              		.align	2
+ 1000              		.global	CPUcpsid
+ 1001              		.thumb
+ 1002              		.thumb_func
+ 1004              	CPUcpsid:
+ 1005              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // cpu.c - Instruction wrappers for special CPU instructions needed by the
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //         drivers.
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // Copyright (c) 2006-2011 Texas Instruments Incorporated.  All rights reserved.
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // Software License Agreement
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // 
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // Texas Instruments (TI) is supplying this software for use solely and
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // exclusively on TI's microcontroller products. The software is owned by
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // laws. You may not combine this software with "viral" open-source
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // software in order to form a larger program.
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // 
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // 
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #include "driverlib/cpu.h"
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // Wrapper function for the CPSID instruction.  Returns the state of PRIMASK
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // on entry.
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(codered) || defined(gcc) || defined(sourcerygxx)
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** unsigned long __attribute__((naked))
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUcpsid(void)
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 1006              		.loc 1 37 0
+ 1007              		.cfi_startproc
+ 1008              		@ Naked Function: prologue and epilogue provided by programmer.
+ 1009              		@ args = 0, pretend = 0, frame = 0
+ 1010              		@ frame_needed = 1, uses_anonymous_args = 0
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     unsigned long ulRet;
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Read PRIMASK and disable interrupts.
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+ 1011              		.loc 1 43 0
+ 1012              	@ 43 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c" 1
+ 1013 0000 EFF31080 		    mrs     r0, PRIMASK
+ 1014 0004 72B6     	    cpsid   i
+ 1015 0006 7047     	    bx      lr
+ 1016              	
+ 1017              	@ 0 "" 2
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    cpsid   i\n"
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    bx      lr\n"
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           : "=r" (ulRet));
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // The return is handled in the inline assembly, but the compiler will
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // still complain if there is not an explicit return here (despite the fact
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // that this does not result in any code being produced because of the
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // naked attribute).
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     return(ulRet);
+ 1018              		.loc 1 54 0
+ 1019              		.thumb
+ 1020 0008 2346     		mov	r3, r4
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 1021              		.loc 1 55 0
+ 1022 000a 1846     		mov	r0, r3
+ 1023              		.cfi_endproc
+ 1024              	.LFE0:
+ 1026              		.section	.text.CPUprimask,"ax",%progbits
+ 1027              		.align	2
+ 1028              		.global	CPUprimask
+ 1029              		.thumb
+ 1030              		.thumb_func
+ 1032              	CPUprimask:
+ 1033              	.LFB1:
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(ewarm)
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** unsigned long
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUcpsid(void)
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Read PRIMASK and disable interrupts.
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    cpsid   i\n");
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // "Warning[Pe940]: missing return statement at end of non-void function"
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // is suppressed here to avoid putting a "bx lr" in the inline assembly
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // above and a superfluous return statement here.
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #pragma diag_suppress=Pe940
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #pragma diag_default=Pe940
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(rvmdk) || defined(__ARMCC_VERSION)
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** __asm unsigned long
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUcpsid(void)
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Read PRIMASK and disable interrupts.
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     mrs     r0, PRIMASK;
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     cpsid   i;
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     bx      lr
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(ccs)
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** unsigned long
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUcpsid(void)
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Read PRIMASK and disable interrupts.
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    cpsid   i\n"
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    bx      lr\n");
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // The following keeps the compiler happy, because it wants to see a
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // return value from this function.  It will generate code to return
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // a zero.  However, the real return is the "bx lr" above, so the
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // return(0) is never executed and the function returns with the value
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // you expect in R0.
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     return(0);
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // Wrapper function returning the state of PRIMASK (indicating whether
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // interrupts are enabled or disabled).
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(codered) || defined(gcc) || defined(sourcerygxx)
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** unsigned long __attribute__((naked))
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUprimask(void)
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 1034              		.loc 1 119 0
+ 1035              		.cfi_startproc
+ 1036              		@ Naked Function: prologue and epilogue provided by programmer.
+ 1037              		@ args = 0, pretend = 0, frame = 0
+ 1038              		@ frame_needed = 1, uses_anonymous_args = 0
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     unsigned long ulRet;
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Read PRIMASK and disable interrupts.
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+ 1039              		.loc 1 125 0
+ 1040              	@ 125 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c" 1
+ 1041 0000 EFF31080 		    mrs     r0, PRIMASK
+ 1042 0004 7047     	    bx      lr
+ 1043              	
+ 1044              	@ 0 "" 2
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    bx      lr\n"
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           : "=r" (ulRet));
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // The return is handled in the inline assembly, but the compiler will
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // still complain if there is not an explicit return here (despite the fact
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // that this does not result in any code being produced because of the
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // naked attribute).
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     return(ulRet);
+ 1045              		.loc 1 135 0
+ 1046              		.thumb
+ 1047 0006 2346     		mov	r3, r4
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 1048              		.loc 1 136 0
+ 1049 0008 1846     		mov	r0, r3
+ 1050              		.cfi_endproc
+ 1051              	.LFE1:
+ 1053 000a 00BF     		.section	.text.CPUcpsie,"ax",%progbits
+ 1054              		.align	2
+ 1055              		.global	CPUcpsie
+ 1056              		.thumb
+ 1057              		.thumb_func
+ 1059              	CPUcpsie:
+ 1060              	.LFB2:
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(ewarm)
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** unsigned long
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUprimask(void)
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Read PRIMASK and disable interrupts.
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    mrs     r0, PRIMASK\n");
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // "Warning[Pe940]: missing return statement at end of non-void function"
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // is suppressed here to avoid putting a "bx lr" in the inline assembly
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // above and a superfluous return statement here.
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #pragma diag_suppress=Pe940
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #pragma diag_default=Pe940
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(rvmdk) || defined(__ARMCC_VERSION)
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** __asm unsigned long
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUprimask(void)
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Read PRIMASK and disable interrupts.
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     mrs     r0, PRIMASK;
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     bx      lr
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(ccs)
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** unsigned long
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUprimask(void)
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Read PRIMASK and disable interrupts.
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    bx      lr\n");
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // The following keeps the compiler happy, because it wants to see a
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // return value from this function.  It will generate code to return
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // a zero.  However, the real return is the "bx lr" above, so the
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // return(0) is never executed and the function returns with the value
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // you expect in R0.
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     return(0);
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // Wrapper function for the CPSIE instruction.  Returns the state of PRIMASK
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // on entry.
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(codered) || defined(gcc) || defined(sourcerygxx)
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** unsigned long __attribute__((naked))
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUcpsie(void)
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 1061              		.loc 1 197 0
+ 1062              		.cfi_startproc
+ 1063              		@ Naked Function: prologue and epilogue provided by programmer.
+ 1064              		@ args = 0, pretend = 0, frame = 0
+ 1065              		@ frame_needed = 1, uses_anonymous_args = 0
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     unsigned long ulRet;
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Read PRIMASK and enable interrupts.
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+ 1066              		.loc 1 203 0
+ 1067              	@ 203 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c" 1
+ 1068 0000 EFF31080 		    mrs     r0, PRIMASK
+ 1069 0004 62B6     	    cpsie   i
+ 1070 0006 7047     	    bx      lr
+ 1071              	
+ 1072              	@ 0 "" 2
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    cpsie   i\n"
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    bx      lr\n"
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           : "=r" (ulRet));
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // The return is handled in the inline assembly, but the compiler will
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // still complain if there is not an explicit return here (despite the fact
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // that this does not result in any code being produced because of the
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // naked attribute).
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     return(ulRet);
+ 1073              		.loc 1 214 0
+ 1074              		.thumb
+ 1075 0008 2346     		mov	r3, r4
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 1076              		.loc 1 215 0
+ 1077 000a 1846     		mov	r0, r3
+ 1078              		.cfi_endproc
+ 1079              	.LFE2:
+ 1081              		.section	.text.CPUwfi,"ax",%progbits
+ 1082              		.align	2
+ 1083              		.global	CPUwfi
+ 1084              		.thumb
+ 1085              		.thumb_func
+ 1087              	CPUwfi:
+ 1088              	.LFB3:
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(ewarm)
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** unsigned long
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUcpsie(void)
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Read PRIMASK and enable interrupts.
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    cpsie   i\n");
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // "Warning[Pe940]: missing return statement at end of non-void function"
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // is suppressed here to avoid putting a "bx lr" in the inline assembly
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // above and a superfluous return statement here.
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #pragma diag_suppress=Pe940
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #pragma diag_default=Pe940
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(rvmdk) || defined(__ARMCC_VERSION)
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** __asm unsigned long
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUcpsie(void)
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Read PRIMASK and enable interrupts.
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     mrs     r0, PRIMASK;
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     cpsie   i;
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     bx      lr
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(ccs)
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** unsigned long
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUcpsie(void)
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Read PRIMASK and enable interrupts.
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    cpsie   i\n"
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    bx      lr\n");
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // The following keeps the compiler happy, because it wants to see a
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // return value from this function.  It will generate code to return
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // a zero.  However, the real return is the "bx lr" above, so the
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // return(0) is never executed and the function returns with the value
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // you expect in R0.
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     return(0);
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // Wrapper function for the WFI instruction.
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(codered) || defined(gcc) || defined(sourcerygxx)
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** void __attribute__((naked))
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUwfi(void)
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 1089              		.loc 1 278 0
+ 1090              		.cfi_startproc
+ 1091              		@ Naked Function: prologue and epilogue provided by programmer.
+ 1092              		@ args = 0, pretend = 0, frame = 0
+ 1093              		@ frame_needed = 1, uses_anonymous_args = 0
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Wait for the next interrupt.
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    wfi\n"
+ 1094              		.loc 1 282 0
+ 1095              	@ 282 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c" 1
+ 1096 0000 30BF     		    wfi
+ 1097 0002 7047     	    bx      lr
+ 1098              	
+ 1099              	@ 0 "" 2
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    bx      lr\n");
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 1100              		.loc 1 284 0
+ 1101              		.thumb
+ 1102              		.cfi_endproc
+ 1103              	.LFE3:
+ 1105              		.section	.text.CPUbasepriSet,"ax",%progbits
+ 1106              		.align	2
+ 1107              		.global	CPUbasepriSet
+ 1108              		.thumb
+ 1109              		.thumb_func
+ 1111              	CPUbasepriSet:
+ 1112              	.LFB4:
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(ewarm)
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** void
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUwfi(void)
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Wait for the next interrupt.
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    wfi\n");
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(rvmdk) || defined(__ARMCC_VERSION)
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** __asm void
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUwfi(void)
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Wait for the next interrupt.
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     wfi;
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     bx      lr
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(ccs)
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** void
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUwfi(void)
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Wait for the next interrupt.
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    wfi\n");
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // Wrapper function for writing the BASEPRI register.
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(codered) || defined(gcc) || defined(sourcerygxx)
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** void __attribute__((naked))
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUbasepriSet(unsigned long ulNewBasepri)
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 1113              		.loc 1 326 0
+ 1114              		.cfi_startproc
+ 1115              		@ Naked Function: prologue and epilogue provided by programmer.
+ 1116              		@ args = 0, pretend = 0, frame = 0
+ 1117              		@ frame_needed = 1, uses_anonymous_args = 0
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Set the BASEPRI register
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    msr     BASEPRI, r0\n"
+ 1118              		.loc 1 331 0
+ 1119              	@ 331 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c" 1
+ 1120 0000 80F31188 		    msr     BASEPRI, r0
+ 1121 0004 7047     	    bx      lr
+ 1122              	
+ 1123              	@ 0 "" 2
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    bx      lr\n");
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 1124              		.loc 1 333 0
+ 1125              		.thumb
+ 1126              		.cfi_endproc
+ 1127              	.LFE4:
+ 1129 0006 00BF     		.section	.text.CPUbasepriGet,"ax",%progbits
+ 1130              		.align	2
+ 1131              		.global	CPUbasepriGet
+ 1132              		.thumb
+ 1133              		.thumb_func
+ 1135              	CPUbasepriGet:
+ 1136              	.LFB5:
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(ewarm)
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** void
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUbasepriSet(unsigned long ulNewBasepri)
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Set the BASEPRI register
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    msr     BASEPRI, r0\n");
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(rvmdk) || defined(__ARMCC_VERSION)
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** __asm void
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUbasepriSet(unsigned long ulNewBasepri)
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Set the BASEPRI register
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     msr     BASEPRI, r0;
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     bx      lr
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(ccs)
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** void
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUbasepriSet(unsigned long ulNewBasepri)
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Set the BASEPRI register
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    msr     BASEPRI, r0\n");
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #endif
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** // Wrapper function for reading the BASEPRI register.
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** //*****************************************************************************
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** #if defined(codered) || defined(gcc) || defined(sourcerygxx)
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** unsigned long __attribute__((naked))
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** CPUbasepriGet(void)
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** {
+ 1137              		.loc 1 375 0
+ 1138              		.cfi_startproc
+ 1139              		@ Naked Function: prologue and epilogue provided by programmer.
+ 1140              		@ args = 0, pretend = 0, frame = 0
+ 1141              		@ frame_needed = 1, uses_anonymous_args = 0
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     unsigned long ulRet;
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // Read BASEPRI
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     __asm("    mrs     r0, BASEPRI\n"
+ 1142              		.loc 1 381 0
+ 1143              	@ 381 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c" 1
+ 1144 0000 EFF31180 		    mrs     r0, BASEPRI
+ 1145 0004 7047     	    bx      lr
+ 1146              	
+ 1147              	@ 0 "" 2
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           "    bx      lr\n"
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****           : "=r" (ulRet));
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** 
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // The return is handled in the inline assembly, but the compiler will
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // still complain if there is not an explicit return here (despite the fact
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // that this does not result in any code being produced because of the
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     // naked attribute).
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     //
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c ****     return(ulRet);
+ 1148              		.loc 1 391 0
+ 1149              		.thumb
+ 1150 0006 2346     		mov	r3, r4
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/cpu.c **** }
+ 1151              		.loc 1 392 0
+ 1152 0008 1846     		mov	r0, r3
+ 1153              		.cfi_endproc
+ 1154              	.LFE5:
+ 1156 000a 00BF     		.text
+ 1157              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 cpu.c
+     /tmp/ccp47qcw.s:999    .text.CPUcpsid:00000000 $t
+     /tmp/ccp47qcw.s:1004   .text.CPUcpsid:00000000 CPUcpsid
+     /tmp/ccp47qcw.s:1027   .text.CPUprimask:00000000 $t
+     /tmp/ccp47qcw.s:1032   .text.CPUprimask:00000000 CPUprimask
+     /tmp/ccp47qcw.s:1054   .text.CPUcpsie:00000000 $t
+     /tmp/ccp47qcw.s:1059   .text.CPUcpsie:00000000 CPUcpsie
+     /tmp/ccp47qcw.s:1082   .text.CPUwfi:00000000 $t
+     /tmp/ccp47qcw.s:1087   .text.CPUwfi:00000000 CPUwfi
+     /tmp/ccp47qcw.s:1106   .text.CPUbasepriSet:00000000 $t
+     /tmp/ccp47qcw.s:1111   .text.CPUbasepriSet:00000000 CPUbasepriSet
+     /tmp/ccp47qcw.s:1130   .text.CPUbasepriGet:00000000 $t
+     /tmp/ccp47qcw.s:1135   .text.CPUbasepriGet:00000000 CPUbasepriGet
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,1091 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"flash_pb.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c"
+ 3056              		.align	2
+ 3057              	g_pucFlashPBStart:
+ 3058 0000 00000000 		.space	4
+ 3059              		.align	2
+ 3060              	g_pucFlashPBEnd:
+ 3061 0004 00000000 		.space	4
+ 3062              		.align	2
+ 3063              	g_ulFlashPBSize:
+ 3064 0008 00000000 		.space	4
+ 3065              		.align	2
+ 3066              	g_pucFlashPBCurrent:
+ 3067 000c 00000000 		.space	4
+ 3068              		.section	.text.FlashPBIsValid,"ax",%progbits
+ 3069              		.align	2
+ 3070              		.thumb
+ 3071              		.thumb_func
+ 3073              	FlashPBIsValid:
+ 3074              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // flash_pb.c - Flash parameter block functions.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // Copyright (c) 2008-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // This is part of revision 8264 of the Stellaris Firmware Development Package.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** #include "inc/hw_flash.h"
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** #include "inc/hw_types.h"
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** #include "driverlib/debug.h"
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** #include "driverlib/flash.h"
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** #include "driverlib/sysctl.h"
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** #include "utils/flash_pb.h"
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! \addtogroup flash_pb_api
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! @{
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // The address of the beginning of the flash used for storing parameter blocks;
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // this must be the start of an erase block in the flash.
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** static unsigned char *g_pucFlashPBStart;
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // The address of the end of the flash used for storing parameter blocks; this
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // must be the start of an erase block in the flash, or the first location
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // after the end of the flash array if the last erase block is used for storing
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // parameters.
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** static unsigned char *g_pucFlashPBEnd;
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // The size of the parameter block when stored in flash; this must be a power
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // of two less than or equal to 1024.
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** static unsigned long g_ulFlashPBSize;
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** // The address of the most recent parameter block in flash.
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** static unsigned char *g_pucFlashPBCurrent;
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! Determines if the parameter block at the given address is valid.
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! \param pucOffset is the address of the parameter block to check.
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! This function will compute the checksum of a parameter block in flash to
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! determine if it is valid.
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! \return Returns one if the parameter block is valid and zero if it is not.
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** static unsigned long
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** FlashPBIsValid(unsigned char *pucOffset)
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** {
+ 3075              		.loc 1 86 0
+ 3076              		.cfi_startproc
+ 3077              		@ args = 0, pretend = 0, frame = 16
+ 3078              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3079              		@ link register save eliminated.
+ 3080 0000 80B4     		push	{r7}
+ 3081              	.LCFI0:
+ 3082              		.cfi_def_cfa_offset 4
+ 3083 0002 85B0     		sub	sp, sp, #20
+ 3084              	.LCFI1:
+ 3085              		.cfi_def_cfa_offset 24
+ 3086 0004 00AF     		add	r7, sp, #0
+ 3087              		.cfi_offset 7, -4
+ 3088              	.LCFI2:
+ 3089              		.cfi_def_cfa_register 7
+ 3090 0006 7860     		str	r0, [r7, #4]
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     unsigned long ulIdx, ulSum;
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // Check the arguments.
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     ASSERT(pucOffset != (void *)0);
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // Loop through the bytes in the block, computing the checksum.
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     for(ulIdx = 0, ulSum = 0; ulIdx < g_ulFlashPBSize; ulIdx++)
+ 3091              		.loc 1 97 0
+ 3092 0008 4FF00003 		mov	r3, #0
+ 3093 000c FB60     		str	r3, [r7, #12]
+ 3094 000e 4FF00003 		mov	r3, #0
+ 3095 0012 BB60     		str	r3, [r7, #8]
+ 3096 0014 0AE0     		b	.L2
+ 3097              	.L3:
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     {
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         ulSum += pucOffset[ulIdx];
+ 3098              		.loc 1 99 0 discriminator 2
+ 3099 0016 7A68     		ldr	r2, [r7, #4]
+ 3100 0018 FB68     		ldr	r3, [r7, #12]
+ 3101 001a D318     		adds	r3, r2, r3
+ 3102 001c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 3103 001e BA68     		ldr	r2, [r7, #8]
+ 3104 0020 D318     		adds	r3, r2, r3
+ 3105 0022 BB60     		str	r3, [r7, #8]
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     for(ulIdx = 0, ulSum = 0; ulIdx < g_ulFlashPBSize; ulIdx++)
+ 3106              		.loc 1 97 0 discriminator 2
+ 3107 0024 FB68     		ldr	r3, [r7, #12]
+ 3108 0026 03F10103 		add	r3, r3, #1
+ 3109 002a FB60     		str	r3, [r7, #12]
+ 3110              	.L2:
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     for(ulIdx = 0, ulSum = 0; ulIdx < g_ulFlashPBSize; ulIdx++)
+ 3111              		.loc 1 97 0 is_stmt 0 discriminator 1
+ 3112 002c 104B     		ldr	r3, .L7
+ 3113 002e 1B68     		ldr	r3, [r3, #0]
+ 3114 0030 FA68     		ldr	r2, [r7, #12]
+ 3115 0032 9A42     		cmp	r2, r3
+ 3116 0034 EFD3     		bcc	.L3
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     }
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // The checksum should be zero, so return a failure if it is not.
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     if((ulSum & 255) != 0)
+ 3117              		.loc 1 105 0 is_stmt 1
+ 3118 0036 BB68     		ldr	r3, [r7, #8]
+ 3119 0038 03F0FF03 		and	r3, r3, #255
+ 3120 003c 002B     		cmp	r3, #0
+ 3121 003e 02D0     		beq	.L4
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     {
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         return(0);
+ 3122              		.loc 1 107 0
+ 3123 0040 4FF00003 		mov	r3, #0
+ 3124 0044 0DE0     		b	.L5
+ 3125              	.L4:
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     }
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // If the sum is equal to the size * 255, then the block is all ones and
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // should not be considered valid.
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     if((g_ulFlashPBSize * 255) == ulSum)
+ 3126              		.loc 1 114 0
+ 3127 0046 0A4B     		ldr	r3, .L7
+ 3128 0048 1A68     		ldr	r2, [r3, #0]
+ 3129 004a 1346     		mov	r3, r2
+ 3130 004c 4FEA0323 		lsl	r3, r3, #8
+ 3131 0050 9A1A     		subs	r2, r3, r2
+ 3132 0052 BB68     		ldr	r3, [r7, #8]
+ 3133 0054 9A42     		cmp	r2, r3
+ 3134 0056 02D1     		bne	.L6
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     {
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         return(0);
+ 3135              		.loc 1 116 0
+ 3136 0058 4FF00003 		mov	r3, #0
+ 3137 005c 01E0     		b	.L5
+ 3138              	.L6:
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     }
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // This is a valid parameter block.
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     return(1);
+ 3139              		.loc 1 122 0
+ 3140 005e 4FF00103 		mov	r3, #1
+ 3141              	.L5:
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** }
+ 3142              		.loc 1 123 0
+ 3143 0062 1846     		mov	r0, r3
+ 3144 0064 07F11407 		add	r7, r7, #20
+ 3145 0068 BD46     		mov	sp, r7
+ 3146 006a 80BC     		pop	{r7}
+ 3147 006c 7047     		bx	lr
+ 3148              	.L8:
+ 3149 006e 00BF     		.align	2
+ 3150              	.L7:
+ 3151 0070 08000000 		.word	g_ulFlashPBSize
+ 3152              		.cfi_endproc
+ 3153              	.LFE0:
+ 3155              		.section	.text.FlashPBGet,"ax",%progbits
+ 3156              		.align	2
+ 3157              		.global	FlashPBGet
+ 3158              		.thumb
+ 3159              		.thumb_func
+ 3161              	FlashPBGet:
+ 3162              	.LFB1:
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! Gets the address of the most recent parameter block.
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! This function returns the address of the most recent parameter block that
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! is stored in flash.
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! \return Returns the address of the most recent parameter block, or NULL if
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! there are no valid parameter blocks in flash.
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** unsigned char *
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** FlashPBGet(void)
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** {
+ 3163              		.loc 1 138 0
+ 3164              		.cfi_startproc
+ 3165              		@ args = 0, pretend = 0, frame = 0
+ 3166              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3167              		@ link register save eliminated.
+ 3168 0000 80B4     		push	{r7}
+ 3169              	.LCFI3:
+ 3170              		.cfi_def_cfa_offset 4
+ 3171 0002 00AF     		add	r7, sp, #0
+ 3172              		.cfi_offset 7, -4
+ 3173              	.LCFI4:
+ 3174              		.cfi_def_cfa_register 7
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // See if there is a valid parameter block.
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     if(g_pucFlashPBCurrent)
+ 3175              		.loc 1 142 0
+ 3176 0004 064B     		ldr	r3, .L12
+ 3177 0006 1B68     		ldr	r3, [r3, #0]
+ 3178 0008 002B     		cmp	r3, #0
+ 3179 000a 02D0     		beq	.L10
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     {
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // Return the address of the most recent parameter block.
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         return(g_pucFlashPBCurrent);
+ 3180              		.loc 1 147 0
+ 3181 000c 044B     		ldr	r3, .L12
+ 3182 000e 1B68     		ldr	r3, [r3, #0]
+ 3183 0010 01E0     		b	.L11
+ 3184              	.L10:
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     }
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // There are no valid parameter blocks in flash, so return NULL.
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     return(0);
+ 3185              		.loc 1 153 0
+ 3186 0012 4FF00003 		mov	r3, #0
+ 3187              	.L11:
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** }
+ 3188              		.loc 1 154 0
+ 3189 0016 1846     		mov	r0, r3
+ 3190 0018 BD46     		mov	sp, r7
+ 3191 001a 80BC     		pop	{r7}
+ 3192 001c 7047     		bx	lr
+ 3193              	.L13:
+ 3194 001e 00BF     		.align	2
+ 3195              	.L12:
+ 3196 0020 0C000000 		.word	g_pucFlashPBCurrent
+ 3197              		.cfi_endproc
+ 3198              	.LFE1:
+ 3200              		.section	.text.FlashPBSave,"ax",%progbits
+ 3201              		.align	2
+ 3202              		.global	FlashPBSave
+ 3203              		.thumb
+ 3204              		.thumb_func
+ 3206              	FlashPBSave:
+ 3207              	.LFB2:
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! Writes a new parameter block to flash.
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! \param pucBuffer is the address of the parameter block to be written to
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! flash.
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! This function will write a parameter block to flash.  Saving the new
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! parameter blocks involves three steps:
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! - Setting the sequence number such that it is one greater than the sequence
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!   number of the latest parameter block in flash.
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! - Computing the checksum of the parameter block.
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! - Writing the parameter block into the storage immediately following the
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!   latest parameter block in flash; if that storage is at the start of an
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!   erase block, that block is erased first.
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! By this process, there is always a valid parameter block in flash.  If
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! power is lost while writing a new parameter block, the checksum will not
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! match and the partially written parameter block will be ignored.  This is
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! what makes this fault-tolerant.
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! Another benefit of this scheme is that it provides wear leveling on the
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! flash.  Since multiple parameter blocks fit into each erase block of flash,
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! and multiple erase blocks are used for parameter block storage, it takes
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! quite a few parameter block saves before flash is re-written.
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! \return None.
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** void
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** FlashPBSave(unsigned char *pucBuffer)
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** {
+ 3208              		.loc 1 188 0
+ 3209              		.cfi_startproc
+ 3210              		@ args = 0, pretend = 0, frame = 24
+ 3211              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3212 0000 80B5     		push	{r7, lr}
+ 3213              	.LCFI5:
+ 3214              		.cfi_def_cfa_offset 8
+ 3215 0002 86B0     		sub	sp, sp, #24
+ 3216              	.LCFI6:
+ 3217              		.cfi_def_cfa_offset 32
+ 3218 0004 00AF     		add	r7, sp, #0
+ 3219              		.cfi_offset 14, -4
+ 3220              		.cfi_offset 7, -8
+ 3221              	.LCFI7:
+ 3222              		.cfi_def_cfa_register 7
+ 3223 0006 7860     		str	r0, [r7, #4]
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     unsigned char *pucNew;
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     unsigned long ulIdx, ulSum;
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // Check the arguments.
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     ASSERT(pucBuffer != (void *)0);
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // See if there is a valid parameter block in flash.
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     if(g_pucFlashPBCurrent)
+ 3224              		.loc 1 200 0
+ 3225 0008 5C4B     		ldr	r3, .L39
+ 3226 000a 1B68     		ldr	r3, [r3, #0]
+ 3227 000c 002B     		cmp	r3, #0
+ 3228 000e 16D0     		beq	.L15
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     {
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // Set the sequence number to one greater than the most recent
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // parameter block.
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         pucBuffer[0] = g_pucFlashPBCurrent[0] + 1;
+ 3229              		.loc 1 206 0
+ 3230 0010 5A4B     		ldr	r3, .L39
+ 3231 0012 1B68     		ldr	r3, [r3, #0]
+ 3232 0014 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 3233 0016 03F10103 		add	r3, r3, #1
+ 3234 001a DAB2     		uxtb	r2, r3
+ 3235 001c 7B68     		ldr	r3, [r7, #4]
+ 3236 001e 1A70     		strb	r2, [r3, #0]
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // Try to write the new parameter block immediately after the most
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // recent parameter block.
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         pucNew = g_pucFlashPBCurrent + g_ulFlashPBSize;
+ 3237              		.loc 1 212 0
+ 3238 0020 564B     		ldr	r3, .L39
+ 3239 0022 1A68     		ldr	r2, [r3, #0]
+ 3240 0024 564B     		ldr	r3, .L39+4
+ 3241 0026 1B68     		ldr	r3, [r3, #0]
+ 3242 0028 D318     		adds	r3, r2, r3
+ 3243 002a 7B61     		str	r3, [r7, #20]
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         if(pucNew == g_pucFlashPBEnd)
+ 3244              		.loc 1 213 0
+ 3245 002c 554B     		ldr	r3, .L39+8
+ 3246 002e 1B68     		ldr	r3, [r3, #0]
+ 3247 0030 7A69     		ldr	r2, [r7, #20]
+ 3248 0032 9A42     		cmp	r2, r3
+ 3249 0034 0AD1     		bne	.L16
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         {
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             pucNew = g_pucFlashPBStart;
+ 3250              		.loc 1 215 0
+ 3251 0036 544B     		ldr	r3, .L39+12
+ 3252 0038 1B68     		ldr	r3, [r3, #0]
+ 3253 003a 7B61     		str	r3, [r7, #20]
+ 3254 003c 06E0     		b	.L16
+ 3255              	.L15:
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         }
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     }
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     else
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     {
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // There is not a valid parameter block in flash, so set the sequence
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // number of this parameter block to zero.
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         pucBuffer[0] = 0;
+ 3256              		.loc 1 224 0
+ 3257 003e 7B68     		ldr	r3, [r7, #4]
+ 3258 0040 4FF00002 		mov	r2, #0
+ 3259 0044 1A70     		strb	r2, [r3, #0]
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // Try to write the new parameter block at the beginning of the flash
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // space for parameter blocks.
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         pucNew = g_pucFlashPBStart;
+ 3260              		.loc 1 230 0
+ 3261 0046 504B     		ldr	r3, .L39+12
+ 3262 0048 1B68     		ldr	r3, [r3, #0]
+ 3263 004a 7B61     		str	r3, [r7, #20]
+ 3264              	.L16:
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     }
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // Compute the checksum of the parameter block to be written.
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     for(ulIdx = 0, ulSum = 0; ulIdx < g_ulFlashPBSize; ulIdx++)
+ 3265              		.loc 1 236 0
+ 3266 004c 4FF00003 		mov	r3, #0
+ 3267 0050 3B61     		str	r3, [r7, #16]
+ 3268 0052 4FF00003 		mov	r3, #0
+ 3269 0056 FB60     		str	r3, [r7, #12]
+ 3270 0058 0AE0     		b	.L17
+ 3271              	.L18:
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     {
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         ulSum -= pucBuffer[ulIdx];
+ 3272              		.loc 1 238 0 discriminator 2
+ 3273 005a 7A68     		ldr	r2, [r7, #4]
+ 3274 005c 3B69     		ldr	r3, [r7, #16]
+ 3275 005e D318     		adds	r3, r2, r3
+ 3276 0060 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 3277 0062 FA68     		ldr	r2, [r7, #12]
+ 3278 0064 D31A     		subs	r3, r2, r3
+ 3279 0066 FB60     		str	r3, [r7, #12]
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     for(ulIdx = 0, ulSum = 0; ulIdx < g_ulFlashPBSize; ulIdx++)
+ 3280              		.loc 1 236 0 discriminator 2
+ 3281 0068 3B69     		ldr	r3, [r7, #16]
+ 3282 006a 03F10103 		add	r3, r3, #1
+ 3283 006e 3B61     		str	r3, [r7, #16]
+ 3284              	.L17:
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     for(ulIdx = 0, ulSum = 0; ulIdx < g_ulFlashPBSize; ulIdx++)
+ 3285              		.loc 1 236 0 is_stmt 0 discriminator 1
+ 3286 0070 434B     		ldr	r3, .L39+4
+ 3287 0072 1B68     		ldr	r3, [r3, #0]
+ 3288 0074 3A69     		ldr	r2, [r7, #16]
+ 3289 0076 9A42     		cmp	r2, r3
+ 3290 0078 EFD3     		bcc	.L18
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     }
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // Store the checksum into the parameter block.
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     pucBuffer[1] += ulSum;
+ 3291              		.loc 1 244 0 is_stmt 1
+ 3292 007a 7B68     		ldr	r3, [r7, #4]
+ 3293 007c 03F10103 		add	r3, r3, #1
+ 3294 0080 7A68     		ldr	r2, [r7, #4]
+ 3295 0082 02F10102 		add	r2, r2, #1
+ 3296 0086 1178     		ldrb	r1, [r2, #0]	@ zero_extendqisi2
+ 3297 0088 FA68     		ldr	r2, [r7, #12]
+ 3298 008a D2B2     		uxtb	r2, r2
+ 3299 008c 8A18     		adds	r2, r1, r2
+ 3300 008e D2B2     		uxtb	r2, r2
+ 3301 0090 1A70     		strb	r2, [r3, #0]
+ 3302 0092 02E0     		b	.L31
+ 3303              	.L36:
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // Look for a location to store this parameter block.  This infinite loop
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // will be explicitly broken out of when a valid location is found.
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     while(1)
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     {
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // See if this location is at the start of an erase block.
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         if(((unsigned long)pucNew & 1023) == 0)
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         {
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             //
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             // Erase this block of the flash.  This does not assume that the
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             // erase succeeded in case this block of the flash has become bad
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             // through too much use.  Given the extremely low frequency that
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             // the parameter blocks are written, this will likely never fail.
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             // But, that assumption is not made in order to be safe.
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             //
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             FlashErase((unsigned long)pucNew);
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         }
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // Loop through this portion of flash to see if is all ones (i.e. it
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // is an erased portion of flash).
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         for(ulIdx = 0; ulIdx < g_ulFlashPBSize; ulIdx++)
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         {
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             if(pucNew[ulIdx] != 0xff)
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             {
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 break;
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             }
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         }
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // If all bytes in this portion of flash are ones, then break out of
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // the loop since this is a good location for storing the parameter
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // block.
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         if(ulIdx == g_ulFlashPBSize)
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         {
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             break;
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         }
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // Increment to the next parameter block location.
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         pucNew += g_ulFlashPBSize;
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         if(pucNew == g_pucFlashPBEnd)
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         {
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             pucNew = g_pucFlashPBStart;
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         }
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // If every possible location has been checked and none are valid, then
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // it will not be possible to write this parameter block.  Simply
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // return without writing it.
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         if((g_pucFlashPBCurrent && (pucNew == g_pucFlashPBCurrent)) ||
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****            (!g_pucFlashPBCurrent && (pucNew == g_pucFlashPBStart)))
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         {
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             return;
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         }
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     }
+ 3304              		.loc 1 308 0
+ 3305 0094 00BF     		nop
+ 3306 0096 00E0     		b	.L31
+ 3307              	.L37:
+ 3308 0098 00BF     		nop
+ 3309              	.L31:
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         if(((unsigned long)pucNew & 1023) == 0)
+ 3310              		.loc 1 255 0
+ 3311 009a 7B69     		ldr	r3, [r7, #20]
+ 3312 009c 4FEA8353 		lsl	r3, r3, #22
+ 3313 00a0 4FEA9353 		lsr	r3, r3, #22
+ 3314 00a4 002B     		cmp	r3, #0
+ 3315 00a6 03D1     		bne	.L19
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             FlashErase((unsigned long)pucNew);
+ 3316              		.loc 1 264 0
+ 3317 00a8 7B69     		ldr	r3, [r7, #20]
+ 3318 00aa 1846     		mov	r0, r3
+ 3319 00ac FFF7FEFF 		bl	FlashErase
+ 3320              	.L19:
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         for(ulIdx = 0; ulIdx < g_ulFlashPBSize; ulIdx++)
+ 3321              		.loc 1 271 0
+ 3322 00b0 4FF00003 		mov	r3, #0
+ 3323 00b4 3B61     		str	r3, [r7, #16]
+ 3324 00b6 09E0     		b	.L20
+ 3325              	.L23:
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             if(pucNew[ulIdx] != 0xff)
+ 3326              		.loc 1 273 0
+ 3327 00b8 7A69     		ldr	r2, [r7, #20]
+ 3328 00ba 3B69     		ldr	r3, [r7, #16]
+ 3329 00bc D318     		adds	r3, r2, r3
+ 3330 00be 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 3331 00c0 FF2B     		cmp	r3, #255
+ 3332 00c2 09D1     		bne	.L34
+ 3333              	.L21:
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         for(ulIdx = 0; ulIdx < g_ulFlashPBSize; ulIdx++)
+ 3334              		.loc 1 271 0
+ 3335 00c4 3B69     		ldr	r3, [r7, #16]
+ 3336 00c6 03F10103 		add	r3, r3, #1
+ 3337 00ca 3B61     		str	r3, [r7, #16]
+ 3338              	.L20:
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         for(ulIdx = 0; ulIdx < g_ulFlashPBSize; ulIdx++)
+ 3339              		.loc 1 271 0 is_stmt 0 discriminator 1
+ 3340 00cc 2C4B     		ldr	r3, .L39+4
+ 3341 00ce 1B68     		ldr	r3, [r3, #0]
+ 3342 00d0 3A69     		ldr	r2, [r7, #16]
+ 3343 00d2 9A42     		cmp	r2, r3
+ 3344 00d4 F0D3     		bcc	.L23
+ 3345 00d6 00E0     		b	.L22
+ 3346              	.L34:
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 break;
+ 3347              		.loc 1 275 0 is_stmt 1
+ 3348 00d8 00BF     		nop
+ 3349              	.L22:
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         if(ulIdx == g_ulFlashPBSize)
+ 3350              		.loc 1 284 0
+ 3351 00da 294B     		ldr	r3, .L39+4
+ 3352 00dc 1B68     		ldr	r3, [r3, #0]
+ 3353 00de 3A69     		ldr	r2, [r7, #16]
+ 3354 00e0 9A42     		cmp	r2, r3
+ 3355 00e2 0CD1     		bne	.L24
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // Write this parameter block to flash.
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     FlashProgram((unsigned long *)pucBuffer, (unsigned long)pucNew,
+ 3356              		.loc 1 313 0
+ 3357 00e4 7968     		ldr	r1, [r7, #4]
+ 3358 00e6 7A69     		ldr	r2, [r7, #20]
+ 3359 00e8 254B     		ldr	r3, .L39+4
+ 3360 00ea 1B68     		ldr	r3, [r3, #0]
+ 3361 00ec 0846     		mov	r0, r1
+ 3362 00ee 1146     		mov	r1, r2
+ 3363 00f0 1A46     		mov	r2, r3
+ 3364 00f2 FFF7FEFF 		bl	FlashProgram
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                  g_ulFlashPBSize);
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // Compare the parameter block data to the data that should now be in
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // flash.  Return if any of the data does not compare, leaving the previous
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // parameter block in flash as the most recent (since the current parameter
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // block failed to properly program).
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     for(ulIdx = 0; ulIdx < g_ulFlashPBSize; ulIdx++)
+ 3365              		.loc 1 322 0
+ 3366 00f6 4FF00003 		mov	r3, #0
+ 3367 00fa 3B61     		str	r3, [r7, #16]
+ 3368 00fc 2DE0     		b	.L25
+ 3369              	.L24:
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         pucNew += g_ulFlashPBSize;
+ 3370              		.loc 1 292 0
+ 3371 00fe 204B     		ldr	r3, .L39+4
+ 3372 0100 1B68     		ldr	r3, [r3, #0]
+ 3373 0102 7A69     		ldr	r2, [r7, #20]
+ 3374 0104 D318     		adds	r3, r2, r3
+ 3375 0106 7B61     		str	r3, [r7, #20]
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         if(pucNew == g_pucFlashPBEnd)
+ 3376              		.loc 1 293 0
+ 3377 0108 1E4B     		ldr	r3, .L39+8
+ 3378 010a 1B68     		ldr	r3, [r3, #0]
+ 3379 010c 7A69     		ldr	r2, [r7, #20]
+ 3380 010e 9A42     		cmp	r2, r3
+ 3381 0110 02D1     		bne	.L26
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             pucNew = g_pucFlashPBStart;
+ 3382              		.loc 1 295 0
+ 3383 0112 1D4B     		ldr	r3, .L39+12
+ 3384 0114 1B68     		ldr	r3, [r3, #0]
+ 3385 0116 7B61     		str	r3, [r7, #20]
+ 3386              	.L26:
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         if((g_pucFlashPBCurrent && (pucNew == g_pucFlashPBCurrent)) ||
+ 3387              		.loc 1 303 0
+ 3388 0118 184B     		ldr	r3, .L39
+ 3389 011a 1B68     		ldr	r3, [r3, #0]
+ 3390 011c 002B     		cmp	r3, #0
+ 3391 011e 04D0     		beq	.L27
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         if((g_pucFlashPBCurrent && (pucNew == g_pucFlashPBCurrent)) ||
+ 3392              		.loc 1 303 0 is_stmt 0 discriminator 1
+ 3393 0120 164B     		ldr	r3, .L39
+ 3394 0122 1B68     		ldr	r3, [r3, #0]
+ 3395 0124 7A69     		ldr	r2, [r7, #20]
+ 3396 0126 9A42     		cmp	r2, r3
+ 3397 0128 20D0     		beq	.L35
+ 3398              	.L27:
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****            (!g_pucFlashPBCurrent && (pucNew == g_pucFlashPBStart)))
+ 3399              		.loc 1 304 0 is_stmt 1 discriminator 2
+ 3400 012a 144B     		ldr	r3, .L39
+ 3401 012c 1B68     		ldr	r3, [r3, #0]
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         if((g_pucFlashPBCurrent && (pucNew == g_pucFlashPBCurrent)) ||
+ 3402              		.loc 1 303 0 discriminator 2
+ 3403 012e 002B     		cmp	r3, #0
+ 3404 0130 B0D1     		bne	.L36
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****            (!g_pucFlashPBCurrent && (pucNew == g_pucFlashPBStart)))
+ 3405              		.loc 1 304 0
+ 3406 0132 154B     		ldr	r3, .L39+12
+ 3407 0134 1B68     		ldr	r3, [r3, #0]
+ 3408 0136 7A69     		ldr	r2, [r7, #20]
+ 3409 0138 9A42     		cmp	r2, r3
+ 3410 013a ADD1     		bne	.L37
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             return;
+ 3411              		.loc 1 306 0
+ 3412 013c 19E0     		b	.L14
+ 3413              	.L33:
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     {
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         if(pucNew[ulIdx] != pucBuffer[ulIdx])
+ 3414              		.loc 1 324 0
+ 3415 013e 7A69     		ldr	r2, [r7, #20]
+ 3416 0140 3B69     		ldr	r3, [r7, #16]
+ 3417 0142 D318     		adds	r3, r2, r3
+ 3418 0144 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 3419 0146 7968     		ldr	r1, [r7, #4]
+ 3420 0148 3B69     		ldr	r3, [r7, #16]
+ 3421 014a CB18     		adds	r3, r1, r3
+ 3422 014c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 3423 014e 9A42     		cmp	r2, r3
+ 3424 0150 0ED1     		bne	.L38
+ 3425              	.L32:
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     for(ulIdx = 0; ulIdx < g_ulFlashPBSize; ulIdx++)
+ 3426              		.loc 1 322 0
+ 3427 0152 3B69     		ldr	r3, [r7, #16]
+ 3428 0154 03F10103 		add	r3, r3, #1
+ 3429 0158 3B61     		str	r3, [r7, #16]
+ 3430              	.L25:
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     for(ulIdx = 0; ulIdx < g_ulFlashPBSize; ulIdx++)
+ 3431              		.loc 1 322 0 is_stmt 0 discriminator 1
+ 3432 015a 094B     		ldr	r3, .L39+4
+ 3433 015c 1B68     		ldr	r3, [r3, #0]
+ 3434 015e 3A69     		ldr	r2, [r7, #16]
+ 3435 0160 9A42     		cmp	r2, r3
+ 3436 0162 ECD3     		bcc	.L33
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         {
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             return;
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         }
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     }
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // The new parameter block becomes the most recent parameter block.
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     g_pucFlashPBCurrent = pucNew;
+ 3437              		.loc 1 333 0 is_stmt 1
+ 3438 0164 054B     		ldr	r3, .L39
+ 3439 0166 7A69     		ldr	r2, [r7, #20]
+ 3440 0168 1A60     		str	r2, [r3, #0]
+ 3441 016a 02E0     		b	.L14
+ 3442              	.L35:
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             return;
+ 3443              		.loc 1 306 0
+ 3444 016c 00BF     		nop
+ 3445 016e 00E0     		b	.L14
+ 3446              	.L38:
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             return;
+ 3447              		.loc 1 326 0
+ 3448 0170 00BF     		nop
+ 3449              	.L14:
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** }
+ 3450              		.loc 1 334 0
+ 3451 0172 07F11807 		add	r7, r7, #24
+ 3452 0176 BD46     		mov	sp, r7
+ 3453 0178 80BD     		pop	{r7, pc}
+ 3454              	.L40:
+ 3455 017a 00BF     		.align	2
+ 3456              	.L39:
+ 3457 017c 0C000000 		.word	g_pucFlashPBCurrent
+ 3458 0180 08000000 		.word	g_ulFlashPBSize
+ 3459 0184 04000000 		.word	g_pucFlashPBEnd
+ 3460 0188 00000000 		.word	g_pucFlashPBStart
+ 3461              		.cfi_endproc
+ 3462              	.LFE2:
+ 3464              		.section	.text.FlashPBInit,"ax",%progbits
+ 3465              		.align	2
+ 3466              		.global	FlashPBInit
+ 3467              		.thumb
+ 3468              		.thumb_func
+ 3470              	FlashPBInit:
+ 3471              	.LFB3:
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! Initializes the flash parameter block.
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! \param ulStart is the address of the flash memory to be used for storing
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! flash parameter blocks; this must be the start of an erase block in the
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! flash.
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! \param ulEnd is the address of the end of flash memory to be used for
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! storing flash parameter blocks; this must be the start of an erase block in
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! the flash (the first block that is NOT part of the flash memory to be
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! used), or the address of the first word after the flash array if the last
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! block of flash is to be used.
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! \param ulSize is the size of the parameter block when stored in flash;
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! this must be a power of two less than or equal to the flash erase block
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! size (typically 1024).
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! This function initializes a fault-tolerant, persistent storage mechanism
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! for a parameter block for an application.  The last several erase blocks
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! of flash (as specified by \e ulStart and \e ulEnd are used for the
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! storage; more than one erase block is required in order to be
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! fault-tolerant.
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! A parameter block is an array of bytes that contain the persistent
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! parameters for the application.  The only special requirement for the
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! parameter block is that the first byte is a sequence number (explained
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! in FlashPBSave()) and the second byte is a checksum used to validate the
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! correctness of the data (the checksum byte is the byte such that the sum of
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! all bytes in the parameter block is zero).
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! The portion of flash for parameter block storage is split into N
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! equal-sized regions, where each region is the size of a parameter block
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! (\e ulSize).  Each region is scanned to find the most recent valid
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! parameter block.  The region that has a valid checksum and has the highest
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! sequence number (with special consideration given to wrapping back to zero)
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! is considered to be the current parameter block.
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! In order to make this efficient and effective, three conditions must be
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! met.  The first is \e ulStart and \e ulEnd must be specified such that at
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! least two erase blocks of flash are dedicated to parameter block storage.
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! If not, fault tolerance can not be guaranteed since an erase of a single
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! block will leave a window where there are no valid parameter blocks in
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! flash.  The second condition is that the size (\e ulSize) of the parameter
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! block must be an integral divisor of the size of an erase block of flash.
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! If not, a parameter block will end up spanning between two erase blocks of
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! flash, making it more difficult to manage.  The final condition is that the
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! size of the flash dedicated to parameter blocks (\e ulEnd - \e ulStart)
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! divided by the parameter block size (\e ulSize) must be less than or equal
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! to 128.  If not, it will not be possible in all cases to determine which
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! parameter block is the most recent (specifically when dealing with the
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! sequence number wrapping back to zero).
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! When the microcontroller is initially programmed, the flash blocks used for
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! parameter block storage are left in an erased state.
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! This function must be called before any other flash parameter block
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! functions are called.
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //!
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //! \return None.
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** //*****************************************************************************
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** void
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** FlashPBInit(unsigned long ulStart, unsigned long ulEnd, unsigned long ulSize)
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** {
+ 3472              		.loc 1 398 0
+ 3473              		.cfi_startproc
+ 3474              		@ args = 0, pretend = 0, frame = 32
+ 3475              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3476 0000 80B5     		push	{r7, lr}
+ 3477              	.LCFI8:
+ 3478              		.cfi_def_cfa_offset 8
+ 3479 0002 88B0     		sub	sp, sp, #32
+ 3480              	.LCFI9:
+ 3481              		.cfi_def_cfa_offset 40
+ 3482 0004 00AF     		add	r7, sp, #0
+ 3483              		.cfi_offset 14, -4
+ 3484              		.cfi_offset 7, -8
+ 3485              	.LCFI10:
+ 3486              		.cfi_def_cfa_register 7
+ 3487 0006 F860     		str	r0, [r7, #12]
+ 3488 0008 B960     		str	r1, [r7, #8]
+ 3489 000a 7A60     		str	r2, [r7, #4]
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     unsigned char *pucOffset, *pucCurrent;
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     unsigned char ucOne, ucTwo;
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // Check the arguments.
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     ASSERT((ulStart % FLASH_ERASE_SIZE) == 0);
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     ASSERT((ulEnd % FLASH_ERASE_SIZE) == 0);
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     ASSERT((FLASH_ERASE_SIZE % ulSize) == 0);
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // Set the number of clocks per microsecond to enable the flash controller
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // to properly program the flash.
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     FlashUsecSet(SysCtlClockGet() / 1000000);
+ 3490              		.loc 1 413 0
+ 3491 000c FFF7FEFF 		bl	SysCtlClockGet
+ 3492 0010 0246     		mov	r2, r0
+ 3493 0012 284B     		ldr	r3, .L50
+ 3494 0014 A3FB0213 		umull	r1, r3, r3, r2
+ 3495 0018 4FEA9343 		lsr	r3, r3, #18
+ 3496 001c 1846     		mov	r0, r3
+ 3497 001e FFF7FEFF 		bl	FlashUsecSet
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // Save the characteristics of the flash memory to be used for storing
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // parameter blocks.
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     g_pucFlashPBStart = (unsigned char *)ulStart;
+ 3498              		.loc 1 419 0
+ 3499 0022 FA68     		ldr	r2, [r7, #12]
+ 3500 0024 244B     		ldr	r3, .L50+4
+ 3501 0026 1A60     		str	r2, [r3, #0]
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     g_pucFlashPBEnd = (unsigned char *)ulEnd;
+ 3502              		.loc 1 420 0
+ 3503 0028 BA68     		ldr	r2, [r7, #8]
+ 3504 002a 244B     		ldr	r3, .L50+8
+ 3505 002c 1A60     		str	r2, [r3, #0]
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     g_ulFlashPBSize = ulSize;
+ 3506              		.loc 1 421 0
+ 3507 002e 244B     		ldr	r3, .L50+12
+ 3508 0030 7A68     		ldr	r2, [r7, #4]
+ 3509 0032 1A60     		str	r2, [r3, #0]
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // Loop through the portion of flash memory used for storing parameter
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // blocks.
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     for(pucOffset = g_pucFlashPBStart, pucCurrent = 0;
+ 3510              		.loc 1 427 0
+ 3511 0034 204B     		ldr	r3, .L50+4
+ 3512 0036 1B68     		ldr	r3, [r3, #0]
+ 3513 0038 FB61     		str	r3, [r7, #28]
+ 3514 003a 4FF00003 		mov	r3, #0
+ 3515 003e BB61     		str	r3, [r7, #24]
+ 3516 0040 2BE0     		b	.L42
+ 3517              	.L47:
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         pucOffset < g_pucFlashPBEnd; pucOffset += g_ulFlashPBSize)
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     {
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // See if this is a valid parameter block (i.e. the checksum is
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         // correct).
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         //
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         if(FlashPBIsValid(pucOffset))
+ 3518              		.loc 1 434 0
+ 3519 0042 F869     		ldr	r0, [r7, #28]
+ 3520 0044 FFF7FEFF 		bl	FlashPBIsValid
+ 3521 0048 0346     		mov	r3, r0
+ 3522 004a 002B     		cmp	r3, #0
+ 3523 004c 20D0     		beq	.L43
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         {
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             //
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             // See if a valid parameter block has been previously found.
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             //
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             if(pucCurrent != 0)
+ 3524              		.loc 1 439 0
+ 3525 004e BB69     		ldr	r3, [r7, #24]
+ 3526 0050 002B     		cmp	r3, #0
+ 3527 0052 17D0     		beq	.L44
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             {
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 //
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 // Get the sequence numbers for the current and new parameter
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 // blocks.
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 //
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 ucOne = pucCurrent[0];
+ 3528              		.loc 1 445 0
+ 3529 0054 BB69     		ldr	r3, [r7, #24]
+ 3530 0056 1B78     		ldrb	r3, [r3, #0]
+ 3531 0058 FB75     		strb	r3, [r7, #23]
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 ucTwo = pucOffset[0];
+ 3532              		.loc 1 446 0
+ 3533 005a FB69     		ldr	r3, [r7, #28]
+ 3534 005c 1B78     		ldrb	r3, [r3, #0]
+ 3535 005e BB75     		strb	r3, [r7, #22]
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 //
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 // See if the sequence number for the new parameter block is
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 // greater than the current block.  The comparison isn't
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 // straightforward since the one byte sequence number will wrap
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 // after 256 parameter blocks.
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 //
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 if(((ucOne > ucTwo) && ((ucOne - ucTwo) < 128)) ||
+ 3536              		.loc 1 454 0
+ 3537 0060 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 3538 0062 BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 3539 0064 9A42     		cmp	r2, r3
+ 3540 0066 04D9     		bls	.L45
+ 3541              		.loc 1 454 0 is_stmt 0 discriminator 1
+ 3542 0068 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 3543 006a BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 3544 006c D31A     		subs	r3, r2, r3
+ 3545 006e 7F2B     		cmp	r3, #127
+ 3546 0070 0BDD     		ble	.L48
+ 3547              	.L45:
+ 3548              		.loc 1 454 0 discriminator 2
+ 3549 0072 BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 3550 0074 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 3551 0076 9A42     		cmp	r2, r3
+ 3552 0078 04D9     		bls	.L44
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                    ((ucTwo > ucOne) && ((ucTwo - ucOne) > 128)))
+ 3553              		.loc 1 455 0 is_stmt 1
+ 3554 007a BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 3555 007c FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 3556 007e D31A     		subs	r3, r2, r3
+ 3557 0080 802B     		cmp	r3, #128
+ 3558 0082 04DC     		bgt	.L49
+ 3559              	.L44:
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 {
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                     //
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                     // The new parameter block is older than the current
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                     // parameter block, so skip the new parameter block and
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                     // keep searching.
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                     //
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                     continue;
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                 }
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             }
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             //
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             // The new parameter block is more recent than the current one, so
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             // make it the new current parameter block.
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             //
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****             pucCurrent = pucOffset;
+ 3560              		.loc 1 470 0
+ 3561 0084 FB69     		ldr	r3, [r7, #28]
+ 3562 0086 BB61     		str	r3, [r7, #24]
+ 3563 0088 02E0     		b	.L43
+ 3564              	.L48:
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****                     continue;
+ 3565              		.loc 1 462 0
+ 3566 008a 00BF     		nop
+ 3567 008c 00E0     		b	.L43
+ 3568              	.L49:
+ 3569 008e 00BF     		nop
+ 3570              	.L43:
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         pucOffset < g_pucFlashPBEnd; pucOffset += g_ulFlashPBSize)
+ 3571              		.loc 1 428 0
+ 3572 0090 0B4B     		ldr	r3, .L50+12
+ 3573 0092 1B68     		ldr	r3, [r3, #0]
+ 3574 0094 FA69     		ldr	r2, [r7, #28]
+ 3575 0096 D318     		adds	r3, r2, r3
+ 3576 0098 FB61     		str	r3, [r7, #28]
+ 3577              	.L42:
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         pucOffset < g_pucFlashPBEnd; pucOffset += g_ulFlashPBSize)
+ 3578              		.loc 1 428 0 is_stmt 0 discriminator 1
+ 3579 009a 084B     		ldr	r3, .L50+8
+ 3580 009c 1B68     		ldr	r3, [r3, #0]
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     for(pucOffset = g_pucFlashPBStart, pucCurrent = 0;
+ 3581              		.loc 1 427 0 is_stmt 1 discriminator 1
+ 3582 009e FA69     		ldr	r2, [r7, #28]
+ 3583 00a0 9A42     		cmp	r2, r3
+ 3584 00a2 CED3     		bcc	.L47
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****         }
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     }
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** 
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // Save the address of the most recent parameter block found.  If no valid
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     // parameter blocks were found, this will be a NULL pointer.
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     //
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c ****     g_pucFlashPBCurrent = pucCurrent;
+ 3585              		.loc 1 478 0
+ 3586 00a4 074B     		ldr	r3, .L50+16
+ 3587 00a6 BA69     		ldr	r2, [r7, #24]
+ 3588 00a8 1A60     		str	r2, [r3, #0]
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/flash_pb.c **** }
+ 3589              		.loc 1 479 0
+ 3590 00aa 07F12007 		add	r7, r7, #32
+ 3591 00ae BD46     		mov	sp, r7
+ 3592 00b0 80BD     		pop	{r7, pc}
+ 3593              	.L51:
+ 3594 00b2 00BF     		.align	2
+ 3595              	.L50:
+ 3596 00b4 83DE1B43 		.word	1125899907
+ 3597 00b8 00000000 		.word	g_pucFlashPBStart
+ 3598 00bc 04000000 		.word	g_pucFlashPBEnd
+ 3599 00c0 08000000 		.word	g_ulFlashPBSize
+ 3600 00c4 0C000000 		.word	g_pucFlashPBCurrent
+ 3601              		.cfi_endproc
+ 3602              	.LFE3:
+ 3604              		.text
+ 3605              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 flash_pb.c
+     /tmp/ccKkITsD.s:3056   .bss:00000000 $d
+     /tmp/ccKkITsD.s:3057   .bss:00000000 g_pucFlashPBStart
+     /tmp/ccKkITsD.s:3060   .bss:00000004 g_pucFlashPBEnd
+     /tmp/ccKkITsD.s:3063   .bss:00000008 g_ulFlashPBSize
+     /tmp/ccKkITsD.s:3066   .bss:0000000c g_pucFlashPBCurrent
+     /tmp/ccKkITsD.s:3069   .text.FlashPBIsValid:00000000 $t
+     /tmp/ccKkITsD.s:3073   .text.FlashPBIsValid:00000000 FlashPBIsValid
+     /tmp/ccKkITsD.s:3151   .text.FlashPBIsValid:00000070 $d
+     /tmp/ccKkITsD.s:3156   .text.FlashPBGet:00000000 $t
+     /tmp/ccKkITsD.s:3161   .text.FlashPBGet:00000000 FlashPBGet
+     /tmp/ccKkITsD.s:3196   .text.FlashPBGet:00000020 $d
+     /tmp/ccKkITsD.s:3201   .text.FlashPBSave:00000000 $t
+     /tmp/ccKkITsD.s:3206   .text.FlashPBSave:00000000 FlashPBSave
+     /tmp/ccKkITsD.s:3457   .text.FlashPBSave:0000017c $d
+     /tmp/ccKkITsD.s:3465   .text.FlashPBInit:00000000 $t
+     /tmp/ccKkITsD.s:3470   .text.FlashPBInit:00000000 FlashPBInit
+     /tmp/ccKkITsD.s:3596   .text.FlashPBInit:000000b4 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+FlashErase
+FlashProgram
+SysCtlClockGet
+FlashUsecSet

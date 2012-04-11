@@ -1,0 +1,1806 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"crc.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c"
+ 1007              		.align	2
+ 1010              	g_pucCrc8CCITT:
+ 1011 0000 00       		.byte	0
+ 1012 0001 07       		.byte	7
+ 1013 0002 0E       		.byte	14
+ 1014 0003 09       		.byte	9
+ 1015 0004 1C       		.byte	28
+ 1016 0005 1B       		.byte	27
+ 1017 0006 12       		.byte	18
+ 1018 0007 15       		.byte	21
+ 1019 0008 38       		.byte	56
+ 1020 0009 3F       		.byte	63
+ 1021 000a 36       		.byte	54
+ 1022 000b 31       		.byte	49
+ 1023 000c 24       		.byte	36
+ 1024 000d 23       		.byte	35
+ 1025 000e 2A       		.byte	42
+ 1026 000f 2D       		.byte	45
+ 1027 0010 70       		.byte	112
+ 1028 0011 77       		.byte	119
+ 1029 0012 7E       		.byte	126
+ 1030 0013 79       		.byte	121
+ 1031 0014 6C       		.byte	108
+ 1032 0015 6B       		.byte	107
+ 1033 0016 62       		.byte	98
+ 1034 0017 65       		.byte	101
+ 1035 0018 48       		.byte	72
+ 1036 0019 4F       		.byte	79
+ 1037 001a 46       		.byte	70
+ 1038 001b 41       		.byte	65
+ 1039 001c 54       		.byte	84
+ 1040 001d 53       		.byte	83
+ 1041 001e 5A       		.byte	90
+ 1042 001f 5D       		.byte	93
+ 1043 0020 E0       		.byte	-32
+ 1044 0021 E7       		.byte	-25
+ 1045 0022 EE       		.byte	-18
+ 1046 0023 E9       		.byte	-23
+ 1047 0024 FC       		.byte	-4
+ 1048 0025 FB       		.byte	-5
+ 1049 0026 F2       		.byte	-14
+ 1050 0027 F5       		.byte	-11
+ 1051 0028 D8       		.byte	-40
+ 1052 0029 DF       		.byte	-33
+ 1053 002a D6       		.byte	-42
+ 1054 002b D1       		.byte	-47
+ 1055 002c C4       		.byte	-60
+ 1056 002d C3       		.byte	-61
+ 1057 002e CA       		.byte	-54
+ 1058 002f CD       		.byte	-51
+ 1059 0030 90       		.byte	-112
+ 1060 0031 97       		.byte	-105
+ 1061 0032 9E       		.byte	-98
+ 1062 0033 99       		.byte	-103
+ 1063 0034 8C       		.byte	-116
+ 1064 0035 8B       		.byte	-117
+ 1065 0036 82       		.byte	-126
+ 1066 0037 85       		.byte	-123
+ 1067 0038 A8       		.byte	-88
+ 1068 0039 AF       		.byte	-81
+ 1069 003a A6       		.byte	-90
+ 1070 003b A1       		.byte	-95
+ 1071 003c B4       		.byte	-76
+ 1072 003d B3       		.byte	-77
+ 1073 003e BA       		.byte	-70
+ 1074 003f BD       		.byte	-67
+ 1075 0040 C7       		.byte	-57
+ 1076 0041 C0       		.byte	-64
+ 1077 0042 C9       		.byte	-55
+ 1078 0043 CE       		.byte	-50
+ 1079 0044 DB       		.byte	-37
+ 1080 0045 DC       		.byte	-36
+ 1081 0046 D5       		.byte	-43
+ 1082 0047 D2       		.byte	-46
+ 1083 0048 FF       		.byte	-1
+ 1084 0049 F8       		.byte	-8
+ 1085 004a F1       		.byte	-15
+ 1086 004b F6       		.byte	-10
+ 1087 004c E3       		.byte	-29
+ 1088 004d E4       		.byte	-28
+ 1089 004e ED       		.byte	-19
+ 1090 004f EA       		.byte	-22
+ 1091 0050 B7       		.byte	-73
+ 1092 0051 B0       		.byte	-80
+ 1093 0052 B9       		.byte	-71
+ 1094 0053 BE       		.byte	-66
+ 1095 0054 AB       		.byte	-85
+ 1096 0055 AC       		.byte	-84
+ 1097 0056 A5       		.byte	-91
+ 1098 0057 A2       		.byte	-94
+ 1099 0058 8F       		.byte	-113
+ 1100 0059 88       		.byte	-120
+ 1101 005a 81       		.byte	-127
+ 1102 005b 86       		.byte	-122
+ 1103 005c 93       		.byte	-109
+ 1104 005d 94       		.byte	-108
+ 1105 005e 9D       		.byte	-99
+ 1106 005f 9A       		.byte	-102
+ 1107 0060 27       		.byte	39
+ 1108 0061 20       		.byte	32
+ 1109 0062 29       		.byte	41
+ 1110 0063 2E       		.byte	46
+ 1111 0064 3B       		.byte	59
+ 1112 0065 3C       		.byte	60
+ 1113 0066 35       		.byte	53
+ 1114 0067 32       		.byte	50
+ 1115 0068 1F       		.byte	31
+ 1116 0069 18       		.byte	24
+ 1117 006a 11       		.byte	17
+ 1118 006b 16       		.byte	22
+ 1119 006c 03       		.byte	3
+ 1120 006d 04       		.byte	4
+ 1121 006e 0D       		.byte	13
+ 1122 006f 0A       		.byte	10
+ 1123 0070 57       		.byte	87
+ 1124 0071 50       		.byte	80
+ 1125 0072 59       		.byte	89
+ 1126 0073 5E       		.byte	94
+ 1127 0074 4B       		.byte	75
+ 1128 0075 4C       		.byte	76
+ 1129 0076 45       		.byte	69
+ 1130 0077 42       		.byte	66
+ 1131 0078 6F       		.byte	111
+ 1132 0079 68       		.byte	104
+ 1133 007a 61       		.byte	97
+ 1134 007b 66       		.byte	102
+ 1135 007c 73       		.byte	115
+ 1136 007d 74       		.byte	116
+ 1137 007e 7D       		.byte	125
+ 1138 007f 7A       		.byte	122
+ 1139 0080 89       		.byte	-119
+ 1140 0081 8E       		.byte	-114
+ 1141 0082 87       		.byte	-121
+ 1142 0083 80       		.byte	-128
+ 1143 0084 95       		.byte	-107
+ 1144 0085 92       		.byte	-110
+ 1145 0086 9B       		.byte	-101
+ 1146 0087 9C       		.byte	-100
+ 1147 0088 B1       		.byte	-79
+ 1148 0089 B6       		.byte	-74
+ 1149 008a BF       		.byte	-65
+ 1150 008b B8       		.byte	-72
+ 1151 008c AD       		.byte	-83
+ 1152 008d AA       		.byte	-86
+ 1153 008e A3       		.byte	-93
+ 1154 008f A4       		.byte	-92
+ 1155 0090 F9       		.byte	-7
+ 1156 0091 FE       		.byte	-2
+ 1157 0092 F7       		.byte	-9
+ 1158 0093 F0       		.byte	-16
+ 1159 0094 E5       		.byte	-27
+ 1160 0095 E2       		.byte	-30
+ 1161 0096 EB       		.byte	-21
+ 1162 0097 EC       		.byte	-20
+ 1163 0098 C1       		.byte	-63
+ 1164 0099 C6       		.byte	-58
+ 1165 009a CF       		.byte	-49
+ 1166 009b C8       		.byte	-56
+ 1167 009c DD       		.byte	-35
+ 1168 009d DA       		.byte	-38
+ 1169 009e D3       		.byte	-45
+ 1170 009f D4       		.byte	-44
+ 1171 00a0 69       		.byte	105
+ 1172 00a1 6E       		.byte	110
+ 1173 00a2 67       		.byte	103
+ 1174 00a3 60       		.byte	96
+ 1175 00a4 75       		.byte	117
+ 1176 00a5 72       		.byte	114
+ 1177 00a6 7B       		.byte	123
+ 1178 00a7 7C       		.byte	124
+ 1179 00a8 51       		.byte	81
+ 1180 00a9 56       		.byte	86
+ 1181 00aa 5F       		.byte	95
+ 1182 00ab 58       		.byte	88
+ 1183 00ac 4D       		.byte	77
+ 1184 00ad 4A       		.byte	74
+ 1185 00ae 43       		.byte	67
+ 1186 00af 44       		.byte	68
+ 1187 00b0 19       		.byte	25
+ 1188 00b1 1E       		.byte	30
+ 1189 00b2 17       		.byte	23
+ 1190 00b3 10       		.byte	16
+ 1191 00b4 05       		.byte	5
+ 1192 00b5 02       		.byte	2
+ 1193 00b6 0B       		.byte	11
+ 1194 00b7 0C       		.byte	12
+ 1195 00b8 21       		.byte	33
+ 1196 00b9 26       		.byte	38
+ 1197 00ba 2F       		.byte	47
+ 1198 00bb 28       		.byte	40
+ 1199 00bc 3D       		.byte	61
+ 1200 00bd 3A       		.byte	58
+ 1201 00be 33       		.byte	51
+ 1202 00bf 34       		.byte	52
+ 1203 00c0 4E       		.byte	78
+ 1204 00c1 49       		.byte	73
+ 1205 00c2 40       		.byte	64
+ 1206 00c3 47       		.byte	71
+ 1207 00c4 52       		.byte	82
+ 1208 00c5 55       		.byte	85
+ 1209 00c6 5C       		.byte	92
+ 1210 00c7 5B       		.byte	91
+ 1211 00c8 76       		.byte	118
+ 1212 00c9 71       		.byte	113
+ 1213 00ca 78       		.byte	120
+ 1214 00cb 7F       		.byte	127
+ 1215 00cc 6A       		.byte	106
+ 1216 00cd 6D       		.byte	109
+ 1217 00ce 64       		.byte	100
+ 1218 00cf 63       		.byte	99
+ 1219 00d0 3E       		.byte	62
+ 1220 00d1 39       		.byte	57
+ 1221 00d2 30       		.byte	48
+ 1222 00d3 37       		.byte	55
+ 1223 00d4 22       		.byte	34
+ 1224 00d5 25       		.byte	37
+ 1225 00d6 2C       		.byte	44
+ 1226 00d7 2B       		.byte	43
+ 1227 00d8 06       		.byte	6
+ 1228 00d9 01       		.byte	1
+ 1229 00da 08       		.byte	8
+ 1230 00db 0F       		.byte	15
+ 1231 00dc 1A       		.byte	26
+ 1232 00dd 1D       		.byte	29
+ 1233 00de 14       		.byte	20
+ 1234 00df 13       		.byte	19
+ 1235 00e0 AE       		.byte	-82
+ 1236 00e1 A9       		.byte	-87
+ 1237 00e2 A0       		.byte	-96
+ 1238 00e3 A7       		.byte	-89
+ 1239 00e4 B2       		.byte	-78
+ 1240 00e5 B5       		.byte	-75
+ 1241 00e6 BC       		.byte	-68
+ 1242 00e7 BB       		.byte	-69
+ 1243 00e8 96       		.byte	-106
+ 1244 00e9 91       		.byte	-111
+ 1245 00ea 98       		.byte	-104
+ 1246 00eb 9F       		.byte	-97
+ 1247 00ec 8A       		.byte	-118
+ 1248 00ed 8D       		.byte	-115
+ 1249 00ee 84       		.byte	-124
+ 1250 00ef 83       		.byte	-125
+ 1251 00f0 DE       		.byte	-34
+ 1252 00f1 D9       		.byte	-39
+ 1253 00f2 D0       		.byte	-48
+ 1254 00f3 D7       		.byte	-41
+ 1255 00f4 C2       		.byte	-62
+ 1256 00f5 C5       		.byte	-59
+ 1257 00f6 CC       		.byte	-52
+ 1258 00f7 CB       		.byte	-53
+ 1259 00f8 E6       		.byte	-26
+ 1260 00f9 E1       		.byte	-31
+ 1261 00fa E8       		.byte	-24
+ 1262 00fb EF       		.byte	-17
+ 1263 00fc FA       		.byte	-6
+ 1264 00fd FD       		.byte	-3
+ 1265 00fe F4       		.byte	-12
+ 1266 00ff F3       		.byte	-13
+ 1267              		.align	2
+ 1270              	g_pusCrc16:
+ 1271 0100 0000     		.short	0
+ 1272 0102 C1C0     		.short	-16191
+ 1273 0104 81C1     		.short	-15999
+ 1274 0106 4001     		.short	320
+ 1275 0108 01C3     		.short	-15615
+ 1276 010a C003     		.short	960
+ 1277 010c 8002     		.short	640
+ 1278 010e 41C2     		.short	-15807
+ 1279 0110 01C6     		.short	-14847
+ 1280 0112 C006     		.short	1728
+ 1281 0114 8007     		.short	1920
+ 1282 0116 41C7     		.short	-14527
+ 1283 0118 0005     		.short	1280
+ 1284 011a C1C5     		.short	-14911
+ 1285 011c 81C4     		.short	-15231
+ 1286 011e 4004     		.short	1088
+ 1287 0120 01CC     		.short	-13311
+ 1288 0122 C00C     		.short	3264
+ 1289 0124 800D     		.short	3456
+ 1290 0126 41CD     		.short	-12991
+ 1291 0128 000F     		.short	3840
+ 1292 012a C1CF     		.short	-12351
+ 1293 012c 81CE     		.short	-12671
+ 1294 012e 400E     		.short	3648
+ 1295 0130 000A     		.short	2560
+ 1296 0132 C1CA     		.short	-13631
+ 1297 0134 81CB     		.short	-13439
+ 1298 0136 400B     		.short	2880
+ 1299 0138 01C9     		.short	-14079
+ 1300 013a C009     		.short	2496
+ 1301 013c 8008     		.short	2176
+ 1302 013e 41C8     		.short	-14271
+ 1303 0140 01D8     		.short	-10239
+ 1304 0142 C018     		.short	6336
+ 1305 0144 8019     		.short	6528
+ 1306 0146 41D9     		.short	-9919
+ 1307 0148 001B     		.short	6912
+ 1308 014a C1DB     		.short	-9279
+ 1309 014c 81DA     		.short	-9599
+ 1310 014e 401A     		.short	6720
+ 1311 0150 001E     		.short	7680
+ 1312 0152 C1DE     		.short	-8511
+ 1313 0154 81DF     		.short	-8319
+ 1314 0156 401F     		.short	8000
+ 1315 0158 01DD     		.short	-8959
+ 1316 015a C01D     		.short	7616
+ 1317 015c 801C     		.short	7296
+ 1318 015e 41DC     		.short	-9151
+ 1319 0160 0014     		.short	5120
+ 1320 0162 C1D4     		.short	-11071
+ 1321 0164 81D5     		.short	-10879
+ 1322 0166 4015     		.short	5440
+ 1323 0168 01D7     		.short	-10495
+ 1324 016a C017     		.short	6080
+ 1325 016c 8016     		.short	5760
+ 1326 016e 41D6     		.short	-10687
+ 1327 0170 01D2     		.short	-11775
+ 1328 0172 C012     		.short	4800
+ 1329 0174 8013     		.short	4992
+ 1330 0176 41D3     		.short	-11455
+ 1331 0178 0011     		.short	4352
+ 1332 017a C1D1     		.short	-11839
+ 1333 017c 81D0     		.short	-12159
+ 1334 017e 4010     		.short	4160
+ 1335 0180 01F0     		.short	-4095
+ 1336 0182 C030     		.short	12480
+ 1337 0184 8031     		.short	12672
+ 1338 0186 41F1     		.short	-3775
+ 1339 0188 0033     		.short	13056
+ 1340 018a C1F3     		.short	-3135
+ 1341 018c 81F2     		.short	-3455
+ 1342 018e 4032     		.short	12864
+ 1343 0190 0036     		.short	13824
+ 1344 0192 C1F6     		.short	-2367
+ 1345 0194 81F7     		.short	-2175
+ 1346 0196 4037     		.short	14144
+ 1347 0198 01F5     		.short	-2815
+ 1348 019a C035     		.short	13760
+ 1349 019c 8034     		.short	13440
+ 1350 019e 41F4     		.short	-3007
+ 1351 01a0 003C     		.short	15360
+ 1352 01a2 C1FC     		.short	-831
+ 1353 01a4 81FD     		.short	-639
+ 1354 01a6 403D     		.short	15680
+ 1355 01a8 01FF     		.short	-255
+ 1356 01aa C03F     		.short	16320
+ 1357 01ac 803E     		.short	16000
+ 1358 01ae 41FE     		.short	-447
+ 1359 01b0 01FA     		.short	-1535
+ 1360 01b2 C03A     		.short	15040
+ 1361 01b4 803B     		.short	15232
+ 1362 01b6 41FB     		.short	-1215
+ 1363 01b8 0039     		.short	14592
+ 1364 01ba C1F9     		.short	-1599
+ 1365 01bc 81F8     		.short	-1919
+ 1366 01be 4038     		.short	14400
+ 1367 01c0 0028     		.short	10240
+ 1368 01c2 C1E8     		.short	-5951
+ 1369 01c4 81E9     		.short	-5759
+ 1370 01c6 4029     		.short	10560
+ 1371 01c8 01EB     		.short	-5375
+ 1372 01ca C02B     		.short	11200
+ 1373 01cc 802A     		.short	10880
+ 1374 01ce 41EA     		.short	-5567
+ 1375 01d0 01EE     		.short	-4607
+ 1376 01d2 C02E     		.short	11968
+ 1377 01d4 802F     		.short	12160
+ 1378 01d6 41EF     		.short	-4287
+ 1379 01d8 002D     		.short	11520
+ 1380 01da C1ED     		.short	-4671
+ 1381 01dc 81EC     		.short	-4991
+ 1382 01de 402C     		.short	11328
+ 1383 01e0 01E4     		.short	-7167
+ 1384 01e2 C024     		.short	9408
+ 1385 01e4 8025     		.short	9600
+ 1386 01e6 41E5     		.short	-6847
+ 1387 01e8 0027     		.short	9984
+ 1388 01ea C1E7     		.short	-6207
+ 1389 01ec 81E6     		.short	-6527
+ 1390 01ee 4026     		.short	9792
+ 1391 01f0 0022     		.short	8704
+ 1392 01f2 C1E2     		.short	-7487
+ 1393 01f4 81E3     		.short	-7295
+ 1394 01f6 4023     		.short	9024
+ 1395 01f8 01E1     		.short	-7935
+ 1396 01fa C021     		.short	8640
+ 1397 01fc 8020     		.short	8320
+ 1398 01fe 41E0     		.short	-8127
+ 1399 0200 01A0     		.short	-24575
+ 1400 0202 C060     		.short	24768
+ 1401 0204 8061     		.short	24960
+ 1402 0206 41A1     		.short	-24255
+ 1403 0208 0063     		.short	25344
+ 1404 020a C1A3     		.short	-23615
+ 1405 020c 81A2     		.short	-23935
+ 1406 020e 4062     		.short	25152
+ 1407 0210 0066     		.short	26112
+ 1408 0212 C1A6     		.short	-22847
+ 1409 0214 81A7     		.short	-22655
+ 1410 0216 4067     		.short	26432
+ 1411 0218 01A5     		.short	-23295
+ 1412 021a C065     		.short	26048
+ 1413 021c 8064     		.short	25728
+ 1414 021e 41A4     		.short	-23487
+ 1415 0220 006C     		.short	27648
+ 1416 0222 C1AC     		.short	-21311
+ 1417 0224 81AD     		.short	-21119
+ 1418 0226 406D     		.short	27968
+ 1419 0228 01AF     		.short	-20735
+ 1420 022a C06F     		.short	28608
+ 1421 022c 806E     		.short	28288
+ 1422 022e 41AE     		.short	-20927
+ 1423 0230 01AA     		.short	-22015
+ 1424 0232 C06A     		.short	27328
+ 1425 0234 806B     		.short	27520
+ 1426 0236 41AB     		.short	-21695
+ 1427 0238 0069     		.short	26880
+ 1428 023a C1A9     		.short	-22079
+ 1429 023c 81A8     		.short	-22399
+ 1430 023e 4068     		.short	26688
+ 1431 0240 0078     		.short	30720
+ 1432 0242 C1B8     		.short	-18239
+ 1433 0244 81B9     		.short	-18047
+ 1434 0246 4079     		.short	31040
+ 1435 0248 01BB     		.short	-17663
+ 1436 024a C07B     		.short	31680
+ 1437 024c 807A     		.short	31360
+ 1438 024e 41BA     		.short	-17855
+ 1439 0250 01BE     		.short	-16895
+ 1440 0252 C07E     		.short	32448
+ 1441 0254 807F     		.short	32640
+ 1442 0256 41BF     		.short	-16575
+ 1443 0258 007D     		.short	32000
+ 1444 025a C1BD     		.short	-16959
+ 1445 025c 81BC     		.short	-17279
+ 1446 025e 407C     		.short	31808
+ 1447 0260 01B4     		.short	-19455
+ 1448 0262 C074     		.short	29888
+ 1449 0264 8075     		.short	30080
+ 1450 0266 41B5     		.short	-19135
+ 1451 0268 0077     		.short	30464
+ 1452 026a C1B7     		.short	-18495
+ 1453 026c 81B6     		.short	-18815
+ 1454 026e 4076     		.short	30272
+ 1455 0270 0072     		.short	29184
+ 1456 0272 C1B2     		.short	-19775
+ 1457 0274 81B3     		.short	-19583
+ 1458 0276 4073     		.short	29504
+ 1459 0278 01B1     		.short	-20223
+ 1460 027a C071     		.short	29120
+ 1461 027c 8070     		.short	28800
+ 1462 027e 41B0     		.short	-20415
+ 1463 0280 0050     		.short	20480
+ 1464 0282 C190     		.short	-28479
+ 1465 0284 8191     		.short	-28287
+ 1466 0286 4051     		.short	20800
+ 1467 0288 0193     		.short	-27903
+ 1468 028a C053     		.short	21440
+ 1469 028c 8052     		.short	21120
+ 1470 028e 4192     		.short	-28095
+ 1471 0290 0196     		.short	-27135
+ 1472 0292 C056     		.short	22208
+ 1473 0294 8057     		.short	22400
+ 1474 0296 4197     		.short	-26815
+ 1475 0298 0055     		.short	21760
+ 1476 029a C195     		.short	-27199
+ 1477 029c 8194     		.short	-27519
+ 1478 029e 4054     		.short	21568
+ 1479 02a0 019C     		.short	-25599
+ 1480 02a2 C05C     		.short	23744
+ 1481 02a4 805D     		.short	23936
+ 1482 02a6 419D     		.short	-25279
+ 1483 02a8 005F     		.short	24320
+ 1484 02aa C19F     		.short	-24639
+ 1485 02ac 819E     		.short	-24959
+ 1486 02ae 405E     		.short	24128
+ 1487 02b0 005A     		.short	23040
+ 1488 02b2 C19A     		.short	-25919
+ 1489 02b4 819B     		.short	-25727
+ 1490 02b6 405B     		.short	23360
+ 1491 02b8 0199     		.short	-26367
+ 1492 02ba C059     		.short	22976
+ 1493 02bc 8058     		.short	22656
+ 1494 02be 4198     		.short	-26559
+ 1495 02c0 0188     		.short	-30719
+ 1496 02c2 C048     		.short	18624
+ 1497 02c4 8049     		.short	18816
+ 1498 02c6 4189     		.short	-30399
+ 1499 02c8 004B     		.short	19200
+ 1500 02ca C18B     		.short	-29759
+ 1501 02cc 818A     		.short	-30079
+ 1502 02ce 404A     		.short	19008
+ 1503 02d0 004E     		.short	19968
+ 1504 02d2 C18E     		.short	-28991
+ 1505 02d4 818F     		.short	-28799
+ 1506 02d6 404F     		.short	20288
+ 1507 02d8 018D     		.short	-29439
+ 1508 02da C04D     		.short	19904
+ 1509 02dc 804C     		.short	19584
+ 1510 02de 418C     		.short	-29631
+ 1511 02e0 0044     		.short	17408
+ 1512 02e2 C184     		.short	-31551
+ 1513 02e4 8185     		.short	-31359
+ 1514 02e6 4045     		.short	17728
+ 1515 02e8 0187     		.short	-30975
+ 1516 02ea C047     		.short	18368
+ 1517 02ec 8046     		.short	18048
+ 1518 02ee 4186     		.short	-31167
+ 1519 02f0 0182     		.short	-32255
+ 1520 02f2 C042     		.short	17088
+ 1521 02f4 8043     		.short	17280
+ 1522 02f6 4183     		.short	-31935
+ 1523 02f8 0041     		.short	16640
+ 1524 02fa C181     		.short	-32319
+ 1525 02fc 8180     		.short	-32639
+ 1526 02fe 4040     		.short	16448
+ 1527              		.section	.text.Crc8CCITT,"ax",%progbits
+ 1528              		.align	2
+ 1529              		.global	Crc8CCITT
+ 1530              		.thumb
+ 1531              		.thumb_func
+ 1533              	Crc8CCITT:
+ 1534              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // crc.c - CRC functions.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // Copyright (c) 2010-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // This is part of revision 8264 of the Stellaris Firmware Development Package.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \addtogroup crc_api
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! @{
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** #include "utils/crc.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // The CRC table for the polynomial C(x) = x^8 + x^2 + x + 1 (CRC-8-CCITT).
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** static const unsigned char g_pucCrc8CCITT[256] =
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** {
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x00, 0x07, 0x0E, 0x09, 0x1C, 0x1B, 0x12, 0x15,
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x38, 0x3F, 0x36, 0x31, 0x24, 0x23, 0x2A, 0x2D,
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x70, 0x77, 0x7E, 0x79, 0x6C, 0x6B, 0x62, 0x65,
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x48, 0x4F, 0x46, 0x41, 0x54, 0x53, 0x5A, 0x5D,
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xE0, 0xE7, 0xEE, 0xE9, 0xFC, 0xFB, 0xF2, 0xF5,
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xD8, 0xDF, 0xD6, 0xD1, 0xC4, 0xC3, 0xCA, 0xCD,
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x90, 0x97, 0x9E, 0x99, 0x8C, 0x8B, 0x82, 0x85,
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xA8, 0xAF, 0xA6, 0xA1, 0xB4, 0xB3, 0xBA, 0xBD,
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xC7, 0xC0, 0xC9, 0xCE, 0xDB, 0xDC, 0xD5, 0xD2,
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xFF, 0xF8, 0xF1, 0xF6, 0xE3, 0xE4, 0xED, 0xEA,
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xB7, 0xB0, 0xB9, 0xBE, 0xAB, 0xAC, 0xA5, 0xA2,
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x8F, 0x88, 0x81, 0x86, 0x93, 0x94, 0x9D, 0x9A,
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x27, 0x20, 0x29, 0x2E, 0x3B, 0x3C, 0x35, 0x32,
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x1F, 0x18, 0x11, 0x16, 0x03, 0x04, 0x0D, 0x0A,
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x57, 0x50, 0x59, 0x5E, 0x4B, 0x4C, 0x45, 0x42,
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x6F, 0x68, 0x61, 0x66, 0x73, 0x74, 0x7D, 0x7A,
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x89, 0x8E, 0x87, 0x80, 0x95, 0x92, 0x9B, 0x9C,
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xB1, 0xB6, 0xBF, 0xB8, 0xAD, 0xAA, 0xA3, 0xA4,
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xF9, 0xFE, 0xF7, 0xF0, 0xE5, 0xE2, 0xEB, 0xEC,
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xC1, 0xC6, 0xCF, 0xC8, 0xDD, 0xDA, 0xD3, 0xD4,
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x69, 0x6E, 0x67, 0x60, 0x75, 0x72, 0x7B, 0x7C,
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x51, 0x56, 0x5F, 0x58, 0x4D, 0x4A, 0x43, 0x44,
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x19, 0x1E, 0x17, 0x10, 0x05, 0x02, 0x0B, 0x0C,
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x21, 0x26, 0x2F, 0x28, 0x3D, 0x3A, 0x33, 0x34,
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x4E, 0x49, 0x40, 0x47, 0x52, 0x55, 0x5C, 0x5B,
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x76, 0x71, 0x78, 0x7F, 0x6A, 0x6D, 0x64, 0x63,
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x3E, 0x39, 0x30, 0x37, 0x22, 0x25, 0x2C, 0x2B,
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x06, 0x01, 0x08, 0x0F, 0x1A, 0x1D, 0x14, 0x13,
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xAE, 0xA9, 0xA0, 0xA7, 0xB2, 0xB5, 0xBC, 0xBB,
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x96, 0x91, 0x98, 0x9F, 0x8A, 0x8D, 0x84, 0x83,
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xDE, 0xD9, 0xD0, 0xD7, 0xC2, 0xC5, 0xCC, 0xCB,
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xE6, 0xE1, 0xE8, 0xEF, 0xFA, 0xFD, 0xF4, 0xF3
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** };
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // The CRC-16 table for the polynomial C(x) = x^16 + x^15 + x^2 + 1 (standard
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // CRC-16, also known as CRC-16-IBM and CRC-16-ANSI).
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** static const unsigned short g_pusCrc16[256] =
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** {
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481, 0x0440,
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xCC01, 0x0CC0, 0x0D80, 0xCD41, 0x0F00, 0xCFC1, 0xCE81, 0x0E40,
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x0A00, 0xCAC1, 0xCB81, 0x0B40, 0xC901, 0x09C0, 0x0880, 0xC841,
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xD801, 0x18C0, 0x1980, 0xD941, 0x1B00, 0xDBC1, 0xDA81, 0x1A40,
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x1E00, 0xDEC1, 0xDF81, 0x1F40, 0xDD01, 0x1DC0, 0x1C80, 0xDC41,
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x1400, 0xD4C1, 0xD581, 0x1540, 0xD701, 0x17C0, 0x1680, 0xD641,
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xD201, 0x12C0, 0x1380, 0xD341, 0x1100, 0xD1C1, 0xD081, 0x1040,
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xF001, 0x30C0, 0x3180, 0xF141, 0x3300, 0xF3C1, 0xF281, 0x3240,
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x3600, 0xF6C1, 0xF781, 0x3740, 0xF501, 0x35C0, 0x3480, 0xF441,
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x3C00, 0xFCC1, 0xFD81, 0x3D40, 0xFF01, 0x3FC0, 0x3E80, 0xFE41,
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xFA01, 0x3AC0, 0x3B80, 0xFB41, 0x3900, 0xF9C1, 0xF881, 0x3840,
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x2800, 0xE8C1, 0xE981, 0x2940, 0xEB01, 0x2BC0, 0x2A80, 0xEA41,
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xEE01, 0x2EC0, 0x2F80, 0xEF41, 0x2D00, 0xEDC1, 0xEC81, 0x2C40,
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xE401, 0x24C0, 0x2580, 0xE541, 0x2700, 0xE7C1, 0xE681, 0x2640,
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x2200, 0xE2C1, 0xE381, 0x2340, 0xE101, 0x21C0, 0x2080, 0xE041,
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xA001, 0x60C0, 0x6180, 0xA141, 0x6300, 0xA3C1, 0xA281, 0x6240,
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x6600, 0xA6C1, 0xA781, 0x6740, 0xA501, 0x65C0, 0x6480, 0xA441,
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x6C00, 0xACC1, 0xAD81, 0x6D40, 0xAF01, 0x6FC0, 0x6E80, 0xAE41,
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xAA01, 0x6AC0, 0x6B80, 0xAB41, 0x6900, 0xA9C1, 0xA881, 0x6840,
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x7800, 0xB8C1, 0xB981, 0x7940, 0xBB01, 0x7BC0, 0x7A80, 0xBA41,
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xBE01, 0x7EC0, 0x7F80, 0xBF41, 0x7D00, 0xBDC1, 0xBC81, 0x7C40,
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0xB401, 0x74C0, 0x7580, 0xB541, 0x7700, 0xB7C1, 0xB681, 0x7640,
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x7200, 0xB2C1, 0xB381, 0x7340, 0xB101, 0x71C0, 0x7080, 0xB041,
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x5000, 0x90C1, 0x9181, 0x5140, 0x9301, 0x53C0, 0x5280, 0x9241,
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x9601, 0x56C0, 0x5780, 0x9741, 0x5500, 0x95C1, 0x9481, 0x5440,
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x9C01, 0x5CC0, 0x5D80, 0x9D41, 0x5F00, 0x9FC1, 0x9E81, 0x5E40,
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x5A00, 0x9AC1, 0x9B81, 0x5B40, 0x9901, 0x59C0, 0x5880, 0x9841,
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x8801, 0x48C0, 0x4980, 0x8941, 0x4B00, 0x8BC1, 0x8A81, 0x4A40,
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x4E00, 0x8EC1, 0x8F81, 0x4F40, 0x8D01, 0x4DC0, 0x4C80, 0x8C41,
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x4400, 0x84C1, 0x8581, 0x4540, 0x8701, 0x47C0, 0x4680, 0x8641,
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081, 0x4040
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** };
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // This macro executes one iteration of the CRC-8-CCITT.
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** #define CRC8_ITER(crc, data)    g_pucCrc8CCITT[(unsigned char)((crc) ^ (data))]
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** // This macro executes one iteration of the CRC-16.
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** #define CRC16_ITER(crc, data)   (((crc) >> 8) ^                               \
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****                                  g_pusCrc16[(unsigned char)((crc) ^ (data))])
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! Calculates the CRC-8-CCITT of an array of bytes.
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \param ucCrc is the starting CRC-8-CCITT value.
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \param pucData is a pointer to the data buffer.
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \param ulCount is the number of bytes in the data buffer.
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! This function is used to calculate the CRC-8-CCITT of the input buffer.
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! The CRC-8-CCITT is computed in a running fashion, meaning that the entire
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! data block that is to have its CRC-8-CCITT computed does not need to be
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! supplied all at once.  If the input buffer contains the entire block of
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! data, then \b ucCrc should be set to 0.  If, however, the entire block of
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! data is not available, then \b ucCrc should be set to 0 for the first
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! portion of the data, and then the returned value should be passed back in
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! as \b ucCrc for the next portion of the data.
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! For example, to compute the CRC-8-CCITT of a block that has been split into
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! three pieces, use the following:
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \verbatim
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!     ucCrc = Crc8CCITT(0, pucData1, ulLen1);
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!     ucCrc = Crc8CCITT(ucCrc, pucData2, ulLen2);
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!     ucCrc = Crc8CCITT(ucCrc, pucData3, ulLen3);
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \endverbatim
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! Computing a CRC-8-CCITT in a running fashion is useful in cases where the
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! data is arriving via a serial link (for example) and is therefore not all
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! available at one time.
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \return The CRC-8-CCITT of the input data.
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** unsigned char
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** Crc8CCITT(unsigned char ucCrc, const unsigned char *pucData,
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****           unsigned long ulCount)
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** {
+ 1535              		.loc 1 168 0
+ 1536              		.cfi_startproc
+ 1537              		@ args = 0, pretend = 0, frame = 24
+ 1538              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1539              		@ link register save eliminated.
+ 1540 0000 80B4     		push	{r7}
+ 1541              	.LCFI0:
+ 1542              		.cfi_def_cfa_offset 4
+ 1543 0002 87B0     		sub	sp, sp, #28
+ 1544              	.LCFI1:
+ 1545              		.cfi_def_cfa_offset 32
+ 1546 0004 00AF     		add	r7, sp, #0
+ 1547              		.cfi_offset 7, -4
+ 1548              	.LCFI2:
+ 1549              		.cfi_def_cfa_register 7
+ 1550 0006 0346     		mov	r3, r0
+ 1551 0008 B960     		str	r1, [r7, #8]
+ 1552 000a 7A60     		str	r2, [r7, #4]
+ 1553 000c FB73     		strb	r3, [r7, #15]
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     unsigned long ulTemp;
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // If the data buffer is not short-aligned, then perform a single step of
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // the CRC to make it short-aligned.
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     if((unsigned long)pucData & 1)
+ 1554              		.loc 1 175 0
+ 1555 000e BB68     		ldr	r3, [r7, #8]
+ 1556 0010 03F00103 		and	r3, r3, #1
+ 1557 0014 DBB2     		uxtb	r3, r3
+ 1558 0016 002B     		cmp	r3, #0
+ 1559 0018 10D0     		beq	.L2
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     {
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Perform the CRC on this input byte.
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ucCrc = CRC8_ITER(ucCrc, *pucData);
+ 1560              		.loc 1 180 0
+ 1561 001a BB68     		ldr	r3, [r7, #8]
+ 1562 001c 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1563 001e FB7B     		ldrb	r3, [r7, #15]
+ 1564 0020 82EA0303 		eor	r3, r2, r3
+ 1565 0024 DBB2     		uxtb	r3, r3
+ 1566 0026 504A     		ldr	r2, .L8
+ 1567 0028 D35C     		ldrb	r3, [r2, r3]
+ 1568 002a FB73     		strb	r3, [r7, #15]
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Skip this input byte.
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         pucData++;
+ 1569              		.loc 1 185 0
+ 1570 002c BB68     		ldr	r3, [r7, #8]
+ 1571 002e 03F10103 		add	r3, r3, #1
+ 1572 0032 BB60     		str	r3, [r7, #8]
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulCount--;
+ 1573              		.loc 1 186 0
+ 1574 0034 7B68     		ldr	r3, [r7, #4]
+ 1575 0036 03F1FF33 		add	r3, r3, #-1
+ 1576 003a 7B60     		str	r3, [r7, #4]
+ 1577              	.L2:
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     }
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // If the data buffer is not word-aligned and there are at least two bytes
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // of data left, then perform two steps of the CRC to make it word-aligned.
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     if(((unsigned long)pucData & 2) && (ulCount > 1))
+ 1578              		.loc 1 193 0
+ 1579 003c BB68     		ldr	r3, [r7, #8]
+ 1580 003e 03F00203 		and	r3, r3, #2
+ 1581 0042 002B     		cmp	r3, #0
+ 1582 0044 57D0     		beq	.L4
+ 1583              		.loc 1 193 0 is_stmt 0 discriminator 1
+ 1584 0046 7B68     		ldr	r3, [r7, #4]
+ 1585 0048 012B     		cmp	r3, #1
+ 1586 004a 54D9     		bls	.L4
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     {
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Read the next short.
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulTemp = *(unsigned short *)pucData;
+ 1587              		.loc 1 198 0 is_stmt 1
+ 1588 004c BB68     		ldr	r3, [r7, #8]
+ 1589 004e 1B88     		ldrh	r3, [r3, #0]
+ 1590 0050 7B61     		str	r3, [r7, #20]
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Perform the CRC on these two bytes.
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ucCrc = CRC8_ITER(ucCrc, ulTemp);
+ 1591              		.loc 1 203 0
+ 1592 0052 7B69     		ldr	r3, [r7, #20]
+ 1593 0054 DAB2     		uxtb	r2, r3
+ 1594 0056 FB7B     		ldrb	r3, [r7, #15]
+ 1595 0058 82EA0303 		eor	r3, r2, r3
+ 1596 005c DBB2     		uxtb	r3, r3
+ 1597 005e 424A     		ldr	r2, .L8
+ 1598 0060 D35C     		ldrb	r3, [r2, r3]
+ 1599 0062 FB73     		strb	r3, [r7, #15]
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ucCrc = CRC8_ITER(ucCrc, ulTemp >> 8);
+ 1600              		.loc 1 204 0
+ 1601 0064 7B69     		ldr	r3, [r7, #20]
+ 1602 0066 4FEA1323 		lsr	r3, r3, #8
+ 1603 006a DAB2     		uxtb	r2, r3
+ 1604 006c FB7B     		ldrb	r3, [r7, #15]
+ 1605 006e 82EA0303 		eor	r3, r2, r3
+ 1606 0072 DBB2     		uxtb	r3, r3
+ 1607 0074 3C4A     		ldr	r2, .L8
+ 1608 0076 D35C     		ldrb	r3, [r2, r3]
+ 1609 0078 FB73     		strb	r3, [r7, #15]
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Skip these input bytes.
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         pucData += 2;
+ 1610              		.loc 1 209 0
+ 1611 007a BB68     		ldr	r3, [r7, #8]
+ 1612 007c 03F10203 		add	r3, r3, #2
+ 1613 0080 BB60     		str	r3, [r7, #8]
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulCount -= 2;
+ 1614              		.loc 1 210 0
+ 1615 0082 7B68     		ldr	r3, [r7, #4]
+ 1616 0084 A3F10203 		sub	r3, r3, #2
+ 1617 0088 7B60     		str	r3, [r7, #4]
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     }
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // While there is at least a word remaining in the data buffer, perform
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // four steps of the CRC to consume a word.
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     while(ulCount > 3)
+ 1618              		.loc 1 217 0
+ 1619 008a 34E0     		b	.L4
+ 1620              	.L5:
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     {
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Read the next word.
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulTemp = *(unsigned long *)pucData;
+ 1621              		.loc 1 222 0
+ 1622 008c BB68     		ldr	r3, [r7, #8]
+ 1623 008e 1B68     		ldr	r3, [r3, #0]
+ 1624 0090 7B61     		str	r3, [r7, #20]
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Perform the CRC on these four bytes.
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ucCrc = CRC8_ITER(ucCrc, ulTemp);
+ 1625              		.loc 1 227 0
+ 1626 0092 7B69     		ldr	r3, [r7, #20]
+ 1627 0094 DAB2     		uxtb	r2, r3
+ 1628 0096 FB7B     		ldrb	r3, [r7, #15]
+ 1629 0098 82EA0303 		eor	r3, r2, r3
+ 1630 009c DBB2     		uxtb	r3, r3
+ 1631 009e 324A     		ldr	r2, .L8
+ 1632 00a0 D35C     		ldrb	r3, [r2, r3]
+ 1633 00a2 FB73     		strb	r3, [r7, #15]
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ucCrc = CRC8_ITER(ucCrc, ulTemp >> 8);
+ 1634              		.loc 1 228 0
+ 1635 00a4 7B69     		ldr	r3, [r7, #20]
+ 1636 00a6 4FEA1323 		lsr	r3, r3, #8
+ 1637 00aa DAB2     		uxtb	r2, r3
+ 1638 00ac FB7B     		ldrb	r3, [r7, #15]
+ 1639 00ae 82EA0303 		eor	r3, r2, r3
+ 1640 00b2 DBB2     		uxtb	r3, r3
+ 1641 00b4 2C4A     		ldr	r2, .L8
+ 1642 00b6 D35C     		ldrb	r3, [r2, r3]
+ 1643 00b8 FB73     		strb	r3, [r7, #15]
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ucCrc = CRC8_ITER(ucCrc, ulTemp >> 16);
+ 1644              		.loc 1 229 0
+ 1645 00ba 7B69     		ldr	r3, [r7, #20]
+ 1646 00bc 4FEA1343 		lsr	r3, r3, #16
+ 1647 00c0 DAB2     		uxtb	r2, r3
+ 1648 00c2 FB7B     		ldrb	r3, [r7, #15]
+ 1649 00c4 82EA0303 		eor	r3, r2, r3
+ 1650 00c8 DBB2     		uxtb	r3, r3
+ 1651 00ca 274A     		ldr	r2, .L8
+ 1652 00cc D35C     		ldrb	r3, [r2, r3]
+ 1653 00ce FB73     		strb	r3, [r7, #15]
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ucCrc = CRC8_ITER(ucCrc, ulTemp >> 24);
+ 1654              		.loc 1 230 0
+ 1655 00d0 7B69     		ldr	r3, [r7, #20]
+ 1656 00d2 4FEA1363 		lsr	r3, r3, #24
+ 1657 00d6 DAB2     		uxtb	r2, r3
+ 1658 00d8 FB7B     		ldrb	r3, [r7, #15]
+ 1659 00da 82EA0303 		eor	r3, r2, r3
+ 1660 00de DBB2     		uxtb	r3, r3
+ 1661 00e0 214A     		ldr	r2, .L8
+ 1662 00e2 D35C     		ldrb	r3, [r2, r3]
+ 1663 00e4 FB73     		strb	r3, [r7, #15]
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Skip these input bytes.
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         pucData += 4;
+ 1664              		.loc 1 235 0
+ 1665 00e6 BB68     		ldr	r3, [r7, #8]
+ 1666 00e8 03F10403 		add	r3, r3, #4
+ 1667 00ec BB60     		str	r3, [r7, #8]
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulCount -= 4;
+ 1668              		.loc 1 236 0
+ 1669 00ee 7B68     		ldr	r3, [r7, #4]
+ 1670 00f0 A3F10403 		sub	r3, r3, #4
+ 1671 00f4 7B60     		str	r3, [r7, #4]
+ 1672              	.L4:
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     while(ulCount > 3)
+ 1673              		.loc 1 217 0 discriminator 1
+ 1674 00f6 7B68     		ldr	r3, [r7, #4]
+ 1675 00f8 032B     		cmp	r3, #3
+ 1676 00fa C7D8     		bhi	.L5
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     }
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // If there is a short left in the input buffer, then perform two steps of
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // the CRC.
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     if(ulCount > 1)
+ 1677              		.loc 1 243 0
+ 1678 00fc 7B68     		ldr	r3, [r7, #4]
+ 1679 00fe 012B     		cmp	r3, #1
+ 1680 0100 1ED9     		bls	.L6
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     {
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Read the short.
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulTemp = *(unsigned short *)pucData;
+ 1681              		.loc 1 248 0
+ 1682 0102 BB68     		ldr	r3, [r7, #8]
+ 1683 0104 1B88     		ldrh	r3, [r3, #0]
+ 1684 0106 7B61     		str	r3, [r7, #20]
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Perform the CRC on these two bytes.
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ucCrc = CRC8_ITER(ucCrc, ulTemp);
+ 1685              		.loc 1 253 0
+ 1686 0108 7B69     		ldr	r3, [r7, #20]
+ 1687 010a DAB2     		uxtb	r2, r3
+ 1688 010c FB7B     		ldrb	r3, [r7, #15]
+ 1689 010e 82EA0303 		eor	r3, r2, r3
+ 1690 0112 DBB2     		uxtb	r3, r3
+ 1691 0114 144A     		ldr	r2, .L8
+ 1692 0116 D35C     		ldrb	r3, [r2, r3]
+ 1693 0118 FB73     		strb	r3, [r7, #15]
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ucCrc = CRC8_ITER(ucCrc, ulTemp >> 8);
+ 1694              		.loc 1 254 0
+ 1695 011a 7B69     		ldr	r3, [r7, #20]
+ 1696 011c 4FEA1323 		lsr	r3, r3, #8
+ 1697 0120 DAB2     		uxtb	r2, r3
+ 1698 0122 FB7B     		ldrb	r3, [r7, #15]
+ 1699 0124 82EA0303 		eor	r3, r2, r3
+ 1700 0128 DBB2     		uxtb	r3, r3
+ 1701 012a 0F4A     		ldr	r2, .L8
+ 1702 012c D35C     		ldrb	r3, [r2, r3]
+ 1703 012e FB73     		strb	r3, [r7, #15]
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Skip these input bytes.
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         pucData += 2;
+ 1704              		.loc 1 259 0
+ 1705 0130 BB68     		ldr	r3, [r7, #8]
+ 1706 0132 03F10203 		add	r3, r3, #2
+ 1707 0136 BB60     		str	r3, [r7, #8]
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulCount -= 2;
+ 1708              		.loc 1 260 0
+ 1709 0138 7B68     		ldr	r3, [r7, #4]
+ 1710 013a A3F10203 		sub	r3, r3, #2
+ 1711 013e 7B60     		str	r3, [r7, #4]
+ 1712              	.L6:
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     }
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // If there is a final byte remaining in the input buffer, then perform a
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // single step of the CRC.
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     if(ulCount != 0)
+ 1713              		.loc 1 267 0
+ 1714 0140 7B68     		ldr	r3, [r7, #4]
+ 1715 0142 002B     		cmp	r3, #0
+ 1716 0144 08D0     		beq	.L7
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     {
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ucCrc = CRC8_ITER(ucCrc, *pucData);
+ 1717              		.loc 1 269 0
+ 1718 0146 BB68     		ldr	r3, [r7, #8]
+ 1719 0148 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1720 014a FB7B     		ldrb	r3, [r7, #15]
+ 1721 014c 82EA0303 		eor	r3, r2, r3
+ 1722 0150 DBB2     		uxtb	r3, r3
+ 1723 0152 054A     		ldr	r2, .L8
+ 1724 0154 D35C     		ldrb	r3, [r2, r3]
+ 1725 0156 FB73     		strb	r3, [r7, #15]
+ 1726              	.L7:
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     }
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // Return the resulting CRC-8-CCITT value.
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     return(ucCrc);
+ 1727              		.loc 1 275 0
+ 1728 0158 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** }
+ 1729              		.loc 1 276 0
+ 1730 015a 1846     		mov	r0, r3
+ 1731 015c 07F11C07 		add	r7, r7, #28
+ 1732 0160 BD46     		mov	sp, r7
+ 1733 0162 80BC     		pop	{r7}
+ 1734 0164 7047     		bx	lr
+ 1735              	.L9:
+ 1736 0166 00BF     		.align	2
+ 1737              	.L8:
+ 1738 0168 00000000 		.word	g_pucCrc8CCITT
+ 1739              		.cfi_endproc
+ 1740              	.LFE0:
+ 1742              		.section	.text.Crc16,"ax",%progbits
+ 1743              		.align	2
+ 1744              		.global	Crc16
+ 1745              		.thumb
+ 1746              		.thumb_func
+ 1748              	Crc16:
+ 1749              	.LFB1:
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! Calculates the CRC-16 of an array of bytes.
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \param usCrc is the starting CRC-16 value.
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \param pucData is a pointer to the data buffer.
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \param ulCount is the number of bytes in the data buffer.
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! This function is used to calculate the CRC-16 of the input buffer.  The
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! CRC-16 is computed in a running fashion, meaning that the entire data block
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! that is to have its CRC-16 computed does not need to be supplied all at
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! once.  If the input buffer contains the entire block of data, then \b usCrc
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! should be set to 0.  If, however, the entire block of data is not
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! available, then \b usCrc should be set to 0 for the first portion of the
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! data, and then the returned value should be passed back in as \b usCrc for
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! the next portion of the data.
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! For example, to compute the CRC-16 of a block that has been split into
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! three pieces, use the following:
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \verbatim
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!     usCrc = Crc16(0, pucData1, ulLen1);
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!     usCrc = Crc16(usCrc, pucData2, ulLen2);
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!     usCrc = Crc16(usCrc, pucData3, ulLen3);
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \endverbatim
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! Computing a CRC-16 in a running fashion is useful in cases where the data
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! is arriving via a serial link (for example) and is therefore not all
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! available at one time.
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \return The CRC-16 of the input data.
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** unsigned short
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** Crc16(unsigned short usCrc, const unsigned char *pucData,
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****       unsigned long ulCount)
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** {
+ 1750              		.loc 1 314 0
+ 1751              		.cfi_startproc
+ 1752              		@ args = 0, pretend = 0, frame = 24
+ 1753              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1754              		@ link register save eliminated.
+ 1755 0000 80B4     		push	{r7}
+ 1756              	.LCFI3:
+ 1757              		.cfi_def_cfa_offset 4
+ 1758 0002 87B0     		sub	sp, sp, #28
+ 1759              	.LCFI4:
+ 1760              		.cfi_def_cfa_offset 32
+ 1761 0004 00AF     		add	r7, sp, #0
+ 1762              		.cfi_offset 7, -4
+ 1763              	.LCFI5:
+ 1764              		.cfi_def_cfa_register 7
+ 1765 0006 0346     		mov	r3, r0
+ 1766 0008 B960     		str	r1, [r7, #8]
+ 1767 000a 7A60     		str	r2, [r7, #4]
+ 1768 000c FB81     		strh	r3, [r7, #14]	@ movhi
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     unsigned long ulTemp;
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // If the data buffer is not short-aligned, then perform a single step of
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // the CRC to make it short-aligned.
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     if((unsigned long)pucData & 1)
+ 1769              		.loc 1 321 0
+ 1770 000e BB68     		ldr	r3, [r7, #8]
+ 1771 0010 03F00103 		and	r3, r3, #1
+ 1772 0014 DBB2     		uxtb	r3, r3
+ 1773 0016 002B     		cmp	r3, #0
+ 1774 0018 19D0     		beq	.L11
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     {
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Perform the CRC on this input byte.
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, *pucData);
+ 1775              		.loc 1 326 0
+ 1776 001a FB89     		ldrh	r3, [r7, #14]
+ 1777 001c 4FEA1323 		lsr	r3, r3, #8
+ 1778 0020 9AB2     		uxth	r2, r3
+ 1779 0022 FB89     		ldrh	r3, [r7, #14]	@ movhi
+ 1780 0024 D9B2     		uxtb	r1, r3
+ 1781 0026 BB68     		ldr	r3, [r7, #8]
+ 1782 0028 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1783 002a 81EA0303 		eor	r3, r1, r3
+ 1784 002e DBB2     		uxtb	r3, r3
+ 1785 0030 1946     		mov	r1, r3
+ 1786 0032 7B4B     		ldr	r3, .L17
+ 1787 0034 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 1788 0038 82EA0303 		eor	r3, r2, r3
+ 1789 003c FB81     		strh	r3, [r7, #14]	@ movhi
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Skip this input byte.
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         pucData++;
+ 1790              		.loc 1 331 0
+ 1791 003e BB68     		ldr	r3, [r7, #8]
+ 1792 0040 03F10103 		add	r3, r3, #1
+ 1793 0044 BB60     		str	r3, [r7, #8]
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulCount--;
+ 1794              		.loc 1 332 0
+ 1795 0046 7B68     		ldr	r3, [r7, #4]
+ 1796 0048 03F1FF33 		add	r3, r3, #-1
+ 1797 004c 7B60     		str	r3, [r7, #4]
+ 1798              	.L11:
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     }
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // If the data buffer is not word-aligned and there are at least two bytes
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // of data left, then perform two steps of the CRC to make it word-aligned.
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     if(((unsigned long)pucData & 2) && (ulCount > 1))
+ 1799              		.loc 1 339 0
+ 1800 004e BB68     		ldr	r3, [r7, #8]
+ 1801 0050 03F00203 		and	r3, r3, #2
+ 1802 0054 002B     		cmp	r3, #0
+ 1803 0056 00F08F80 		beq	.L13
+ 1804              		.loc 1 339 0 is_stmt 0 discriminator 1
+ 1805 005a 7B68     		ldr	r3, [r7, #4]
+ 1806 005c 012B     		cmp	r3, #1
+ 1807 005e 40F28B80 		bls	.L13
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     {
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Read the next short.
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulTemp = *(unsigned short *)pucData;
+ 1808              		.loc 1 344 0 is_stmt 1
+ 1809 0062 BB68     		ldr	r3, [r7, #8]
+ 1810 0064 1B88     		ldrh	r3, [r3, #0]
+ 1811 0066 7B61     		str	r3, [r7, #20]
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Perform the CRC on these two bytes.
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, ulTemp);
+ 1812              		.loc 1 349 0
+ 1813 0068 FB89     		ldrh	r3, [r7, #14]
+ 1814 006a 4FEA1323 		lsr	r3, r3, #8
+ 1815 006e 9AB2     		uxth	r2, r3
+ 1816 0070 FB89     		ldrh	r3, [r7, #14]	@ movhi
+ 1817 0072 D9B2     		uxtb	r1, r3
+ 1818 0074 7B69     		ldr	r3, [r7, #20]
+ 1819 0076 DBB2     		uxtb	r3, r3
+ 1820 0078 81EA0303 		eor	r3, r1, r3
+ 1821 007c DBB2     		uxtb	r3, r3
+ 1822 007e 1946     		mov	r1, r3
+ 1823 0080 674B     		ldr	r3, .L17
+ 1824 0082 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 1825 0086 82EA0303 		eor	r3, r2, r3
+ 1826 008a FB81     		strh	r3, [r7, #14]	@ movhi
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, ulTemp >> 8);
+ 1827              		.loc 1 350 0
+ 1828 008c FB89     		ldrh	r3, [r7, #14]
+ 1829 008e 4FEA1323 		lsr	r3, r3, #8
+ 1830 0092 9AB2     		uxth	r2, r3
+ 1831 0094 FB89     		ldrh	r3, [r7, #14]	@ movhi
+ 1832 0096 D9B2     		uxtb	r1, r3
+ 1833 0098 7B69     		ldr	r3, [r7, #20]
+ 1834 009a 4FEA1323 		lsr	r3, r3, #8
+ 1835 009e DBB2     		uxtb	r3, r3
+ 1836 00a0 81EA0303 		eor	r3, r1, r3
+ 1837 00a4 DBB2     		uxtb	r3, r3
+ 1838 00a6 1946     		mov	r1, r3
+ 1839 00a8 5D4B     		ldr	r3, .L17
+ 1840 00aa 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 1841 00ae 82EA0303 		eor	r3, r2, r3
+ 1842 00b2 FB81     		strh	r3, [r7, #14]	@ movhi
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Skip these input bytes.
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         pucData += 2;
+ 1843              		.loc 1 355 0
+ 1844 00b4 BB68     		ldr	r3, [r7, #8]
+ 1845 00b6 03F10203 		add	r3, r3, #2
+ 1846 00ba BB60     		str	r3, [r7, #8]
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulCount -= 2;
+ 1847              		.loc 1 356 0
+ 1848 00bc 7B68     		ldr	r3, [r7, #4]
+ 1849 00be A3F10203 		sub	r3, r3, #2
+ 1850 00c2 7B60     		str	r3, [r7, #4]
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     }
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // While there is at least a word remaining in the data buffer, perform
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // four steps of the CRC to consume a word.
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     while(ulCount > 3)
+ 1851              		.loc 1 363 0
+ 1852 00c4 58E0     		b	.L13
+ 1853              	.L14:
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     {
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Read the next word.
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulTemp = *(unsigned long *)pucData;
+ 1854              		.loc 1 368 0
+ 1855 00c6 BB68     		ldr	r3, [r7, #8]
+ 1856 00c8 1B68     		ldr	r3, [r3, #0]
+ 1857 00ca 7B61     		str	r3, [r7, #20]
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Perform the CRC on these four bytes.
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, ulTemp);
+ 1858              		.loc 1 373 0
+ 1859 00cc FB89     		ldrh	r3, [r7, #14]
+ 1860 00ce 4FEA1323 		lsr	r3, r3, #8
+ 1861 00d2 9AB2     		uxth	r2, r3
+ 1862 00d4 FB89     		ldrh	r3, [r7, #14]	@ movhi
+ 1863 00d6 D9B2     		uxtb	r1, r3
+ 1864 00d8 7B69     		ldr	r3, [r7, #20]
+ 1865 00da DBB2     		uxtb	r3, r3
+ 1866 00dc 81EA0303 		eor	r3, r1, r3
+ 1867 00e0 DBB2     		uxtb	r3, r3
+ 1868 00e2 1946     		mov	r1, r3
+ 1869 00e4 4E4B     		ldr	r3, .L17
+ 1870 00e6 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 1871 00ea 82EA0303 		eor	r3, r2, r3
+ 1872 00ee FB81     		strh	r3, [r7, #14]	@ movhi
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, ulTemp >> 8);
+ 1873              		.loc 1 374 0
+ 1874 00f0 FB89     		ldrh	r3, [r7, #14]
+ 1875 00f2 4FEA1323 		lsr	r3, r3, #8
+ 1876 00f6 9AB2     		uxth	r2, r3
+ 1877 00f8 FB89     		ldrh	r3, [r7, #14]	@ movhi
+ 1878 00fa D9B2     		uxtb	r1, r3
+ 1879 00fc 7B69     		ldr	r3, [r7, #20]
+ 1880 00fe 4FEA1323 		lsr	r3, r3, #8
+ 1881 0102 DBB2     		uxtb	r3, r3
+ 1882 0104 81EA0303 		eor	r3, r1, r3
+ 1883 0108 DBB2     		uxtb	r3, r3
+ 1884 010a 1946     		mov	r1, r3
+ 1885 010c 444B     		ldr	r3, .L17
+ 1886 010e 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 1887 0112 82EA0303 		eor	r3, r2, r3
+ 1888 0116 FB81     		strh	r3, [r7, #14]	@ movhi
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, ulTemp >> 16);
+ 1889              		.loc 1 375 0
+ 1890 0118 FB89     		ldrh	r3, [r7, #14]
+ 1891 011a 4FEA1323 		lsr	r3, r3, #8
+ 1892 011e 9AB2     		uxth	r2, r3
+ 1893 0120 FB89     		ldrh	r3, [r7, #14]	@ movhi
+ 1894 0122 D9B2     		uxtb	r1, r3
+ 1895 0124 7B69     		ldr	r3, [r7, #20]
+ 1896 0126 4FEA1343 		lsr	r3, r3, #16
+ 1897 012a DBB2     		uxtb	r3, r3
+ 1898 012c 81EA0303 		eor	r3, r1, r3
+ 1899 0130 DBB2     		uxtb	r3, r3
+ 1900 0132 1946     		mov	r1, r3
+ 1901 0134 3A4B     		ldr	r3, .L17
+ 1902 0136 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 1903 013a 82EA0303 		eor	r3, r2, r3
+ 1904 013e FB81     		strh	r3, [r7, #14]	@ movhi
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, ulTemp >> 24);
+ 1905              		.loc 1 376 0
+ 1906 0140 FB89     		ldrh	r3, [r7, #14]
+ 1907 0142 4FEA1323 		lsr	r3, r3, #8
+ 1908 0146 9AB2     		uxth	r2, r3
+ 1909 0148 FB89     		ldrh	r3, [r7, #14]	@ movhi
+ 1910 014a D9B2     		uxtb	r1, r3
+ 1911 014c 7B69     		ldr	r3, [r7, #20]
+ 1912 014e 4FEA1363 		lsr	r3, r3, #24
+ 1913 0152 DBB2     		uxtb	r3, r3
+ 1914 0154 81EA0303 		eor	r3, r1, r3
+ 1915 0158 DBB2     		uxtb	r3, r3
+ 1916 015a 1946     		mov	r1, r3
+ 1917 015c 304B     		ldr	r3, .L17
+ 1918 015e 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 1919 0162 82EA0303 		eor	r3, r2, r3
+ 1920 0166 FB81     		strh	r3, [r7, #14]	@ movhi
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Skip these input bytes.
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         pucData += 4;
+ 1921              		.loc 1 381 0
+ 1922 0168 BB68     		ldr	r3, [r7, #8]
+ 1923 016a 03F10403 		add	r3, r3, #4
+ 1924 016e BB60     		str	r3, [r7, #8]
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulCount -= 4;
+ 1925              		.loc 1 382 0
+ 1926 0170 7B68     		ldr	r3, [r7, #4]
+ 1927 0172 A3F10403 		sub	r3, r3, #4
+ 1928 0176 7B60     		str	r3, [r7, #4]
+ 1929              	.L13:
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     while(ulCount > 3)
+ 1930              		.loc 1 363 0 discriminator 1
+ 1931 0178 7B68     		ldr	r3, [r7, #4]
+ 1932 017a 032B     		cmp	r3, #3
+ 1933 017c A3D8     		bhi	.L14
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     }
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // If there is a short left in the input buffer, then perform two steps of
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // the CRC.
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     if(ulCount > 1)
+ 1934              		.loc 1 389 0
+ 1935 017e 7B68     		ldr	r3, [r7, #4]
+ 1936 0180 012B     		cmp	r3, #1
+ 1937 0182 30D9     		bls	.L15
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     {
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Read the short.
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulTemp = *(unsigned short *)pucData;
+ 1938              		.loc 1 394 0
+ 1939 0184 BB68     		ldr	r3, [r7, #8]
+ 1940 0186 1B88     		ldrh	r3, [r3, #0]
+ 1941 0188 7B61     		str	r3, [r7, #20]
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Perform the CRC on these two bytes.
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, ulTemp);
+ 1942              		.loc 1 399 0
+ 1943 018a FB89     		ldrh	r3, [r7, #14]
+ 1944 018c 4FEA1323 		lsr	r3, r3, #8
+ 1945 0190 9AB2     		uxth	r2, r3
+ 1946 0192 FB89     		ldrh	r3, [r7, #14]	@ movhi
+ 1947 0194 D9B2     		uxtb	r1, r3
+ 1948 0196 7B69     		ldr	r3, [r7, #20]
+ 1949 0198 DBB2     		uxtb	r3, r3
+ 1950 019a 81EA0303 		eor	r3, r1, r3
+ 1951 019e DBB2     		uxtb	r3, r3
+ 1952 01a0 1946     		mov	r1, r3
+ 1953 01a2 1F4B     		ldr	r3, .L17
+ 1954 01a4 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 1955 01a8 82EA0303 		eor	r3, r2, r3
+ 1956 01ac FB81     		strh	r3, [r7, #14]	@ movhi
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, ulTemp >> 8);
+ 1957              		.loc 1 400 0
+ 1958 01ae FB89     		ldrh	r3, [r7, #14]
+ 1959 01b0 4FEA1323 		lsr	r3, r3, #8
+ 1960 01b4 9AB2     		uxth	r2, r3
+ 1961 01b6 FB89     		ldrh	r3, [r7, #14]	@ movhi
+ 1962 01b8 D9B2     		uxtb	r1, r3
+ 1963 01ba 7B69     		ldr	r3, [r7, #20]
+ 1964 01bc 4FEA1323 		lsr	r3, r3, #8
+ 1965 01c0 DBB2     		uxtb	r3, r3
+ 1966 01c2 81EA0303 		eor	r3, r1, r3
+ 1967 01c6 DBB2     		uxtb	r3, r3
+ 1968 01c8 1946     		mov	r1, r3
+ 1969 01ca 154B     		ldr	r3, .L17
+ 1970 01cc 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 1971 01d0 82EA0303 		eor	r3, r2, r3
+ 1972 01d4 FB81     		strh	r3, [r7, #14]	@ movhi
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Skip these input bytes.
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         pucData += 2;
+ 1973              		.loc 1 405 0
+ 1974 01d6 BB68     		ldr	r3, [r7, #8]
+ 1975 01d8 03F10203 		add	r3, r3, #2
+ 1976 01dc BB60     		str	r3, [r7, #8]
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulCount -= 2;
+ 1977              		.loc 1 406 0
+ 1978 01de 7B68     		ldr	r3, [r7, #4]
+ 1979 01e0 A3F10203 		sub	r3, r3, #2
+ 1980 01e4 7B60     		str	r3, [r7, #4]
+ 1981              	.L15:
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     }
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // If there is a final byte remaining in the input buffer, then perform a
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // single step of the CRC.
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     if(ulCount != 0)
+ 1982              		.loc 1 413 0
+ 1983 01e6 7B68     		ldr	r3, [r7, #4]
+ 1984 01e8 002B     		cmp	r3, #0
+ 1985 01ea 11D0     		beq	.L16
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     {
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, *pucData);
+ 1986              		.loc 1 415 0
+ 1987 01ec FB89     		ldrh	r3, [r7, #14]
+ 1988 01ee 4FEA1323 		lsr	r3, r3, #8
+ 1989 01f2 9AB2     		uxth	r2, r3
+ 1990 01f4 FB89     		ldrh	r3, [r7, #14]	@ movhi
+ 1991 01f6 D9B2     		uxtb	r1, r3
+ 1992 01f8 BB68     		ldr	r3, [r7, #8]
+ 1993 01fa 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1994 01fc 81EA0303 		eor	r3, r1, r3
+ 1995 0200 DBB2     		uxtb	r3, r3
+ 1996 0202 1946     		mov	r1, r3
+ 1997 0204 064B     		ldr	r3, .L17
+ 1998 0206 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 1999 020a 82EA0303 		eor	r3, r2, r3
+ 2000 020e FB81     		strh	r3, [r7, #14]	@ movhi
+ 2001              	.L16:
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     }
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // Return the resulting CRC-16 value.
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     return(usCrc);
+ 2002              		.loc 1 421 0
+ 2003 0210 FB89     		ldrh	r3, [r7, #14]
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** }
+ 2004              		.loc 1 422 0
+ 2005 0212 1846     		mov	r0, r3
+ 2006 0214 07F11C07 		add	r7, r7, #28
+ 2007 0218 BD46     		mov	sp, r7
+ 2008 021a 80BC     		pop	{r7}
+ 2009 021c 7047     		bx	lr
+ 2010              	.L18:
+ 2011 021e 00BF     		.align	2
+ 2012              	.L17:
+ 2013 0220 00010000 		.word	g_pusCrc16
+ 2014              		.cfi_endproc
+ 2015              	.LFE1:
+ 2017              		.section	.text.Crc16Array,"ax",%progbits
+ 2018              		.align	2
+ 2019              		.global	Crc16Array
+ 2020              		.thumb
+ 2021              		.thumb_func
+ 2023              	Crc16Array:
+ 2024              	.LFB2:
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! Calculates the CRC-16 of an array of words.
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \param ulWordLen is the length of the array in words (the number of bytes
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! divided by 4).
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \param pulData is a pointer to the data buffer.
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! This function is a wrapper around the running CRC-16 function, providing
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! the CRC-16 for a single block of data.
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \return The CRC-16 of the input data.
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** unsigned short
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** Crc16Array(unsigned long ulWordLen, const unsigned long *pulData)
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** {
+ 2025              		.loc 1 440 0
+ 2026              		.cfi_startproc
+ 2027              		@ args = 0, pretend = 0, frame = 8
+ 2028              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2029 0000 80B5     		push	{r7, lr}
+ 2030              	.LCFI6:
+ 2031              		.cfi_def_cfa_offset 8
+ 2032 0002 82B0     		sub	sp, sp, #8
+ 2033              	.LCFI7:
+ 2034              		.cfi_def_cfa_offset 16
+ 2035 0004 00AF     		add	r7, sp, #0
+ 2036              		.cfi_offset 14, -4
+ 2037              		.cfi_offset 7, -8
+ 2038              	.LCFI8:
+ 2039              		.cfi_def_cfa_register 7
+ 2040 0006 7860     		str	r0, [r7, #4]
+ 2041 0008 3960     		str	r1, [r7, #0]
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // Calculate and return the CRC-16 of this array of words.
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     return(Crc16(0, (const unsigned char *)pulData, ulWordLen * 4));
+ 2042              		.loc 1 444 0
+ 2043 000a 3A68     		ldr	r2, [r7, #0]
+ 2044 000c 7B68     		ldr	r3, [r7, #4]
+ 2045 000e 4FEA8303 		lsl	r3, r3, #2
+ 2046 0012 4FF00000 		mov	r0, #0
+ 2047 0016 1146     		mov	r1, r2
+ 2048 0018 1A46     		mov	r2, r3
+ 2049 001a FFF7FEFF 		bl	Crc16
+ 2050 001e 0346     		mov	r3, r0
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** }
+ 2051              		.loc 1 445 0
+ 2052 0020 1846     		mov	r0, r3
+ 2053 0022 07F10807 		add	r7, r7, #8
+ 2054 0026 BD46     		mov	sp, r7
+ 2055 0028 80BD     		pop	{r7, pc}
+ 2056              		.cfi_endproc
+ 2057              	.LFE2:
+ 2059 002a 00BF     		.section	.text.Crc16Array3,"ax",%progbits
+ 2060              		.align	2
+ 2061              		.global	Crc16Array3
+ 2062              		.thumb
+ 2063              		.thumb_func
+ 2065              	Crc16Array3:
+ 2066              	.LFB3:
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! Calculates three CRC-16s of an array of words.
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \param ulWordLen is the length of the array in words (the number of bytes
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! divided by 4).
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \param pulData is a pointer to the data buffer.
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \param pusCrc3 is a pointer to an array in which to place the three CRC-16
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! values.
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! This function is used to calculate three CRC-16s of the input buffer; the
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! first uses every byte from the array, the second uses only the even-index
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! bytes from the array (in other words, bytes 0, 2, 4, etc.), and the third
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! uses only the odd-index bytes from the array (in other words, bytes 1, 3,
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! 5, etc.).
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //!
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //! \return None
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** //*****************************************************************************
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** void
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** Crc16Array3(unsigned long ulWordLen, const unsigned long *pulData,
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****             unsigned short *pusCrc3)
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** {
+ 2067              		.loc 1 469 0
+ 2068              		.cfi_startproc
+ 2069              		@ args = 0, pretend = 0, frame = 32
+ 2070              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2071              		@ link register save eliminated.
+ 2072 0000 80B4     		push	{r7}
+ 2073              	.LCFI9:
+ 2074              		.cfi_def_cfa_offset 4
+ 2075 0002 89B0     		sub	sp, sp, #36
+ 2076              	.LCFI10:
+ 2077              		.cfi_def_cfa_offset 40
+ 2078 0004 00AF     		add	r7, sp, #0
+ 2079              		.cfi_offset 7, -4
+ 2080              	.LCFI11:
+ 2081              		.cfi_def_cfa_register 7
+ 2082 0006 F860     		str	r0, [r7, #12]
+ 2083 0008 B960     		str	r1, [r7, #8]
+ 2084 000a 7A60     		str	r2, [r7, #4]
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     unsigned short usCrc, usCrcOdd, usCrcEven;
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     unsigned long ulTemp;
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // Initialize the CRC values to zero.
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     usCrc = 0;
+ 2085              		.loc 1 476 0
+ 2086 000c 4FF00003 		mov	r3, #0
+ 2087 0010 FB83     		strh	r3, [r7, #30]	@ movhi
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     usCrcOdd = 0;
+ 2088              		.loc 1 477 0
+ 2089 0012 4FF00003 		mov	r3, #0
+ 2090 0016 BB83     		strh	r3, [r7, #28]	@ movhi
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     usCrcEven = 0;
+ 2091              		.loc 1 478 0
+ 2092 0018 4FF00003 		mov	r3, #0
+ 2093 001c 7B83     		strh	r3, [r7, #26]	@ movhi
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 480:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 481:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // Loop while there are more words in the data buffer.
+ 482:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     while(ulWordLen--)
+ 2094              		.loc 1 483 0
+ 2095 001e A2E0     		b	.L21
+ 2096              	.L22:
+ 484:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     {
+ 485:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 486:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Read the next word.
+ 487:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 488:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         ulTemp = *pulData++;
+ 2097              		.loc 1 488 0
+ 2098 0020 BB68     		ldr	r3, [r7, #8]
+ 2099 0022 1B68     		ldr	r3, [r3, #0]
+ 2100 0024 7B61     		str	r3, [r7, #20]
+ 2101 0026 BB68     		ldr	r3, [r7, #8]
+ 2102 0028 03F10403 		add	r3, r3, #4
+ 2103 002c BB60     		str	r3, [r7, #8]
+ 489:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 490:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 491:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Perform the first CRC on all four data bytes.
+ 492:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 493:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, ulTemp);
+ 2104              		.loc 1 493 0
+ 2105 002e FB8B     		ldrh	r3, [r7, #30]
+ 2106 0030 4FEA1323 		lsr	r3, r3, #8
+ 2107 0034 9AB2     		uxth	r2, r3
+ 2108 0036 FB8B     		ldrh	r3, [r7, #30]	@ movhi
+ 2109 0038 D9B2     		uxtb	r1, r3
+ 2110 003a 7B69     		ldr	r3, [r7, #20]
+ 2111 003c DBB2     		uxtb	r3, r3
+ 2112 003e 81EA0303 		eor	r3, r1, r3
+ 2113 0042 DBB2     		uxtb	r3, r3
+ 2114 0044 1946     		mov	r1, r3
+ 2115 0046 574B     		ldr	r3, .L23
+ 2116 0048 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 2117 004c 82EA0303 		eor	r3, r2, r3
+ 2118 0050 FB83     		strh	r3, [r7, #30]	@ movhi
+ 494:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, ulTemp >> 8);
+ 2119              		.loc 1 494 0
+ 2120 0052 FB8B     		ldrh	r3, [r7, #30]
+ 2121 0054 4FEA1323 		lsr	r3, r3, #8
+ 2122 0058 9AB2     		uxth	r2, r3
+ 2123 005a FB8B     		ldrh	r3, [r7, #30]	@ movhi
+ 2124 005c D9B2     		uxtb	r1, r3
+ 2125 005e 7B69     		ldr	r3, [r7, #20]
+ 2126 0060 4FEA1323 		lsr	r3, r3, #8
+ 2127 0064 DBB2     		uxtb	r3, r3
+ 2128 0066 81EA0303 		eor	r3, r1, r3
+ 2129 006a DBB2     		uxtb	r3, r3
+ 2130 006c 1946     		mov	r1, r3
+ 2131 006e 4D4B     		ldr	r3, .L23
+ 2132 0070 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 2133 0074 82EA0303 		eor	r3, r2, r3
+ 2134 0078 FB83     		strh	r3, [r7, #30]	@ movhi
+ 495:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, ulTemp >> 16);
+ 2135              		.loc 1 495 0
+ 2136 007a FB8B     		ldrh	r3, [r7, #30]
+ 2137 007c 4FEA1323 		lsr	r3, r3, #8
+ 2138 0080 9AB2     		uxth	r2, r3
+ 2139 0082 FB8B     		ldrh	r3, [r7, #30]	@ movhi
+ 2140 0084 D9B2     		uxtb	r1, r3
+ 2141 0086 7B69     		ldr	r3, [r7, #20]
+ 2142 0088 4FEA1343 		lsr	r3, r3, #16
+ 2143 008c DBB2     		uxtb	r3, r3
+ 2144 008e 81EA0303 		eor	r3, r1, r3
+ 2145 0092 DBB2     		uxtb	r3, r3
+ 2146 0094 1946     		mov	r1, r3
+ 2147 0096 434B     		ldr	r3, .L23
+ 2148 0098 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 2149 009c 82EA0303 		eor	r3, r2, r3
+ 2150 00a0 FB83     		strh	r3, [r7, #30]	@ movhi
+ 496:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrc = CRC16_ITER(usCrc, ulTemp >> 24);
+ 2151              		.loc 1 496 0
+ 2152 00a2 FB8B     		ldrh	r3, [r7, #30]
+ 2153 00a4 4FEA1323 		lsr	r3, r3, #8
+ 2154 00a8 9AB2     		uxth	r2, r3
+ 2155 00aa FB8B     		ldrh	r3, [r7, #30]	@ movhi
+ 2156 00ac D9B2     		uxtb	r1, r3
+ 2157 00ae 7B69     		ldr	r3, [r7, #20]
+ 2158 00b0 4FEA1363 		lsr	r3, r3, #24
+ 2159 00b4 DBB2     		uxtb	r3, r3
+ 2160 00b6 81EA0303 		eor	r3, r1, r3
+ 2161 00ba DBB2     		uxtb	r3, r3
+ 2162 00bc 1946     		mov	r1, r3
+ 2163 00be 394B     		ldr	r3, .L23
+ 2164 00c0 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 2165 00c4 82EA0303 		eor	r3, r2, r3
+ 2166 00c8 FB83     		strh	r3, [r7, #30]	@ movhi
+ 497:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 498:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 499:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Perform the second CRC on only the even-index data bytes.
+ 500:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 501:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrcEven = CRC16_ITER(usCrcEven, ulTemp);
+ 2167              		.loc 1 501 0
+ 2168 00ca 7B8B     		ldrh	r3, [r7, #26]
+ 2169 00cc 4FEA1323 		lsr	r3, r3, #8
+ 2170 00d0 9AB2     		uxth	r2, r3
+ 2171 00d2 7B8B     		ldrh	r3, [r7, #26]	@ movhi
+ 2172 00d4 D9B2     		uxtb	r1, r3
+ 2173 00d6 7B69     		ldr	r3, [r7, #20]
+ 2174 00d8 DBB2     		uxtb	r3, r3
+ 2175 00da 81EA0303 		eor	r3, r1, r3
+ 2176 00de DBB2     		uxtb	r3, r3
+ 2177 00e0 1946     		mov	r1, r3
+ 2178 00e2 304B     		ldr	r3, .L23
+ 2179 00e4 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 2180 00e8 82EA0303 		eor	r3, r2, r3
+ 2181 00ec 7B83     		strh	r3, [r7, #26]	@ movhi
+ 502:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrcEven = CRC16_ITER(usCrcEven, ulTemp >> 16);
+ 2182              		.loc 1 502 0
+ 2183 00ee 7B8B     		ldrh	r3, [r7, #26]
+ 2184 00f0 4FEA1323 		lsr	r3, r3, #8
+ 2185 00f4 9AB2     		uxth	r2, r3
+ 2186 00f6 7B8B     		ldrh	r3, [r7, #26]	@ movhi
+ 2187 00f8 D9B2     		uxtb	r1, r3
+ 2188 00fa 7B69     		ldr	r3, [r7, #20]
+ 2189 00fc 4FEA1343 		lsr	r3, r3, #16
+ 2190 0100 DBB2     		uxtb	r3, r3
+ 2191 0102 81EA0303 		eor	r3, r1, r3
+ 2192 0106 DBB2     		uxtb	r3, r3
+ 2193 0108 1946     		mov	r1, r3
+ 2194 010a 264B     		ldr	r3, .L23
+ 2195 010c 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 2196 0110 82EA0303 		eor	r3, r2, r3
+ 2197 0114 7B83     		strh	r3, [r7, #26]	@ movhi
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 504:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 505:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         // Perform the third CRC on only the odd-index data bytes.
+ 506:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         //
+ 507:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrcOdd = CRC16_ITER(usCrcOdd, ulTemp >> 8);
+ 2198              		.loc 1 507 0
+ 2199 0116 BB8B     		ldrh	r3, [r7, #28]
+ 2200 0118 4FEA1323 		lsr	r3, r3, #8
+ 2201 011c 9AB2     		uxth	r2, r3
+ 2202 011e BB8B     		ldrh	r3, [r7, #28]	@ movhi
+ 2203 0120 D9B2     		uxtb	r1, r3
+ 2204 0122 7B69     		ldr	r3, [r7, #20]
+ 2205 0124 4FEA1323 		lsr	r3, r3, #8
+ 2206 0128 DBB2     		uxtb	r3, r3
+ 2207 012a 81EA0303 		eor	r3, r1, r3
+ 2208 012e DBB2     		uxtb	r3, r3
+ 2209 0130 1946     		mov	r1, r3
+ 2210 0132 1C4B     		ldr	r3, .L23
+ 2211 0134 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 2212 0138 82EA0303 		eor	r3, r2, r3
+ 2213 013c BB83     		strh	r3, [r7, #28]	@ movhi
+ 508:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****         usCrcOdd = CRC16_ITER(usCrcOdd, ulTemp >> 24);
+ 2214              		.loc 1 508 0
+ 2215 013e BB8B     		ldrh	r3, [r7, #28]
+ 2216 0140 4FEA1323 		lsr	r3, r3, #8
+ 2217 0144 9AB2     		uxth	r2, r3
+ 2218 0146 BB8B     		ldrh	r3, [r7, #28]	@ movhi
+ 2219 0148 D9B2     		uxtb	r1, r3
+ 2220 014a 7B69     		ldr	r3, [r7, #20]
+ 2221 014c 4FEA1363 		lsr	r3, r3, #24
+ 2222 0150 DBB2     		uxtb	r3, r3
+ 2223 0152 81EA0303 		eor	r3, r1, r3
+ 2224 0156 DBB2     		uxtb	r3, r3
+ 2225 0158 1946     		mov	r1, r3
+ 2226 015a 124B     		ldr	r3, .L23
+ 2227 015c 33F81130 		ldrh	r3, [r3, r1, lsl #1]
+ 2228 0160 82EA0303 		eor	r3, r2, r3
+ 2229 0164 BB83     		strh	r3, [r7, #28]	@ movhi
+ 2230              	.L21:
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     while(ulWordLen--)
+ 2231              		.loc 1 483 0 discriminator 1
+ 2232 0166 FB68     		ldr	r3, [r7, #12]
+ 2233 0168 002B     		cmp	r3, #0
+ 2234 016a 0CBF     		ite	eq
+ 2235 016c 0023     		moveq	r3, #0
+ 2236 016e 0123     		movne	r3, #1
+ 2237 0170 DBB2     		uxtb	r3, r3
+ 2238 0172 FA68     		ldr	r2, [r7, #12]
+ 2239 0174 02F1FF32 		add	r2, r2, #-1
+ 2240 0178 FA60     		str	r2, [r7, #12]
+ 2241 017a 002B     		cmp	r3, #0
+ 2242 017c 7FF450AF 		bne	.L22
+ 509:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     }
+ 510:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** 
+ 511:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 512:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     // Return the resulting CRC-16 values.
+ 513:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     //
+ 514:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     pusCrc3[0] = usCrc;
+ 2243              		.loc 1 514 0
+ 2244 0180 7B68     		ldr	r3, [r7, #4]
+ 2245 0182 FA8B     		ldrh	r2, [r7, #30]	@ movhi
+ 2246 0184 1A80     		strh	r2, [r3, #0]	@ movhi
+ 515:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     pusCrc3[1] = usCrcEven;
+ 2247              		.loc 1 515 0
+ 2248 0186 7B68     		ldr	r3, [r7, #4]
+ 2249 0188 03F10203 		add	r3, r3, #2
+ 2250 018c 7A8B     		ldrh	r2, [r7, #26]	@ movhi
+ 2251 018e 1A80     		strh	r2, [r3, #0]	@ movhi
+ 516:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c ****     pusCrc3[2] = usCrcOdd;
+ 2252              		.loc 1 516 0
+ 2253 0190 7B68     		ldr	r3, [r7, #4]
+ 2254 0192 03F10403 		add	r3, r3, #4
+ 2255 0196 BA8B     		ldrh	r2, [r7, #28]	@ movhi
+ 2256 0198 1A80     		strh	r2, [r3, #0]	@ movhi
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/crc.c **** }
+ 2257              		.loc 1 517 0
+ 2258 019a 07F12407 		add	r7, r7, #36
+ 2259 019e BD46     		mov	sp, r7
+ 2260 01a0 80BC     		pop	{r7}
+ 2261 01a2 7047     		bx	lr
+ 2262              	.L24:
+ 2263              		.align	2
+ 2264              	.L23:
+ 2265 01a4 00010000 		.word	g_pusCrc16
+ 2266              		.cfi_endproc
+ 2267              	.LFE3:
+ 2269              		.text
+ 2270              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 crc.c
+     /tmp/ccXvujIt.s:1007   .rodata:00000000 $d
+     /tmp/ccXvujIt.s:1010   .rodata:00000000 g_pucCrc8CCITT
+     /tmp/ccXvujIt.s:1270   .rodata:00000100 g_pusCrc16
+     /tmp/ccXvujIt.s:1528   .text.Crc8CCITT:00000000 $t
+     /tmp/ccXvujIt.s:1533   .text.Crc8CCITT:00000000 Crc8CCITT
+     /tmp/ccXvujIt.s:1738   .text.Crc8CCITT:00000168 $d
+     /tmp/ccXvujIt.s:1743   .text.Crc16:00000000 $t
+     /tmp/ccXvujIt.s:1748   .text.Crc16:00000000 Crc16
+     /tmp/ccXvujIt.s:2013   .text.Crc16:00000220 $d
+     /tmp/ccXvujIt.s:2018   .text.Crc16Array:00000000 $t
+     /tmp/ccXvujIt.s:2023   .text.Crc16Array:00000000 Crc16Array
+     /tmp/ccXvujIt.s:2060   .text.Crc16Array3:00000000 $t
+     /tmp/ccXvujIt.s:2065   .text.Crc16Array3:00000000 Crc16Array3
+     /tmp/ccXvujIt.s:2265   .text.Crc16Array3:000001a4 $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

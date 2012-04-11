@@ -1,0 +1,798 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"scheduler.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c"
+ 2870              		.align	2
+ 2871              	g_ulSchedulerTickCount:
+ 2872 0000 00000000 		.space	4
+ 2873              		.section	.text.SchedulerSysTickIntHandler,"ax",%progbits
+ 2874              		.align	2
+ 2875              		.global	SchedulerSysTickIntHandler
+ 2876              		.thumb
+ 2877              		.thumb_func
+ 2879              	SchedulerSysTickIntHandler:
+ 2880              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // scheduler.c - A simple task scheduler
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // Copyright (c) 2010-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** // This is part of revision 8264 of the Stellaris Firmware Development Package.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** #include "inc/hw_types.h"
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** #include "inc/hw_ints.h"
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** #include "driverlib/systick.h"
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** #include "driverlib/sysctl.h"
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** #include "driverlib/interrupt.h"
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** #include "driverlib/debug.h"
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** #include "utils/scheduler.h"
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //*****************************************************************************
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \addtogroup scheduler_api
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! @{
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //*****************************************************************************
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** static volatile unsigned long g_ulSchedulerTickCount;
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! Handles the SysTick interrupt on behalf of the scheduler module.
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! Applications using the scheduler module must ensure that this function is
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! hooked to the SysTick interrupt vector.
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \return None.
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** void
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** SchedulerSysTickIntHandler(void)
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** {
+ 2881              		.loc 1 53 0
+ 2882              		.cfi_startproc
+ 2883              		@ args = 0, pretend = 0, frame = 0
+ 2884              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2885              		@ link register save eliminated.
+ 2886 0000 80B4     		push	{r7}
+ 2887              	.LCFI0:
+ 2888              		.cfi_def_cfa_offset 4
+ 2889 0002 00AF     		add	r7, sp, #0
+ 2890              		.cfi_offset 7, -4
+ 2891              	.LCFI1:
+ 2892              		.cfi_def_cfa_register 7
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     g_ulSchedulerTickCount++;
+ 2893              		.loc 1 54 0
+ 2894 0004 044B     		ldr	r3, .L2
+ 2895 0006 1B68     		ldr	r3, [r3, #0]
+ 2896 0008 03F10102 		add	r2, r3, #1
+ 2897 000c 024B     		ldr	r3, .L2
+ 2898 000e 1A60     		str	r2, [r3, #0]
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** }
+ 2899              		.loc 1 55 0
+ 2900 0010 BD46     		mov	sp, r7
+ 2901 0012 80BC     		pop	{r7}
+ 2902 0014 7047     		bx	lr
+ 2903              	.L3:
+ 2904 0016 00BF     		.align	2
+ 2905              	.L2:
+ 2906 0018 00000000 		.word	g_ulSchedulerTickCount
+ 2907              		.cfi_endproc
+ 2908              	.LFE0:
+ 2910              		.section	.text.SchedulerInit,"ax",%progbits
+ 2911              		.align	2
+ 2912              		.global	SchedulerInit
+ 2913              		.thumb
+ 2914              		.thumb_func
+ 2916              	SchedulerInit:
+ 2917              	.LFB1:
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! Initializes the task scheduler.
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \param ulTicksPerSecond sets the basic frequency of the SysTick interrupt
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!   used by the scheduler to determine when to run the various task functions.
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! This function must be called during application startup to configure the
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! SysTick timer.  This is used by the scheduler module to determine when each
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! of the functions provided in the g_psSchedulerTable array is called.
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! The caller is responsible for ensuring that SchedulerSysTickIntHandler()
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! has previously been installed in the SYSTICK vector in the vector table
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! and must also ensure that interrupts are enabled at the CPU level.
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! Note that this call does not start the scheduler calling the configured
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! functions.  All function calls are made in the context of later calls to
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! SchedulerRun().  This call merely configures the SysTick interrupt that is
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! used by the scheduler to determine what the current system time is.
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \return None.
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** void
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** SchedulerInit(unsigned long ulTicksPerSecond)
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** {
+ 2918              		.loc 1 82 0
+ 2919              		.cfi_startproc
+ 2920              		@ args = 0, pretend = 0, frame = 8
+ 2921              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2922 0000 80B5     		push	{r7, lr}
+ 2923              	.LCFI2:
+ 2924              		.cfi_def_cfa_offset 8
+ 2925 0002 82B0     		sub	sp, sp, #8
+ 2926              	.LCFI3:
+ 2927              		.cfi_def_cfa_offset 16
+ 2928 0004 00AF     		add	r7, sp, #0
+ 2929              		.cfi_offset 14, -4
+ 2930              		.cfi_offset 7, -8
+ 2931              	.LCFI4:
+ 2932              		.cfi_def_cfa_register 7
+ 2933 0006 7860     		str	r0, [r7, #4]
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     ASSERT(ulTicksPerSecond);
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     //
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     // Configure SysTick for a periodic interrupt.
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     //
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     SysTickPeriodSet(SysCtlClockGet() / ulTicksPerSecond);
+ 2934              		.loc 1 88 0
+ 2935 0008 FFF7FEFF 		bl	SysCtlClockGet
+ 2936 000c 0246     		mov	r2, r0
+ 2937 000e 7B68     		ldr	r3, [r7, #4]
+ 2938 0010 B2FBF3F3 		udiv	r3, r2, r3
+ 2939 0014 1846     		mov	r0, r3
+ 2940 0016 FFF7FEFF 		bl	SysTickPeriodSet
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     SysTickEnable();
+ 2941              		.loc 1 89 0
+ 2942 001a FFF7FEFF 		bl	SysTickEnable
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     SysTickIntEnable();
+ 2943              		.loc 1 90 0
+ 2944 001e FFF7FEFF 		bl	SysTickIntEnable
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** }
+ 2945              		.loc 1 91 0
+ 2946 0022 07F10807 		add	r7, r7, #8
+ 2947 0026 BD46     		mov	sp, r7
+ 2948 0028 80BD     		pop	{r7, pc}
+ 2949              		.cfi_endproc
+ 2950              	.LFE1:
+ 2952 002a 00BF     		.section	.text.SchedulerRun,"ax",%progbits
+ 2953              		.align	2
+ 2954              		.global	SchedulerRun
+ 2955              		.thumb
+ 2956              		.thumb_func
+ 2958              	SchedulerRun:
+ 2959              	.LFB2:
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! Instructs the scheduler to update its task table and make calls to
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! functions needing called.
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! This function must be called periodically by the client to allow the
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! scheduler to make calls to any configured task functions if it is their
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! time to be called.  The call must be made at least as frequently as the
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! most frequent task configured in the g_psSchedulerTable array.
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! Although the scheduler makes use of the SysTick interrupt, all calls to
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! functions configured in \e g_psSchedulerTable are made in the context of
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! SchedulerRun().
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \return None.
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** void
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** SchedulerRun(void)
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** {
+ 2960              		.loc 1 112 0
+ 2961              		.cfi_startproc
+ 2962              		@ args = 0, pretend = 0, frame = 8
+ 2963              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2964 0000 80B5     		push	{r7, lr}
+ 2965              	.LCFI5:
+ 2966              		.cfi_def_cfa_offset 8
+ 2967 0002 82B0     		sub	sp, sp, #8
+ 2968              	.LCFI6:
+ 2969              		.cfi_def_cfa_offset 16
+ 2970 0004 00AF     		add	r7, sp, #0
+ 2971              		.cfi_offset 14, -4
+ 2972              		.cfi_offset 7, -8
+ 2973              	.LCFI7:
+ 2974              		.cfi_def_cfa_register 7
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     unsigned long ulLoop;
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     tSchedulerTask *psTask;
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     //
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     // Loop through each task in the task table.
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     //
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     for(ulLoop = 0; ulLoop < g_ulSchedulerNumTasks; ulLoop++)
+ 2975              		.loc 1 119 0
+ 2976 0006 4FF00003 		mov	r3, #0
+ 2977 000a 7B60     		str	r3, [r7, #4]
+ 2978 000c 26E0     		b	.L6
+ 2979              	.L8:
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     {
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         //
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         // Get a pointer to the task information.
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         //
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         psTask = &g_psSchedulerTable[ulLoop];
+ 2980              		.loc 1 124 0
+ 2981 000e 7A68     		ldr	r2, [r7, #4]
+ 2982 0010 1346     		mov	r3, r2
+ 2983 0012 4FEA8303 		lsl	r3, r3, #2
+ 2984 0016 9B18     		adds	r3, r3, r2
+ 2985 0018 4FEA8303 		lsl	r3, r3, #2
+ 2986 001c 1A46     		mov	r2, r3
+ 2987 001e 144B     		ldr	r3, .L9
+ 2988 0020 D318     		adds	r3, r2, r3
+ 2989 0022 3B60     		str	r3, [r7, #0]
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         //
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         // Is this task active and, if so, is it time to call it's function?
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         //
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         if(psTask->bActive && (SchedulerElapsedTicksGet(psTask->ulLastCall) >=
+ 2990              		.loc 1 129 0
+ 2991 0024 3B68     		ldr	r3, [r7, #0]
+ 2992 0026 1B7C     		ldrb	r3, [r3, #16]	@ zero_extendqisi2
+ 2993 0028 002B     		cmp	r3, #0
+ 2994 002a 13D0     		beq	.L7
+ 2995              		.loc 1 129 0 is_stmt 0 discriminator 1
+ 2996 002c 3B68     		ldr	r3, [r7, #0]
+ 2997 002e DB68     		ldr	r3, [r3, #12]
+ 2998 0030 1846     		mov	r0, r3
+ 2999 0032 FFF7FEFF 		bl	SchedulerElapsedTicksGet
+ 3000 0036 0246     		mov	r2, r0
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****            psTask->ulFrequencyTicks))
+ 3001              		.loc 1 130 0 is_stmt 1 discriminator 1
+ 3002 0038 3B68     		ldr	r3, [r7, #0]
+ 3003 003a 9B68     		ldr	r3, [r3, #8]
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         if(psTask->bActive && (SchedulerElapsedTicksGet(psTask->ulLastCall) >=
+ 3004              		.loc 1 129 0 discriminator 1
+ 3005 003c 9A42     		cmp	r2, r3
+ 3006 003e 09D3     		bcc	.L7
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         {
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             //
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             // Remember the timestamp at which we make the function call.
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             //
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             psTask->ulLastCall = g_ulSchedulerTickCount;
+ 3007              		.loc 1 135 0
+ 3008 0040 0C4B     		ldr	r3, .L9+4
+ 3009 0042 1A68     		ldr	r2, [r3, #0]
+ 3010 0044 3B68     		ldr	r3, [r7, #0]
+ 3011 0046 DA60     		str	r2, [r3, #12]
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             //
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             // Call the task function, passing the provided parameter.
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             //
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             psTask->pfnFunction(psTask->pvParam);
+ 3012              		.loc 1 140 0
+ 3013 0048 3B68     		ldr	r3, [r7, #0]
+ 3014 004a 1B68     		ldr	r3, [r3, #0]
+ 3015 004c 3A68     		ldr	r2, [r7, #0]
+ 3016 004e 5268     		ldr	r2, [r2, #4]
+ 3017 0050 1046     		mov	r0, r2
+ 3018 0052 9847     		blx	r3
+ 3019              	.L7:
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     for(ulLoop = 0; ulLoop < g_ulSchedulerNumTasks; ulLoop++)
+ 3020              		.loc 1 119 0
+ 3021 0054 7B68     		ldr	r3, [r7, #4]
+ 3022 0056 03F10103 		add	r3, r3, #1
+ 3023 005a 7B60     		str	r3, [r7, #4]
+ 3024              	.L6:
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     for(ulLoop = 0; ulLoop < g_ulSchedulerNumTasks; ulLoop++)
+ 3025              		.loc 1 119 0 is_stmt 0 discriminator 1
+ 3026 005c 064B     		ldr	r3, .L9+8
+ 3027 005e 1B68     		ldr	r3, [r3, #0]
+ 3028 0060 7A68     		ldr	r2, [r7, #4]
+ 3029 0062 9A42     		cmp	r2, r3
+ 3030 0064 D3D3     		bcc	.L8
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         }
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     }
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** }
+ 3031              		.loc 1 143 0 is_stmt 1
+ 3032 0066 07F10807 		add	r7, r7, #8
+ 3033 006a BD46     		mov	sp, r7
+ 3034 006c 80BD     		pop	{r7, pc}
+ 3035              	.L10:
+ 3036 006e 00BF     		.align	2
+ 3037              	.L9:
+ 3038 0070 00000000 		.word	g_psSchedulerTable
+ 3039 0074 00000000 		.word	g_ulSchedulerTickCount
+ 3040 0078 00000000 		.word	g_ulSchedulerNumTasks
+ 3041              		.cfi_endproc
+ 3042              	.LFE2:
+ 3044              		.section	.text.SchedulerTaskEnable,"ax",%progbits
+ 3045              		.align	2
+ 3046              		.global	SchedulerTaskEnable
+ 3047              		.thumb
+ 3048              		.thumb_func
+ 3050              	SchedulerTaskEnable:
+ 3051              	.LFB3:
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! Enables a task and allows the scheduler to call it periodically.
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \param ulIndex is the index of the task which is to be enabled in the
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!        global \e g_psSchedulerTable array.
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \param bRunNow is \b true if the task is to be run on the next call to
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!        SchedulerRun() or \b false if one whole period is to elapse before
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!        the task is run.
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! This function marks one of the configured tasks as enabled and causes
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! SchedulerRun() to call that task periodically.  The caller may choose to
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! have the enabled task run for the first time on the next call to
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! SchedulerRun() or to wait one full task period before making the first
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! call.
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \return None.
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** void
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** SchedulerTaskEnable(unsigned long ulIndex, tBoolean bRunNow)
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** {
+ 3052              		.loc 1 166 0
+ 3053              		.cfi_startproc
+ 3054              		@ args = 0, pretend = 0, frame = 8
+ 3055              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3056              		@ link register save eliminated.
+ 3057 0000 80B4     		push	{r7}
+ 3058              	.LCFI8:
+ 3059              		.cfi_def_cfa_offset 4
+ 3060 0002 83B0     		sub	sp, sp, #12
+ 3061              	.LCFI9:
+ 3062              		.cfi_def_cfa_offset 16
+ 3063 0004 00AF     		add	r7, sp, #0
+ 3064              		.cfi_offset 7, -4
+ 3065              	.LCFI10:
+ 3066              		.cfi_def_cfa_register 7
+ 3067 0006 7860     		str	r0, [r7, #4]
+ 3068 0008 0B46     		mov	r3, r1
+ 3069 000a FB70     		strb	r3, [r7, #3]
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     //
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     // Is the task index passed valid?
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     //
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     if(ulIndex < g_ulSchedulerNumTasks)
+ 3070              		.loc 1 170 0
+ 3071 000c 224B     		ldr	r3, .L14
+ 3072 000e 1B68     		ldr	r3, [r3, #0]
+ 3073 0010 7A68     		ldr	r2, [r7, #4]
+ 3074 0012 9A42     		cmp	r2, r3
+ 3075 0014 3AD2     		bcs	.L11
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     {
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         //
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         // Yes - mark the task as active.
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         //
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         g_psSchedulerTable[ulIndex].bActive = true;
+ 3076              		.loc 1 175 0
+ 3077 0016 2149     		ldr	r1, .L14+4
+ 3078 0018 7A68     		ldr	r2, [r7, #4]
+ 3079 001a 1346     		mov	r3, r2
+ 3080 001c 4FEA8303 		lsl	r3, r3, #2
+ 3081 0020 9B18     		adds	r3, r3, r2
+ 3082 0022 4FEA8303 		lsl	r3, r3, #2
+ 3083 0026 CB18     		adds	r3, r1, r3
+ 3084 0028 03F11003 		add	r3, r3, #16
+ 3085 002c 4FF00102 		mov	r2, #1
+ 3086 0030 1A70     		strb	r2, [r3, #0]
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         //
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         // Set the last call time to ensure that the function is called either
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         // next time the scheduler is run or after the desired number of ticks
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         // depending upon the value of the bRunNow parameter.
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         //
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         if(bRunNow)
+ 3087              		.loc 1 182 0
+ 3088 0032 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 3089 0034 002B     		cmp	r3, #0
+ 3090 0036 1BD0     		beq	.L13
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         {
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             //
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             // Cause the task to run on the next call to SchedulerRun().
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             //
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             g_psSchedulerTable[ulIndex].ulLastCall = (g_ulSchedulerTickCount -
+ 3091              		.loc 1 187 0
+ 3092 0038 194B     		ldr	r3, .L14+8
+ 3093 003a 1968     		ldr	r1, [r3, #0]
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****                             g_psSchedulerTable[ulIndex].ulFrequencyTicks);
+ 3094              		.loc 1 188 0
+ 3095 003c 1748     		ldr	r0, .L14+4
+ 3096 003e 7A68     		ldr	r2, [r7, #4]
+ 3097 0040 1346     		mov	r3, r2
+ 3098 0042 4FEA8303 		lsl	r3, r3, #2
+ 3099 0046 9B18     		adds	r3, r3, r2
+ 3100 0048 4FEA8303 		lsl	r3, r3, #2
+ 3101 004c C318     		adds	r3, r0, r3
+ 3102 004e 03F10803 		add	r3, r3, #8
+ 3103 0052 1B68     		ldr	r3, [r3, #0]
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             g_psSchedulerTable[ulIndex].ulLastCall = (g_ulSchedulerTickCount -
+ 3104              		.loc 1 187 0
+ 3105 0054 C91A     		subs	r1, r1, r3
+ 3106 0056 1148     		ldr	r0, .L14+4
+ 3107 0058 7A68     		ldr	r2, [r7, #4]
+ 3108 005a 1346     		mov	r3, r2
+ 3109 005c 4FEA8303 		lsl	r3, r3, #2
+ 3110 0060 9B18     		adds	r3, r3, r2
+ 3111 0062 4FEA8303 		lsl	r3, r3, #2
+ 3112 0066 C318     		adds	r3, r0, r3
+ 3113 0068 03F10C03 		add	r3, r3, #12
+ 3114 006c 1960     		str	r1, [r3, #0]
+ 3115 006e 0DE0     		b	.L11
+ 3116              	.L13:
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         }
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         else
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         {
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             //
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             // Cause the task to run after one full time period.
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             //
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****             g_psSchedulerTable[ulIndex].ulLastCall = g_ulSchedulerTickCount;
+ 3117              		.loc 1 195 0
+ 3118 0070 0B4B     		ldr	r3, .L14+8
+ 3119 0072 1968     		ldr	r1, [r3, #0]
+ 3120 0074 0948     		ldr	r0, .L14+4
+ 3121 0076 7A68     		ldr	r2, [r7, #4]
+ 3122 0078 1346     		mov	r3, r2
+ 3123 007a 4FEA8303 		lsl	r3, r3, #2
+ 3124 007e 9B18     		adds	r3, r3, r2
+ 3125 0080 4FEA8303 		lsl	r3, r3, #2
+ 3126 0084 C318     		adds	r3, r0, r3
+ 3127 0086 03F10C03 		add	r3, r3, #12
+ 3128 008a 1960     		str	r1, [r3, #0]
+ 3129              	.L11:
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         }
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     }
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** }
+ 3130              		.loc 1 198 0
+ 3131 008c 07F10C07 		add	r7, r7, #12
+ 3132 0090 BD46     		mov	sp, r7
+ 3133 0092 80BC     		pop	{r7}
+ 3134 0094 7047     		bx	lr
+ 3135              	.L15:
+ 3136 0096 00BF     		.align	2
+ 3137              	.L14:
+ 3138 0098 00000000 		.word	g_ulSchedulerNumTasks
+ 3139 009c 00000000 		.word	g_psSchedulerTable
+ 3140 00a0 00000000 		.word	g_ulSchedulerTickCount
+ 3141              		.cfi_endproc
+ 3142              	.LFE3:
+ 3144              		.section	.text.SchedulerTaskDisable,"ax",%progbits
+ 3145              		.align	2
+ 3146              		.global	SchedulerTaskDisable
+ 3147              		.thumb
+ 3148              		.thumb_func
+ 3150              	SchedulerTaskDisable:
+ 3151              	.LFB4:
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! Disables a task and prevents the scheduler from calling it.
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \param ulIndex is the index of the task which is to be disabled in the
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!        global \e g_psSchedulerTable array.
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! This function marks one of the configured tasks as inactive and prevents
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! SchedulerRun() from calling it.  The task may be reenabled by calling
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! SchedulerTaskEnable().
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \return None.
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** void
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** SchedulerTaskDisable(unsigned long ulIndex)
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** {
+ 3152              		.loc 1 216 0
+ 3153              		.cfi_startproc
+ 3154              		@ args = 0, pretend = 0, frame = 8
+ 3155              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3156              		@ link register save eliminated.
+ 3157 0000 80B4     		push	{r7}
+ 3158              	.LCFI11:
+ 3159              		.cfi_def_cfa_offset 4
+ 3160 0002 83B0     		sub	sp, sp, #12
+ 3161              	.LCFI12:
+ 3162              		.cfi_def_cfa_offset 16
+ 3163 0004 00AF     		add	r7, sp, #0
+ 3164              		.cfi_offset 7, -4
+ 3165              	.LCFI13:
+ 3166              		.cfi_def_cfa_register 7
+ 3167 0006 7860     		str	r0, [r7, #4]
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     //
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     // Is the task index passed valid?
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     //
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     if(ulIndex < g_ulSchedulerNumTasks)
+ 3168              		.loc 1 220 0
+ 3169 0008 0B4B     		ldr	r3, .L18
+ 3170 000a 1B68     		ldr	r3, [r3, #0]
+ 3171 000c 7A68     		ldr	r2, [r7, #4]
+ 3172 000e 9A42     		cmp	r2, r3
+ 3173 0010 0DD2     		bcs	.L16
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     {
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         //
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         // Yes - mark the task as inactive.
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         //
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****         g_psSchedulerTable[ulIndex].bActive = false;
+ 3174              		.loc 1 225 0
+ 3175 0012 0A49     		ldr	r1, .L18+4
+ 3176 0014 7A68     		ldr	r2, [r7, #4]
+ 3177 0016 1346     		mov	r3, r2
+ 3178 0018 4FEA8303 		lsl	r3, r3, #2
+ 3179 001c 9B18     		adds	r3, r3, r2
+ 3180 001e 4FEA8303 		lsl	r3, r3, #2
+ 3181 0022 CB18     		adds	r3, r1, r3
+ 3182 0024 03F11003 		add	r3, r3, #16
+ 3183 0028 4FF00002 		mov	r2, #0
+ 3184 002c 1A70     		strb	r2, [r3, #0]
+ 3185              	.L16:
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     }
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** }
+ 3186              		.loc 1 227 0
+ 3187 002e 07F10C07 		add	r7, r7, #12
+ 3188 0032 BD46     		mov	sp, r7
+ 3189 0034 80BC     		pop	{r7}
+ 3190 0036 7047     		bx	lr
+ 3191              	.L19:
+ 3192              		.align	2
+ 3193              	.L18:
+ 3194 0038 00000000 		.word	g_ulSchedulerNumTasks
+ 3195 003c 00000000 		.word	g_psSchedulerTable
+ 3196              		.cfi_endproc
+ 3197              	.LFE4:
+ 3199              		.section	.text.SchedulerTickCountGet,"ax",%progbits
+ 3200              		.align	2
+ 3201              		.global	SchedulerTickCountGet
+ 3202              		.thumb
+ 3203              		.thumb_func
+ 3205              	SchedulerTickCountGet:
+ 3206              	.LFB5:
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! Returns the current system time in ticks since power on.
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! This function may be called by a client to retrieve the current system
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! time.  The value returned is a count of ticks elapsed since the system
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! last booted.
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \return Tick count since last boot.
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** unsigned long
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** SchedulerTickCountGet(void)
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** {
+ 3207              		.loc 1 242 0
+ 3208              		.cfi_startproc
+ 3209              		@ args = 0, pretend = 0, frame = 0
+ 3210              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3211              		@ link register save eliminated.
+ 3212 0000 80B4     		push	{r7}
+ 3213              	.LCFI14:
+ 3214              		.cfi_def_cfa_offset 4
+ 3215 0002 00AF     		add	r7, sp, #0
+ 3216              		.cfi_offset 7, -4
+ 3217              	.LCFI15:
+ 3218              		.cfi_def_cfa_register 7
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     return(g_ulSchedulerTickCount);
+ 3219              		.loc 1 243 0
+ 3220 0004 024B     		ldr	r3, .L21
+ 3221 0006 1B68     		ldr	r3, [r3, #0]
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** }
+ 3222              		.loc 1 244 0
+ 3223 0008 1846     		mov	r0, r3
+ 3224 000a BD46     		mov	sp, r7
+ 3225 000c 80BC     		pop	{r7}
+ 3226 000e 7047     		bx	lr
+ 3227              	.L22:
+ 3228              		.align	2
+ 3229              	.L21:
+ 3230 0010 00000000 		.word	g_ulSchedulerTickCount
+ 3231              		.cfi_endproc
+ 3232              	.LFE5:
+ 3234              		.section	.text.SchedulerElapsedTicksGet,"ax",%progbits
+ 3235              		.align	2
+ 3236              		.global	SchedulerElapsedTicksGet
+ 3237              		.thumb
+ 3238              		.thumb_func
+ 3240              	SchedulerElapsedTicksGet:
+ 3241              	.LFB6:
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! Returns the number of ticks elapsed since the provided tick count.
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \param ulTickCount is the tick count from which to determine the elapsed
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! time.
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! This function may be called by a client to determine how much time has
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! passed since a particular tick count provided in the \e ulTickCount
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! parameter.  This function takes into account wrapping of the global tick
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! counter and assumes that the provided tick count always represents a time
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! in the past.  The returned value will, of course, be wrong if the tick
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! counter has wrapped more than once since the passed \e ulTickCount.  As a
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! result, please do not use this function if you are dealing with timeouts
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! of 497 days or longer (assuming you use a 10mS tick period).
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \return The number of ticks elapsed since the provided tick count.
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** unsigned long
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** SchedulerElapsedTicksGet(unsigned long ulTickCount)
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** {
+ 3242              		.loc 1 267 0
+ 3243              		.cfi_startproc
+ 3244              		@ args = 0, pretend = 0, frame = 8
+ 3245              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3246 0000 80B5     		push	{r7, lr}
+ 3247              	.LCFI16:
+ 3248              		.cfi_def_cfa_offset 8
+ 3249 0002 82B0     		sub	sp, sp, #8
+ 3250              	.LCFI17:
+ 3251              		.cfi_def_cfa_offset 16
+ 3252 0004 00AF     		add	r7, sp, #0
+ 3253              		.cfi_offset 14, -4
+ 3254              		.cfi_offset 7, -8
+ 3255              	.LCFI18:
+ 3256              		.cfi_def_cfa_register 7
+ 3257 0006 7860     		str	r0, [r7, #4]
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     //
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     // Determine the calculation based upon whether the global tick count has
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     // wrapped since the passed ulTickCount.
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     //
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     return(SchedulerElapsedTicksCalc(ulTickCount, g_ulSchedulerTickCount));
+ 3258              		.loc 1 272 0
+ 3259 0008 054B     		ldr	r3, .L24
+ 3260 000a 1B68     		ldr	r3, [r3, #0]
+ 3261 000c 7868     		ldr	r0, [r7, #4]
+ 3262 000e 1946     		mov	r1, r3
+ 3263 0010 FFF7FEFF 		bl	SchedulerElapsedTicksCalc
+ 3264 0014 0346     		mov	r3, r0
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** }
+ 3265              		.loc 1 273 0
+ 3266 0016 1846     		mov	r0, r3
+ 3267 0018 07F10807 		add	r7, r7, #8
+ 3268 001c BD46     		mov	sp, r7
+ 3269 001e 80BD     		pop	{r7, pc}
+ 3270              	.L25:
+ 3271              		.align	2
+ 3272              	.L24:
+ 3273 0020 00000000 		.word	g_ulSchedulerTickCount
+ 3274              		.cfi_endproc
+ 3275              	.LFE6:
+ 3277              		.section	.text.SchedulerElapsedTicksCalc,"ax",%progbits
+ 3278              		.align	2
+ 3279              		.global	SchedulerElapsedTicksCalc
+ 3280              		.thumb
+ 3281              		.thumb_func
+ 3283              	SchedulerElapsedTicksCalc:
+ 3284              	.LFB7:
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** 
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! Returns the number of ticks elapsed between two times.
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \param ulTickStart is the system tick count for the start of the period.
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \param ulTickEnd is the system tick count for the end of the period.
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! This function may be called by a client to determine the number of ticks
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! which have elapsed between provided starting and ending tick counts.  The
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! function takes into account wrapping cases where the end tick count is
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! lower than the starting count assuming that the ending tick count always
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! represents a later time than the starting count.
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //!
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! \return The number of ticks elapsed between the provided start and end
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //! counts.
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** //****************************************************************************
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** unsigned long
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** SchedulerElapsedTicksCalc(unsigned long ulTickStart, unsigned long ulTickEnd)
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** {
+ 3285              		.loc 1 294 0
+ 3286              		.cfi_startproc
+ 3287              		@ args = 0, pretend = 0, frame = 8
+ 3288              		@ frame_needed = 1, uses_anonymous_args = 0
+ 3289              		@ link register save eliminated.
+ 3290 0000 80B4     		push	{r7}
+ 3291              	.LCFI19:
+ 3292              		.cfi_def_cfa_offset 4
+ 3293 0002 83B0     		sub	sp, sp, #12
+ 3294              	.LCFI20:
+ 3295              		.cfi_def_cfa_offset 16
+ 3296 0004 00AF     		add	r7, sp, #0
+ 3297              		.cfi_offset 7, -4
+ 3298              	.LCFI21:
+ 3299              		.cfi_def_cfa_register 7
+ 3300 0006 7860     		str	r0, [r7, #4]
+ 3301 0008 3960     		str	r1, [r7, #0]
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     return((ulTickEnd > ulTickStart) ? (ulTickEnd - ulTickStart) :
+ 3302              		.loc 1 295 0
+ 3303 000a 3A68     		ldr	r2, [r7, #0]
+ 3304 000c 7B68     		ldr	r3, [r7, #4]
+ 3305 000e 9A42     		cmp	r2, r3
+ 3306 0010 03D9     		bls	.L27
+ 3307              		.loc 1 295 0 is_stmt 0 discriminator 1
+ 3308 0012 3A68     		ldr	r2, [r7, #0]
+ 3309 0014 7B68     		ldr	r3, [r7, #4]
+ 3310 0016 D31A     		subs	r3, r2, r3
+ 3311 0018 06E0     		b	.L28
+ 3312              	.L27:
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****            ((0xFFFFFFFF - ulTickStart) + ulTickEnd + 1));
+ 3313              		.loc 1 296 0 is_stmt 1 discriminator 2
+ 3314 001a 7B68     		ldr	r3, [r7, #4]
+ 3315 001c 6FEA0302 		mvn	r2, r3
+ 3316 0020 3B68     		ldr	r3, [r7, #0]
+ 3317 0022 D318     		adds	r3, r2, r3
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c ****     return((ulTickEnd > ulTickStart) ? (ulTickEnd - ulTickStart) :
+ 3318              		.loc 1 295 0 discriminator 2
+ 3319 0024 03F10103 		add	r3, r3, #1
+ 3320              	.L28:
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/scheduler.c **** }
+ 3321              		.loc 1 297 0 discriminator 3
+ 3322 0028 1846     		mov	r0, r3
+ 3323 002a 07F10C07 		add	r7, r7, #12
+ 3324 002e BD46     		mov	sp, r7
+ 3325 0030 80BC     		pop	{r7}
+ 3326 0032 7047     		bx	lr
+ 3327              		.cfi_endproc
+ 3328              	.LFE7:
+ 3330              		.text
+ 3331              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 scheduler.c
+     /tmp/ccl2tSsW.s:2870   .bss:00000000 $d
+     /tmp/ccl2tSsW.s:2871   .bss:00000000 g_ulSchedulerTickCount
+     /tmp/ccl2tSsW.s:2874   .text.SchedulerSysTickIntHandler:00000000 $t
+     /tmp/ccl2tSsW.s:2879   .text.SchedulerSysTickIntHandler:00000000 SchedulerSysTickIntHandler
+     /tmp/ccl2tSsW.s:2906   .text.SchedulerSysTickIntHandler:00000018 $d
+     /tmp/ccl2tSsW.s:2911   .text.SchedulerInit:00000000 $t
+     /tmp/ccl2tSsW.s:2916   .text.SchedulerInit:00000000 SchedulerInit
+     /tmp/ccl2tSsW.s:2953   .text.SchedulerRun:00000000 $t
+     /tmp/ccl2tSsW.s:2958   .text.SchedulerRun:00000000 SchedulerRun
+     /tmp/ccl2tSsW.s:3240   .text.SchedulerElapsedTicksGet:00000000 SchedulerElapsedTicksGet
+     /tmp/ccl2tSsW.s:3038   .text.SchedulerRun:00000070 $d
+     /tmp/ccl2tSsW.s:3045   .text.SchedulerTaskEnable:00000000 $t
+     /tmp/ccl2tSsW.s:3050   .text.SchedulerTaskEnable:00000000 SchedulerTaskEnable
+     /tmp/ccl2tSsW.s:3138   .text.SchedulerTaskEnable:00000098 $d
+     /tmp/ccl2tSsW.s:3145   .text.SchedulerTaskDisable:00000000 $t
+     /tmp/ccl2tSsW.s:3150   .text.SchedulerTaskDisable:00000000 SchedulerTaskDisable
+     /tmp/ccl2tSsW.s:3194   .text.SchedulerTaskDisable:00000038 $d
+     /tmp/ccl2tSsW.s:3200   .text.SchedulerTickCountGet:00000000 $t
+     /tmp/ccl2tSsW.s:3205   .text.SchedulerTickCountGet:00000000 SchedulerTickCountGet
+     /tmp/ccl2tSsW.s:3230   .text.SchedulerTickCountGet:00000010 $d
+     /tmp/ccl2tSsW.s:3235   .text.SchedulerElapsedTicksGet:00000000 $t
+     /tmp/ccl2tSsW.s:3283   .text.SchedulerElapsedTicksCalc:00000000 SchedulerElapsedTicksCalc
+     /tmp/ccl2tSsW.s:3273   .text.SchedulerElapsedTicksGet:00000020 $d
+     /tmp/ccl2tSsW.s:3278   .text.SchedulerElapsedTicksCalc:00000000 $t
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+SysCtlClockGet
+SysTickPeriodSet
+SysTickEnable
+SysTickIntEnable
+g_psSchedulerTable
+g_ulSchedulerNumTasks

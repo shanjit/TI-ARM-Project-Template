@@ -1,0 +1,1777 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"interrupt.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c"
+ 4539              		.align	2
+ 4542              	g_pulPriority:
+ 4543 0000 00070000 		.word	1792
+ 4544 0004 00060000 		.word	1536
+ 4545 0008 00050000 		.word	1280
+ 4546 000c 00040000 		.word	1024
+ 4547 0010 00030000 		.word	768
+ 4548 0014 00020000 		.word	512
+ 4549 0018 00010000 		.word	256
+ 4550 001c 00000000 		.word	0
+ 4551              		.align	2
+ 4554              	g_pulRegs:
+ 4555 0020 00000000 		.word	0
+ 4556 0024 18ED00E0 		.word	-536810216
+ 4557 0028 1CED00E0 		.word	-536810212
+ 4558 002c 20ED00E0 		.word	-536810208
+ 4559 0030 00E400E0 		.word	-536812544
+ 4560 0034 04E400E0 		.word	-536812540
+ 4561 0038 08E400E0 		.word	-536812536
+ 4562 003c 0CE400E0 		.word	-536812532
+ 4563 0040 10E400E0 		.word	-536812528
+ 4564 0044 14E400E0 		.word	-536812524
+ 4565 0048 18E400E0 		.word	-536812520
+ 4566 004c 1CE400E0 		.word	-536812516
+ 4567 0050 20E400E0 		.word	-536812512
+ 4568 0054 24E400E0 		.word	-536812508
+ 4569 0058 28E400E0 		.word	-536812504
+ 4570 005c 2CE400E0 		.word	-536812500
+ 4571 0060 30E400E0 		.word	-536812496
+ 4572 0064 34E400E0 		.word	-536812492
+ 4573 0068 38E400E0 		.word	-536812488
+ 4574 006c 3CE400E0 		.word	-536812484
+ 4575 0070 40E400E0 		.word	-536812480
+ 4576 0074 44E400E0 		.word	-536812476
+ 4577 0078 48E400E0 		.word	-536812472
+ 4578 007c 4CE400E0 		.word	-536812468
+ 4579 0080 50E400E0 		.word	-536812464
+ 4580 0084 54E400E0 		.word	-536812460
+ 4581 0088 58E400E0 		.word	-536812456
+ 4582 008c 5CE400E0 		.word	-536812452
+ 4583 0090 60E400E0 		.word	-536812448
+ 4584 0094 64E400E0 		.word	-536812444
+ 4585 0098 68E400E0 		.word	-536812440
+ 4586 009c 6CE400E0 		.word	-536812436
+ 4587 00a0 70E400E0 		.word	-536812432
+ 4588 00a4 74E400E0 		.word	-536812428
+ 4589 00a8 78E400E0 		.word	-536812424
+ 4590 00ac 7CE400E0 		.word	-536812420
+ 4591 00b0 80E400E0 		.word	-536812416
+ 4592              		.align	2
+ 4595              	g_pulEnRegs:
+ 4596 00b4 00E100E0 		.word	-536813312
+ 4597 00b8 04E100E0 		.word	-536813308
+ 4598 00bc 08E100E0 		.word	-536813304
+ 4599 00c0 0CE100E0 		.word	-536813300
+ 4600 00c4 10E100E0 		.word	-536813296
+ 4601              		.align	2
+ 4604              	g_pulDisRegs:
+ 4605 00c8 80E100E0 		.word	-536813184
+ 4606 00cc 84E100E0 		.word	-536813180
+ 4607 00d0 88E100E0 		.word	-536813176
+ 4608 00d4 8CE100E0 		.word	-536813172
+ 4609 00d8 90E100E0 		.word	-536813168
+ 4610              		.align	2
+ 4613              	g_pulPendRegs:
+ 4614 00dc 00E200E0 		.word	-536813056
+ 4615 00e0 04E200E0 		.word	-536813052
+ 4616 00e4 08E200E0 		.word	-536813048
+ 4617 00e8 0CE200E0 		.word	-536813044
+ 4618 00ec 10E200E0 		.word	-536813040
+ 4619              		.align	2
+ 4622              	g_pulUnpendRegs:
+ 4623 00f0 80E200E0 		.word	-536812928
+ 4624 00f4 84E200E0 		.word	-536812924
+ 4625 00f8 88E200E0 		.word	-536812920
+ 4626 00fc 8CE200E0 		.word	-536812916
+ 4627 0100 90E200E0 		.word	-536812912
+ 4628              		.section	.text.IntDefaultHandler,"ax",%progbits
+ 4629              		.align	2
+ 4630              		.thumb
+ 4631              		.thumb_func
+ 4633              	IntDefaultHandler:
+ 4634              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // interrupt.c - Driver for the NVIC Interrupt Controller.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // Copyright (c) 2005-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \addtogroup interrupt_api
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! @{
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #include "inc/hw_ints.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #include "inc/hw_nvic.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #include "inc/hw_types.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #include "driverlib/cpu.h"
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #include "driverlib/debug.h"
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #include "driverlib/interrupt.h"
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // This is a mapping between priority grouping encodings and the number of
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // preemption priority bits.
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** static const unsigned long g_pulPriority[] =
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     NVIC_APINT_PRIGROUP_0_8, NVIC_APINT_PRIGROUP_1_7, NVIC_APINT_PRIGROUP_2_6,
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     NVIC_APINT_PRIGROUP_3_5, NVIC_APINT_PRIGROUP_4_4, NVIC_APINT_PRIGROUP_5_3,
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     NVIC_APINT_PRIGROUP_6_2, NVIC_APINT_PRIGROUP_7_1
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** };
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // This is a mapping between interrupt number and the register that contains
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // the priority encoding for that interrupt.
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** static const unsigned long g_pulRegs[] =
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     0, NVIC_SYS_PRI1, NVIC_SYS_PRI2, NVIC_SYS_PRI3, NVIC_PRI0, NVIC_PRI1,
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     NVIC_PRI2, NVIC_PRI3, NVIC_PRI4, NVIC_PRI5, NVIC_PRI6, NVIC_PRI7,
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     NVIC_PRI8, NVIC_PRI9, NVIC_PRI10, NVIC_PRI11, NVIC_PRI12, NVIC_PRI13,
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     NVIC_PRI14, NVIC_PRI15, NVIC_PRI16, NVIC_PRI17, NVIC_PRI18, NVIC_PRI19,
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     NVIC_PRI20, NVIC_PRI21, NVIC_PRI22, NVIC_PRI23, NVIC_PRI24, NVIC_PRI25,
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     NVIC_PRI26, NVIC_PRI27, NVIC_PRI28, NVIC_PRI29, NVIC_PRI30, NVIC_PRI31,
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     NVIC_PRI32
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** };
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // This is a mapping between interrupt number (for the peripheral interrupts
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // only) and the register that contains the interrupt enable for that
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // interrupt.
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** static const unsigned long g_pulEnRegs[] =
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     NVIC_EN0, NVIC_EN1, NVIC_EN2, NVIC_EN3, NVIC_EN4
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** };
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // This is a mapping between interrupt number (for the peripheral interrupts
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // only) and the register that contains the interrupt disable for that
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // interrupt.
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** static const unsigned long g_pulDisRegs[] =
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     NVIC_DIS0, NVIC_DIS1, NVIC_DIS2, NVIC_DIS3, NVIC_DIS4
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** };
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // This is a mapping between interrupt number (for the peripheral interrupts
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // only) and the register that contains the interrupt pend for that interrupt.
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** static const unsigned long g_pulPendRegs[] =
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     NVIC_PEND0, NVIC_PEND1, NVIC_PEND2, NVIC_PEND3, NVIC_PEND4
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** };
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // This is a mapping between interrupt number (for the peripheral interrupts
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // only) and the register that contains the interrupt unpend for that
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // interrupt.
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** static const unsigned long g_pulUnpendRegs[] =
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     NVIC_UNPEND0, NVIC_UNPEND1, NVIC_UNPEND2, NVIC_UNPEND3, NVIC_UNPEND4
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** };
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \internal
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! The default interrupt handler.
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! This is the default interrupt handler for all interrupts.  It simply loops
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! forever so that the system state is preserved for observation by a
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! debugger.  Since interrupts should be disabled before unregistering the
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! corresponding handler, this should never be called.
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return None.
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** static void
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntDefaultHandler(void)
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 4635              		.loc 1 131 0
+ 4636              		.cfi_startproc
+ 4637              		@ args = 0, pretend = 0, frame = 0
+ 4638              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4639              		@ link register save eliminated.
+ 4640 0000 80B4     		push	{r7}
+ 4641              	.LCFI0:
+ 4642              		.cfi_def_cfa_offset 4
+ 4643 0002 00AF     		add	r7, sp, #0
+ 4644              		.cfi_offset 7, -4
+ 4645              	.LCFI1:
+ 4646              		.cfi_def_cfa_register 7
+ 4647              	.L2:
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Go into an infinite loop.
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     while(1)
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 4648              		.loc 1 137 0 discriminator 1
+ 4649 0004 FEE7     		b	.L2
+ 4650              		.cfi_endproc
+ 4651              	.LFE0:
+ 4653              		.section	vtable,"aw",%progbits
+ 4654              		.align	10
+ 4657              	g_pfnRAMVectors:
+ 4658 0000 00000000 		.space	620
+ 4658      00000000 
+ 4658      00000000 
+ 4658      00000000 
+ 4658      00000000 
+ 4659 026c 00000000 		.section	.text.IntMasterEnable,"ax",%progbits
+ 4659      00000000 
+ 4659      00000000 
+ 4659      00000000 
+ 4659      00000000 
+ 4660              		.align	2
+ 4661              		.global	IntMasterEnable
+ 4662              		.thumb
+ 4663              		.thumb_func
+ 4665              	IntMasterEnable:
+ 4666              	.LFB1:
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // The processor vector table.
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // This contains a list of the handlers for the various interrupt sources in
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // the system.  The layout of this list is defined by the hardware; assertion
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // of an interrupt causes the processor to start executing directly at the
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** // address given in the corresponding location in this list.
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #if defined(ewarm)
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #pragma data_alignment=1024
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** static __no_init void (*g_pfnRAMVectors[NUM_INTERRUPTS])(void) @ "VTABLE";
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #elif defined(sourcerygxx)
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** static __attribute__((section(".cs3.region-head.ram")))
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** void (*g_pfnRAMVectors[NUM_INTERRUPTS])(void) __attribute__ ((aligned(1024)));
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #elif defined(ccs) || defined(DOXYGEN)
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #pragma DATA_ALIGN(g_pfnRAMVectors, 1024)
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #pragma DATA_SECTION(g_pfnRAMVectors, ".vtable")
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** void (*g_pfnRAMVectors[NUM_INTERRUPTS])(void);
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #else
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** static __attribute__((section("vtable")))
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** void (*g_pfnRAMVectors[NUM_INTERRUPTS])(void) __attribute__ ((aligned(1024)));
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** #endif
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Enables the processor interrupt.
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! This function allows the processor to respond to interrupts.  This function
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! does not affect the set of interrupts enabled in the interrupt controller; 
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! it just gates the single interrupt from the controller to the processor.
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \note Previously, this function had no return value.  As such, it was
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! possible to include <tt>interrupt.h</tt> and call this function without
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! having included <tt>hw_types.h</tt>.  Now that the return is a
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! <tt>tBoolean</tt>, a compiler error occurs in this case.  The solution
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! is to include <tt>hw_types.h</tt> before including <tt>interrupt.h</tt>.
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return Returns \b true if interrupts were disabled when the function was
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! called or \b false if they were initially enabled.
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** tBoolean
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntMasterEnable(void)
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 4667              		.loc 1 185 0
+ 4668              		.cfi_startproc
+ 4669              		@ args = 0, pretend = 0, frame = 0
+ 4670              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4671 0000 80B5     		push	{r7, lr}
+ 4672              	.LCFI2:
+ 4673              		.cfi_def_cfa_offset 8
+ 4674 0002 00AF     		add	r7, sp, #0
+ 4675              		.cfi_offset 14, -4
+ 4676              		.cfi_offset 7, -8
+ 4677              	.LCFI3:
+ 4678              		.cfi_def_cfa_register 7
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Enable processor interrupts.
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     return(CPUcpsie());
+ 4679              		.loc 1 189 0
+ 4680 0004 FFF7FEFF 		bl	CPUcpsie
+ 4681 0008 0346     		mov	r3, r0
+ 4682 000a DBB2     		uxtb	r3, r3
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 4683              		.loc 1 190 0
+ 4684 000c 1846     		mov	r0, r3
+ 4685 000e 80BD     		pop	{r7, pc}
+ 4686              		.cfi_endproc
+ 4687              	.LFE1:
+ 4689              		.section	.text.IntMasterDisable,"ax",%progbits
+ 4690              		.align	2
+ 4691              		.global	IntMasterDisable
+ 4692              		.thumb
+ 4693              		.thumb_func
+ 4695              	IntMasterDisable:
+ 4696              	.LFB2:
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Disables the processor interrupt.
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! This function prevents the processor from receiving interrupts.  This 
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! function does not affect the set of interrupts enabled in the interrupt 
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! controller; it just gates the single interrupt from the controller to the 
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! processor.
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \note Previously, this function had no return value.  As such, it was
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! possible to include <tt>interrupt.h</tt> and call this function without
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! having included <tt>hw_types.h</tt>.  Now that the return is a
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! <tt>tBoolean</tt>, a compiler error occurs in this case.  The solution
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! is to include <tt>hw_types.h</tt> before including <tt>interrupt.h</tt>.
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return Returns \b true if interrupts were already disabled when the
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! function was called or \b false if they were initially enabled.
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** tBoolean
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntMasterDisable(void)
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 4697              		.loc 1 213 0
+ 4698              		.cfi_startproc
+ 4699              		@ args = 0, pretend = 0, frame = 0
+ 4700              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4701 0000 80B5     		push	{r7, lr}
+ 4702              	.LCFI4:
+ 4703              		.cfi_def_cfa_offset 8
+ 4704 0002 00AF     		add	r7, sp, #0
+ 4705              		.cfi_offset 14, -4
+ 4706              		.cfi_offset 7, -8
+ 4707              	.LCFI5:
+ 4708              		.cfi_def_cfa_register 7
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Disable processor interrupts.
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     return(CPUcpsid());
+ 4709              		.loc 1 217 0
+ 4710 0004 FFF7FEFF 		bl	CPUcpsid
+ 4711 0008 0346     		mov	r3, r0
+ 4712 000a DBB2     		uxtb	r3, r3
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 4713              		.loc 1 218 0
+ 4714 000c 1846     		mov	r0, r3
+ 4715 000e 80BD     		pop	{r7, pc}
+ 4716              		.cfi_endproc
+ 4717              	.LFE2:
+ 4719              		.section	.text.IntRegister,"ax",%progbits
+ 4720              		.align	2
+ 4721              		.global	IntRegister
+ 4722              		.thumb
+ 4723              		.thumb_func
+ 4725              	IntRegister:
+ 4726              	.LFB3:
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Registers a function to be called when an interrupt occurs.
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \param ulInterrupt specifies the interrupt in question.
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \param pfnHandler is a pointer to the function to be called.
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! This function is used to specify the handler function to be called when the
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! given interrupt is asserted to the processor.  When the interrupt occurs,
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! if it is enabled (via IntEnable()), the handler function is called in
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! interrupt context.  Because the handler function can preempt other code, 
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! care must be taken to protect memory or peripherals that are accessed by 
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! the handler and other non-handler code.
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \note The use of this function (directly or indirectly via a peripheral
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! driver interrupt register function) moves the interrupt vector table from
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! flash to SRAM.  Therefore, care must be taken when linking the application
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! to ensure that the SRAM vector table is located at the beginning of SRAM;
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! otherwise the NVIC does not look in the correct portion of memory for the
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! vector table (it requires the vector table be on a 1 kB memory alignment).
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Normally, the SRAM vector table is so placed via the use of linker scripts.
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! See the discussion of compile-time versus run-time interrupt handler
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! registration in the introduction to this chapter.
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return None.
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** void
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntRegister(unsigned long ulInterrupt, void (*pfnHandler)(void))
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 4727              		.loc 1 249 0
+ 4728              		.cfi_startproc
+ 4729              		@ args = 0, pretend = 0, frame = 16
+ 4730              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4731              		@ link register save eliminated.
+ 4732 0000 80B4     		push	{r7}
+ 4733              	.LCFI6:
+ 4734              		.cfi_def_cfa_offset 4
+ 4735 0002 85B0     		sub	sp, sp, #20
+ 4736              	.LCFI7:
+ 4737              		.cfi_def_cfa_offset 24
+ 4738 0004 00AF     		add	r7, sp, #0
+ 4739              		.cfi_offset 7, -4
+ 4740              	.LCFI8:
+ 4741              		.cfi_def_cfa_register 7
+ 4742 0006 7860     		str	r0, [r7, #4]
+ 4743 0008 3960     		str	r1, [r7, #0]
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     unsigned long ulIdx, ulValue;
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Check the arguments.
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ASSERT(ulInterrupt < NUM_INTERRUPTS);
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Make sure that the RAM vector table is correctly aligned.
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ASSERT(((unsigned long)g_pfnRAMVectors & 0x000003ff) == 0);
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // See if the RAM vector table has been initialized.
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     if(HWREG(NVIC_VTABLE) != (unsigned long)g_pfnRAMVectors)
+ 4744              		.loc 1 265 0
+ 4745 000a 154B     		ldr	r3, .L9
+ 4746 000c 1A68     		ldr	r2, [r3, #0]
+ 4747 000e 154B     		ldr	r3, .L9+4
+ 4748 0010 9A42     		cmp	r2, r3
+ 4749 0012 1BD0     		beq	.L6
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Copy the vector table from the beginning of FLASH to the RAM vector
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // table.
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         ulValue = HWREG(NVIC_VTABLE);
+ 4750              		.loc 1 271 0
+ 4751 0014 124B     		ldr	r3, .L9
+ 4752 0016 1B68     		ldr	r3, [r3, #0]
+ 4753 0018 BB60     		str	r3, [r7, #8]
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         for(ulIdx = 0; ulIdx < NUM_INTERRUPTS; ulIdx++)
+ 4754              		.loc 1 272 0
+ 4755 001a 4FF00003 		mov	r3, #0
+ 4756 001e FB60     		str	r3, [r7, #12]
+ 4757 0020 0EE0     		b	.L7
+ 4758              	.L8:
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         {
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****             g_pfnRAMVectors[ulIdx] = (void (*)(void))HWREG((ulIdx * 4) +
+ 4759              		.loc 1 274 0 discriminator 2
+ 4760 0022 FB68     		ldr	r3, [r7, #12]
+ 4761 0024 4FEA8302 		lsl	r2, r3, #2
+ 4762 0028 BB68     		ldr	r3, [r7, #8]
+ 4763 002a D318     		adds	r3, r2, r3
+ 4764 002c 1B68     		ldr	r3, [r3, #0]
+ 4765 002e 1946     		mov	r1, r3
+ 4766 0030 0C4B     		ldr	r3, .L9+4
+ 4767 0032 FA68     		ldr	r2, [r7, #12]
+ 4768 0034 43F82210 		str	r1, [r3, r2, lsl #2]
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         for(ulIdx = 0; ulIdx < NUM_INTERRUPTS; ulIdx++)
+ 4769              		.loc 1 272 0 discriminator 2
+ 4770 0038 FB68     		ldr	r3, [r7, #12]
+ 4771 003a 03F10103 		add	r3, r3, #1
+ 4772 003e FB60     		str	r3, [r7, #12]
+ 4773              	.L7:
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         for(ulIdx = 0; ulIdx < NUM_INTERRUPTS; ulIdx++)
+ 4774              		.loc 1 272 0 is_stmt 0 discriminator 1
+ 4775 0040 FB68     		ldr	r3, [r7, #12]
+ 4776 0042 9A2B     		cmp	r3, #154
+ 4777 0044 EDD9     		bls	.L8
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****                                                      ulValue);
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         }
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Point the NVIC at the RAM vector table.
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_VTABLE) = (unsigned long)g_pfnRAMVectors;
+ 4778              		.loc 1 281 0 is_stmt 1
+ 4779 0046 064B     		ldr	r3, .L9
+ 4780 0048 064A     		ldr	r2, .L9+4
+ 4781 004a 1A60     		str	r2, [r3, #0]
+ 4782              	.L6:
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Save the interrupt handler.
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     g_pfnRAMVectors[ulInterrupt] = pfnHandler;
+ 4783              		.loc 1 287 0
+ 4784 004c 054B     		ldr	r3, .L9+4
+ 4785 004e 7A68     		ldr	r2, [r7, #4]
+ 4786 0050 3968     		ldr	r1, [r7, #0]
+ 4787 0052 43F82210 		str	r1, [r3, r2, lsl #2]
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 4788              		.loc 1 288 0
+ 4789 0056 07F11407 		add	r7, r7, #20
+ 4790 005a BD46     		mov	sp, r7
+ 4791 005c 80BC     		pop	{r7}
+ 4792 005e 7047     		bx	lr
+ 4793              	.L10:
+ 4794              		.align	2
+ 4795              	.L9:
+ 4796 0060 08ED00E0 		.word	-536810232
+ 4797 0064 00000000 		.word	g_pfnRAMVectors
+ 4798              		.cfi_endproc
+ 4799              	.LFE3:
+ 4801              		.section	.text.IntUnregister,"ax",%progbits
+ 4802              		.align	2
+ 4803              		.global	IntUnregister
+ 4804              		.thumb
+ 4805              		.thumb_func
+ 4807              	IntUnregister:
+ 4808              	.LFB4:
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Unregisters the function to be called when an interrupt occurs.
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \param ulInterrupt specifies the interrupt in question.
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! This function is used to indicate that no handler should be called when the
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! given interrupt is asserted to the processor.  The interrupt source is
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! automatically disabled (via IntDisable()) if necessary.
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \sa IntRegister() for important information about registering interrupt
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! handlers.
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return None.
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** void
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntUnregister(unsigned long ulInterrupt)
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 4809              		.loc 1 308 0
+ 4810              		.cfi_startproc
+ 4811              		@ args = 0, pretend = 0, frame = 8
+ 4812              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4813              		@ link register save eliminated.
+ 4814 0000 80B4     		push	{r7}
+ 4815              	.LCFI9:
+ 4816              		.cfi_def_cfa_offset 4
+ 4817 0002 83B0     		sub	sp, sp, #12
+ 4818              	.LCFI10:
+ 4819              		.cfi_def_cfa_offset 16
+ 4820 0004 00AF     		add	r7, sp, #0
+ 4821              		.cfi_offset 7, -4
+ 4822              	.LCFI11:
+ 4823              		.cfi_def_cfa_register 7
+ 4824 0006 7860     		str	r0, [r7, #4]
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Check the arguments.
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ASSERT(ulInterrupt < NUM_INTERRUPTS);
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Reset the interrupt handler.
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     g_pfnRAMVectors[ulInterrupt] = IntDefaultHandler;
+ 4825              		.loc 1 317 0
+ 4826 0008 044B     		ldr	r3, .L12
+ 4827 000a 7A68     		ldr	r2, [r7, #4]
+ 4828 000c 0449     		ldr	r1, .L12+4
+ 4829 000e 43F82210 		str	r1, [r3, r2, lsl #2]
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 4830              		.loc 1 318 0
+ 4831 0012 07F10C07 		add	r7, r7, #12
+ 4832 0016 BD46     		mov	sp, r7
+ 4833 0018 80BC     		pop	{r7}
+ 4834 001a 7047     		bx	lr
+ 4835              	.L13:
+ 4836              		.align	2
+ 4837              	.L12:
+ 4838 001c 00000000 		.word	g_pfnRAMVectors
+ 4839 0020 00000000 		.word	IntDefaultHandler
+ 4840              		.cfi_endproc
+ 4841              	.LFE4:
+ 4843              		.section	.text.IntPriorityGroupingSet,"ax",%progbits
+ 4844              		.align	2
+ 4845              		.global	IntPriorityGroupingSet
+ 4846              		.thumb
+ 4847              		.thumb_func
+ 4849              	IntPriorityGroupingSet:
+ 4850              	.LFB5:
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Sets the priority grouping of the interrupt controller.
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \param ulBits specifies the number of bits of preemptable priority.
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! This function specifies the split between preemptable priority levels and
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! subpriority levels in the interrupt priority specification.  The range of
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! the grouping values are dependent upon the hardware implementation; on
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! the Stellaris family, three bits are available for hardware interrupt
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! prioritization and therefore priority grouping values of three through
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! seven have the same effect.
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return None.
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** void
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntPriorityGroupingSet(unsigned long ulBits)
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 4851              		.loc 1 338 0
+ 4852              		.cfi_startproc
+ 4853              		@ args = 0, pretend = 0, frame = 8
+ 4854              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4855              		@ link register save eliminated.
+ 4856 0000 80B4     		push	{r7}
+ 4857              	.LCFI12:
+ 4858              		.cfi_def_cfa_offset 4
+ 4859 0002 83B0     		sub	sp, sp, #12
+ 4860              	.LCFI13:
+ 4861              		.cfi_def_cfa_offset 16
+ 4862 0004 00AF     		add	r7, sp, #0
+ 4863              		.cfi_offset 7, -4
+ 4864              	.LCFI14:
+ 4865              		.cfi_def_cfa_register 7
+ 4866 0006 7860     		str	r0, [r7, #4]
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Check the arguments.
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ASSERT(ulBits < NUM_PRIORITY);
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Set the priority grouping.
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     HWREG(NVIC_APINT) = NVIC_APINT_VECTKEY | g_pulPriority[ulBits];
+ 4867              		.loc 1 347 0
+ 4868 0008 074A     		ldr	r2, .L15
+ 4869 000a 084B     		ldr	r3, .L15+4
+ 4870 000c 7968     		ldr	r1, [r7, #4]
+ 4871 000e 53F82130 		ldr	r3, [r3, r1, lsl #2]
+ 4872 0012 43F0BE63 		orr	r3, r3, #99614720
+ 4873 0016 43F42023 		orr	r3, r3, #655360
+ 4874 001a 1360     		str	r3, [r2, #0]
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 4875              		.loc 1 348 0
+ 4876 001c 07F10C07 		add	r7, r7, #12
+ 4877 0020 BD46     		mov	sp, r7
+ 4878 0022 80BC     		pop	{r7}
+ 4879 0024 7047     		bx	lr
+ 4880              	.L16:
+ 4881 0026 00BF     		.align	2
+ 4882              	.L15:
+ 4883 0028 0CED00E0 		.word	-536810228
+ 4884 002c 00000000 		.word	g_pulPriority
+ 4885              		.cfi_endproc
+ 4886              	.LFE5:
+ 4888              		.section	.text.IntPriorityGroupingGet,"ax",%progbits
+ 4889              		.align	2
+ 4890              		.global	IntPriorityGroupingGet
+ 4891              		.thumb
+ 4892              		.thumb_func
+ 4894              	IntPriorityGroupingGet:
+ 4895              	.LFB6:
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Gets the priority grouping of the interrupt controller.
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! This function returns the split between preemptable priority levels and
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! subpriority levels in the interrupt priority specification.
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return The number of bits of preemptable priority.
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** unsigned long
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntPriorityGroupingGet(void)
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 4896              		.loc 1 362 0
+ 4897              		.cfi_startproc
+ 4898              		@ args = 0, pretend = 0, frame = 8
+ 4899              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4900              		@ link register save eliminated.
+ 4901 0000 80B4     		push	{r7}
+ 4902              	.LCFI15:
+ 4903              		.cfi_def_cfa_offset 4
+ 4904 0002 83B0     		sub	sp, sp, #12
+ 4905              	.LCFI16:
+ 4906              		.cfi_def_cfa_offset 16
+ 4907 0004 00AF     		add	r7, sp, #0
+ 4908              		.cfi_offset 7, -4
+ 4909              	.LCFI17:
+ 4910              		.cfi_def_cfa_register 7
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     unsigned long ulLoop, ulValue;
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Read the priority grouping.
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ulValue = HWREG(NVIC_APINT) & NVIC_APINT_PRIGROUP_M;
+ 4911              		.loc 1 368 0
+ 4912 0006 104B     		ldr	r3, .L23
+ 4913 0008 1B68     		ldr	r3, [r3, #0]
+ 4914 000a 03F4E063 		and	r3, r3, #1792
+ 4915 000e 3B60     		str	r3, [r7, #0]
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Loop through the priority grouping values.
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     for(ulLoop = 0; ulLoop < NUM_PRIORITY; ulLoop++)
+ 4916              		.loc 1 373 0
+ 4917 0010 4FF00003 		mov	r3, #0
+ 4918 0014 7B60     		str	r3, [r7, #4]
+ 4919 0016 0AE0     		b	.L18
+ 4920              	.L21:
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Stop looping if this value matches.
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         if(ulValue == g_pulPriority[ulLoop])
+ 4921              		.loc 1 378 0
+ 4922 0018 0C4B     		ldr	r3, .L23+4
+ 4923 001a 7A68     		ldr	r2, [r7, #4]
+ 4924 001c 53F82220 		ldr	r2, [r3, r2, lsl #2]
+ 4925 0020 3B68     		ldr	r3, [r7, #0]
+ 4926 0022 9A42     		cmp	r2, r3
+ 4927 0024 07D0     		beq	.L22
+ 4928              	.L19:
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     for(ulLoop = 0; ulLoop < NUM_PRIORITY; ulLoop++)
+ 4929              		.loc 1 373 0
+ 4930 0026 7B68     		ldr	r3, [r7, #4]
+ 4931 0028 03F10103 		add	r3, r3, #1
+ 4932 002c 7B60     		str	r3, [r7, #4]
+ 4933              	.L18:
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     for(ulLoop = 0; ulLoop < NUM_PRIORITY; ulLoop++)
+ 4934              		.loc 1 373 0 is_stmt 0 discriminator 1
+ 4935 002e 7B68     		ldr	r3, [r7, #4]
+ 4936 0030 072B     		cmp	r3, #7
+ 4937 0032 F1D9     		bls	.L21
+ 4938 0034 00E0     		b	.L20
+ 4939              	.L22:
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         {
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****             break;
+ 4940              		.loc 1 380 0 is_stmt 1
+ 4941 0036 00BF     		nop
+ 4942              	.L20:
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         }
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Return the number of priority bits.
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     return(ulLoop);
+ 4943              		.loc 1 387 0
+ 4944 0038 7B68     		ldr	r3, [r7, #4]
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 4945              		.loc 1 388 0
+ 4946 003a 1846     		mov	r0, r3
+ 4947 003c 07F10C07 		add	r7, r7, #12
+ 4948 0040 BD46     		mov	sp, r7
+ 4949 0042 80BC     		pop	{r7}
+ 4950 0044 7047     		bx	lr
+ 4951              	.L24:
+ 4952 0046 00BF     		.align	2
+ 4953              	.L23:
+ 4954 0048 0CED00E0 		.word	-536810228
+ 4955 004c 00000000 		.word	g_pulPriority
+ 4956              		.cfi_endproc
+ 4957              	.LFE6:
+ 4959              		.section	.text.IntPrioritySet,"ax",%progbits
+ 4960              		.align	2
+ 4961              		.global	IntPrioritySet
+ 4962              		.thumb
+ 4963              		.thumb_func
+ 4965              	IntPrioritySet:
+ 4966              	.LFB7:
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Sets the priority of an interrupt.
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \param ulInterrupt specifies the interrupt in question.
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \param ucPriority specifies the priority of the interrupt.
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! This function is used to set the priority of an interrupt.  When multiple
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! interrupts are asserted simultaneously, the ones with the highest priority
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! are processed before the lower priority interrupts.  Smaller numbers
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! correspond to higher interrupt priorities; priority 0 is the highest
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! interrupt priority.
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! The hardware priority mechanism only looks at the upper N bits of the
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! priority level (where N is 3 for the Stellaris family), so any
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! prioritization must be performed in those bits.  The remaining bits can be
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! used to sub-prioritize the interrupt sources, and may be used by the
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! hardware priority mechanism on a future part.  This arrangement allows
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! priorities to migrate to different NVIC implementations without changing
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! the gross prioritization of the interrupts.
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return None.
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** void
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntPrioritySet(unsigned long ulInterrupt, unsigned char ucPriority)
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 4967              		.loc 1 416 0
+ 4968              		.cfi_startproc
+ 4969              		@ args = 0, pretend = 0, frame = 16
+ 4970              		@ frame_needed = 1, uses_anonymous_args = 0
+ 4971              		@ link register save eliminated.
+ 4972 0000 80B4     		push	{r7}
+ 4973              	.LCFI18:
+ 4974              		.cfi_def_cfa_offset 4
+ 4975 0002 85B0     		sub	sp, sp, #20
+ 4976              	.LCFI19:
+ 4977              		.cfi_def_cfa_offset 24
+ 4978 0004 00AF     		add	r7, sp, #0
+ 4979              		.cfi_offset 7, -4
+ 4980              	.LCFI20:
+ 4981              		.cfi_def_cfa_register 7
+ 4982 0006 7860     		str	r0, [r7, #4]
+ 4983 0008 0B46     		mov	r3, r1
+ 4984 000a FB70     		strb	r3, [r7, #3]
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     unsigned long ulTemp;
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Check the arguments.
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ASSERT((ulInterrupt >= 4) && (ulInterrupt < NUM_INTERRUPTS));
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Set the interrupt priority.
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ulTemp = HWREG(g_pulRegs[ulInterrupt >> 2]);
+ 4985              		.loc 1 427 0
+ 4986 000c 7B68     		ldr	r3, [r7, #4]
+ 4987 000e 4FEA9302 		lsr	r2, r3, #2
+ 4988 0012 164B     		ldr	r3, .L26
+ 4989 0014 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 4990 0018 1B68     		ldr	r3, [r3, #0]
+ 4991 001a FB60     		str	r3, [r7, #12]
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ulTemp &= ~(0xFF << (8 * (ulInterrupt & 3)));
+ 4992              		.loc 1 428 0
+ 4993 001c 7B68     		ldr	r3, [r7, #4]
+ 4994 001e 03F00303 		and	r3, r3, #3
+ 4995 0022 4FEAC303 		lsl	r3, r3, #3
+ 4996 0026 4FF0FF02 		mov	r2, #255
+ 4997 002a 02FA03F3 		lsl	r3, r2, r3
+ 4998 002e 6FEA0303 		mvn	r3, r3
+ 4999 0032 FA68     		ldr	r2, [r7, #12]
+ 5000 0034 02EA0303 		and	r3, r2, r3
+ 5001 0038 FB60     		str	r3, [r7, #12]
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ulTemp |= ucPriority << (8 * (ulInterrupt & 3));
+ 5002              		.loc 1 429 0
+ 5003 003a FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 5004 003c 7B68     		ldr	r3, [r7, #4]
+ 5005 003e 03F00303 		and	r3, r3, #3
+ 5006 0042 4FEAC303 		lsl	r3, r3, #3
+ 5007 0046 02FA03F3 		lsl	r3, r2, r3
+ 5008 004a FA68     		ldr	r2, [r7, #12]
+ 5009 004c 42EA0303 		orr	r3, r2, r3
+ 5010 0050 FB60     		str	r3, [r7, #12]
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     HWREG(g_pulRegs[ulInterrupt >> 2]) = ulTemp;
+ 5011              		.loc 1 430 0
+ 5012 0052 7B68     		ldr	r3, [r7, #4]
+ 5013 0054 4FEA9302 		lsr	r2, r3, #2
+ 5014 0058 044B     		ldr	r3, .L26
+ 5015 005a 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 5016 005e FA68     		ldr	r2, [r7, #12]
+ 5017 0060 1A60     		str	r2, [r3, #0]
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 5018              		.loc 1 431 0
+ 5019 0062 07F11407 		add	r7, r7, #20
+ 5020 0066 BD46     		mov	sp, r7
+ 5021 0068 80BC     		pop	{r7}
+ 5022 006a 7047     		bx	lr
+ 5023              	.L27:
+ 5024              		.align	2
+ 5025              	.L26:
+ 5026 006c 20000000 		.word	g_pulRegs
+ 5027              		.cfi_endproc
+ 5028              	.LFE7:
+ 5030              		.section	.text.IntPriorityGet,"ax",%progbits
+ 5031              		.align	2
+ 5032              		.global	IntPriorityGet
+ 5033              		.thumb
+ 5034              		.thumb_func
+ 5036              	IntPriorityGet:
+ 5037              	.LFB8:
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Gets the priority of an interrupt.
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \param ulInterrupt specifies the interrupt in question.
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! This function gets the priority of an interrupt.  See IntPrioritySet() for
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! a definition of the priority value.
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return Returns the interrupt priority, or -1 if an invalid interrupt was
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! specified.
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** long
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntPriorityGet(unsigned long ulInterrupt)
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 5038              		.loc 1 448 0
+ 5039              		.cfi_startproc
+ 5040              		@ args = 0, pretend = 0, frame = 8
+ 5041              		@ frame_needed = 1, uses_anonymous_args = 0
+ 5042              		@ link register save eliminated.
+ 5043 0000 80B4     		push	{r7}
+ 5044              	.LCFI21:
+ 5045              		.cfi_def_cfa_offset 4
+ 5046 0002 83B0     		sub	sp, sp, #12
+ 5047              	.LCFI22:
+ 5048              		.cfi_def_cfa_offset 16
+ 5049 0004 00AF     		add	r7, sp, #0
+ 5050              		.cfi_offset 7, -4
+ 5051              	.LCFI23:
+ 5052              		.cfi_def_cfa_register 7
+ 5053 0006 7860     		str	r0, [r7, #4]
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Check the arguments.
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ASSERT((ulInterrupt >= 4) && (ulInterrupt < NUM_INTERRUPTS));
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Return the interrupt priority.
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     return((HWREG(g_pulRegs[ulInterrupt >> 2]) >> (8 * (ulInterrupt & 3))) &
+ 5054              		.loc 1 457 0
+ 5055 0008 7B68     		ldr	r3, [r7, #4]
+ 5056 000a 4FEA9302 		lsr	r2, r3, #2
+ 5057 000e 094B     		ldr	r3, .L29
+ 5058 0010 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 5059 0014 1A68     		ldr	r2, [r3, #0]
+ 5060 0016 7B68     		ldr	r3, [r7, #4]
+ 5061 0018 03F00303 		and	r3, r3, #3
+ 5062 001c 4FEAC303 		lsl	r3, r3, #3
+ 5063 0020 22FA03F3 		lsr	r3, r2, r3
+ 5064 0024 03F0FF03 		and	r3, r3, #255
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****            0xFF);
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 5065              		.loc 1 459 0
+ 5066 0028 1846     		mov	r0, r3
+ 5067 002a 07F10C07 		add	r7, r7, #12
+ 5068 002e BD46     		mov	sp, r7
+ 5069 0030 80BC     		pop	{r7}
+ 5070 0032 7047     		bx	lr
+ 5071              	.L30:
+ 5072              		.align	2
+ 5073              	.L29:
+ 5074 0034 20000000 		.word	g_pulRegs
+ 5075              		.cfi_endproc
+ 5076              	.LFE8:
+ 5078              		.section	.text.IntEnable,"ax",%progbits
+ 5079              		.align	2
+ 5080              		.global	IntEnable
+ 5081              		.thumb
+ 5082              		.thumb_func
+ 5084              	IntEnable:
+ 5085              	.LFB9:
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Enables an interrupt.
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \param ulInterrupt specifies the interrupt to be enabled.
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! The specified interrupt is enabled in the interrupt controller.  Other
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! enables for the interrupt (such as at the peripheral level) are unaffected
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! by this function.
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return None.
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** void
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntEnable(unsigned long ulInterrupt)
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 5086              		.loc 1 476 0
+ 5087              		.cfi_startproc
+ 5088              		@ args = 0, pretend = 0, frame = 8
+ 5089              		@ frame_needed = 1, uses_anonymous_args = 0
+ 5090              		@ link register save eliminated.
+ 5091 0000 80B4     		push	{r7}
+ 5092              	.LCFI24:
+ 5093              		.cfi_def_cfa_offset 4
+ 5094 0002 83B0     		sub	sp, sp, #12
+ 5095              	.LCFI25:
+ 5096              		.cfi_def_cfa_offset 16
+ 5097 0004 00AF     		add	r7, sp, #0
+ 5098              		.cfi_offset 7, -4
+ 5099              	.LCFI26:
+ 5100              		.cfi_def_cfa_register 7
+ 5101 0006 7860     		str	r0, [r7, #4]
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Check the arguments.
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 480:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ASSERT(ulInterrupt < NUM_INTERRUPTS);
+ 481:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 482:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Determine the interrupt to enable.
+ 484:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 485:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     if(ulInterrupt == FAULT_MPU)
+ 5102              		.loc 1 485 0
+ 5103 0008 7B68     		ldr	r3, [r7, #4]
+ 5104 000a 042B     		cmp	r3, #4
+ 5105 000c 06D1     		bne	.L32
+ 486:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 487:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 488:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Enable the MemManage interrupt.
+ 489:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 490:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_SYS_HND_CTRL) |= NVIC_SYS_HND_CTRL_MEM;
+ 5106              		.loc 1 490 0
+ 5107 000e 1F4B     		ldr	r3, .L37
+ 5108 0010 1E4A     		ldr	r2, .L37
+ 5109 0012 1268     		ldr	r2, [r2, #0]
+ 5110 0014 42F48032 		orr	r2, r2, #65536
+ 5111 0018 1A60     		str	r2, [r3, #0]
+ 5112 001a 32E0     		b	.L31
+ 5113              	.L32:
+ 491:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 492:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     else if(ulInterrupt == FAULT_BUS)
+ 5114              		.loc 1 492 0
+ 5115 001c 7B68     		ldr	r3, [r7, #4]
+ 5116 001e 052B     		cmp	r3, #5
+ 5117 0020 06D1     		bne	.L34
+ 493:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 494:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 495:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Enable the bus fault interrupt.
+ 496:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 497:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_SYS_HND_CTRL) |= NVIC_SYS_HND_CTRL_BUS;
+ 5118              		.loc 1 497 0
+ 5119 0022 1A4B     		ldr	r3, .L37
+ 5120 0024 194A     		ldr	r2, .L37
+ 5121 0026 1268     		ldr	r2, [r2, #0]
+ 5122 0028 42F40032 		orr	r2, r2, #131072
+ 5123 002c 1A60     		str	r2, [r3, #0]
+ 5124 002e 28E0     		b	.L31
+ 5125              	.L34:
+ 498:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 499:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     else if(ulInterrupt == FAULT_USAGE)
+ 5126              		.loc 1 499 0
+ 5127 0030 7B68     		ldr	r3, [r7, #4]
+ 5128 0032 062B     		cmp	r3, #6
+ 5129 0034 06D1     		bne	.L35
+ 500:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 501:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 502:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Enable the usage fault interrupt.
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 504:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_SYS_HND_CTRL) |= NVIC_SYS_HND_CTRL_USAGE;
+ 5130              		.loc 1 504 0
+ 5131 0036 154B     		ldr	r3, .L37
+ 5132 0038 144A     		ldr	r2, .L37
+ 5133 003a 1268     		ldr	r2, [r2, #0]
+ 5134 003c 42F48022 		orr	r2, r2, #262144
+ 5135 0040 1A60     		str	r2, [r3, #0]
+ 5136 0042 1EE0     		b	.L31
+ 5137              	.L35:
+ 505:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 506:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     else if(ulInterrupt == FAULT_SYSTICK)
+ 5138              		.loc 1 506 0
+ 5139 0044 7B68     		ldr	r3, [r7, #4]
+ 5140 0046 0F2B     		cmp	r3, #15
+ 5141 0048 06D1     		bne	.L36
+ 507:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 508:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 509:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Enable the System Tick interrupt.
+ 510:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 511:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_ST_CTRL) |= NVIC_ST_CTRL_INTEN;
+ 5142              		.loc 1 511 0
+ 5143 004a 114B     		ldr	r3, .L37+4
+ 5144 004c 104A     		ldr	r2, .L37+4
+ 5145 004e 1268     		ldr	r2, [r2, #0]
+ 5146 0050 42F00202 		orr	r2, r2, #2
+ 5147 0054 1A60     		str	r2, [r3, #0]
+ 5148 0056 14E0     		b	.L31
+ 5149              	.L36:
+ 512:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 513:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     else if(ulInterrupt >= 16)
+ 5150              		.loc 1 513 0
+ 5151 0058 7B68     		ldr	r3, [r7, #4]
+ 5152 005a 0F2B     		cmp	r3, #15
+ 5153 005c 11D9     		bls	.L31
+ 514:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 515:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 516:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Enable the general interrupt.
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 518:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(g_pulEnRegs[(ulInterrupt - 16) / 32]) =
+ 5154              		.loc 1 518 0
+ 5155 005e 7B68     		ldr	r3, [r7, #4]
+ 5156 0060 A3F11003 		sub	r3, r3, #16
+ 5157 0064 4FEA5312 		lsr	r2, r3, #5
+ 5158 0068 0A4B     		ldr	r3, .L37+8
+ 5159 006a 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 519:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****             1 << ((ulInterrupt - 16) & 31);
+ 5160              		.loc 1 519 0
+ 5161 006e 7A68     		ldr	r2, [r7, #4]
+ 5162 0070 A2F11002 		sub	r2, r2, #16
+ 5163 0074 02F01F02 		and	r2, r2, #31
+ 5164 0078 4FF00101 		mov	r1, #1
+ 5165 007c 01FA02F2 		lsl	r2, r1, r2
+ 518:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(g_pulEnRegs[(ulInterrupt - 16) / 32]) =
+ 5166              		.loc 1 518 0
+ 5167 0080 1A60     		str	r2, [r3, #0]
+ 5168              	.L31:
+ 520:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 521:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 5169              		.loc 1 521 0
+ 5170 0082 07F10C07 		add	r7, r7, #12
+ 5171 0086 BD46     		mov	sp, r7
+ 5172 0088 80BC     		pop	{r7}
+ 5173 008a 7047     		bx	lr
+ 5174              	.L38:
+ 5175              		.align	2
+ 5176              	.L37:
+ 5177 008c 24ED00E0 		.word	-536810204
+ 5178 0090 10E000E0 		.word	-536813552
+ 5179 0094 B4000000 		.word	g_pulEnRegs
+ 5180              		.cfi_endproc
+ 5181              	.LFE9:
+ 5183              		.section	.text.IntDisable,"ax",%progbits
+ 5184              		.align	2
+ 5185              		.global	IntDisable
+ 5186              		.thumb
+ 5187              		.thumb_func
+ 5189              	IntDisable:
+ 5190              	.LFB10:
+ 522:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 523:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 524:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 525:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Disables an interrupt.
+ 526:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 527:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \param ulInterrupt specifies the interrupt to be disabled.
+ 528:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 529:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! The specified interrupt is disabled in the interrupt controller.  Other
+ 530:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! enables for the interrupt (such as at the peripheral level) are unaffected
+ 531:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! by this function.
+ 532:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 533:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return None.
+ 534:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 535:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 536:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** void
+ 537:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntDisable(unsigned long ulInterrupt)
+ 538:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 5191              		.loc 1 538 0
+ 5192              		.cfi_startproc
+ 5193              		@ args = 0, pretend = 0, frame = 8
+ 5194              		@ frame_needed = 1, uses_anonymous_args = 0
+ 5195              		@ link register save eliminated.
+ 5196 0000 80B4     		push	{r7}
+ 5197              	.LCFI27:
+ 5198              		.cfi_def_cfa_offset 4
+ 5199 0002 83B0     		sub	sp, sp, #12
+ 5200              	.LCFI28:
+ 5201              		.cfi_def_cfa_offset 16
+ 5202 0004 00AF     		add	r7, sp, #0
+ 5203              		.cfi_offset 7, -4
+ 5204              	.LCFI29:
+ 5205              		.cfi_def_cfa_register 7
+ 5206 0006 7860     		str	r0, [r7, #4]
+ 539:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 540:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Check the arguments.
+ 541:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 542:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ASSERT(ulInterrupt < NUM_INTERRUPTS);
+ 543:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 544:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 545:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Determine the interrupt to disable.
+ 546:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 547:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     if(ulInterrupt == FAULT_MPU)
+ 5207              		.loc 1 547 0
+ 5208 0008 7B68     		ldr	r3, [r7, #4]
+ 5209 000a 042B     		cmp	r3, #4
+ 5210 000c 06D1     		bne	.L40
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 549:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 550:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Disable the MemManage interrupt.
+ 551:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 552:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_SYS_HND_CTRL) &= ~(NVIC_SYS_HND_CTRL_MEM);
+ 5211              		.loc 1 552 0
+ 5212 000e 1F4B     		ldr	r3, .L45
+ 5213 0010 1E4A     		ldr	r2, .L45
+ 5214 0012 1268     		ldr	r2, [r2, #0]
+ 5215 0014 22F48032 		bic	r2, r2, #65536
+ 5216 0018 1A60     		str	r2, [r3, #0]
+ 5217 001a 32E0     		b	.L39
+ 5218              	.L40:
+ 553:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 554:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     else if(ulInterrupt == FAULT_BUS)
+ 5219              		.loc 1 554 0
+ 5220 001c 7B68     		ldr	r3, [r7, #4]
+ 5221 001e 052B     		cmp	r3, #5
+ 5222 0020 06D1     		bne	.L42
+ 555:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 556:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 557:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Disable the bus fault interrupt.
+ 558:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 559:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_SYS_HND_CTRL) &= ~(NVIC_SYS_HND_CTRL_BUS);
+ 5223              		.loc 1 559 0
+ 5224 0022 1A4B     		ldr	r3, .L45
+ 5225 0024 194A     		ldr	r2, .L45
+ 5226 0026 1268     		ldr	r2, [r2, #0]
+ 5227 0028 22F40032 		bic	r2, r2, #131072
+ 5228 002c 1A60     		str	r2, [r3, #0]
+ 5229 002e 28E0     		b	.L39
+ 5230              	.L42:
+ 560:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 561:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     else if(ulInterrupt == FAULT_USAGE)
+ 5231              		.loc 1 561 0
+ 5232 0030 7B68     		ldr	r3, [r7, #4]
+ 5233 0032 062B     		cmp	r3, #6
+ 5234 0034 06D1     		bne	.L43
+ 562:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 563:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 564:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Disable the usage fault interrupt.
+ 565:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 566:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_SYS_HND_CTRL) &= ~(NVIC_SYS_HND_CTRL_USAGE);
+ 5235              		.loc 1 566 0
+ 5236 0036 154B     		ldr	r3, .L45
+ 5237 0038 144A     		ldr	r2, .L45
+ 5238 003a 1268     		ldr	r2, [r2, #0]
+ 5239 003c 22F48022 		bic	r2, r2, #262144
+ 5240 0040 1A60     		str	r2, [r3, #0]
+ 5241 0042 1EE0     		b	.L39
+ 5242              	.L43:
+ 567:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 568:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     else if(ulInterrupt == FAULT_SYSTICK)
+ 5243              		.loc 1 568 0
+ 5244 0044 7B68     		ldr	r3, [r7, #4]
+ 5245 0046 0F2B     		cmp	r3, #15
+ 5246 0048 06D1     		bne	.L44
+ 569:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 570:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 571:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Disable the System Tick interrupt.
+ 572:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 573:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_ST_CTRL) &= ~(NVIC_ST_CTRL_INTEN);
+ 5247              		.loc 1 573 0
+ 5248 004a 114B     		ldr	r3, .L45+4
+ 5249 004c 104A     		ldr	r2, .L45+4
+ 5250 004e 1268     		ldr	r2, [r2, #0]
+ 5251 0050 22F00202 		bic	r2, r2, #2
+ 5252 0054 1A60     		str	r2, [r3, #0]
+ 5253 0056 14E0     		b	.L39
+ 5254              	.L44:
+ 574:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 575:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     else if(ulInterrupt >= 16)
+ 5255              		.loc 1 575 0
+ 5256 0058 7B68     		ldr	r3, [r7, #4]
+ 5257 005a 0F2B     		cmp	r3, #15
+ 5258 005c 11D9     		bls	.L39
+ 576:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 577:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 578:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Disable the general interrupt.
+ 579:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(g_pulDisRegs[(ulInterrupt - 16) / 32]) =
+ 5259              		.loc 1 580 0
+ 5260 005e 7B68     		ldr	r3, [r7, #4]
+ 5261 0060 A3F11003 		sub	r3, r3, #16
+ 5262 0064 4FEA5312 		lsr	r2, r3, #5
+ 5263 0068 0A4B     		ldr	r3, .L45+8
+ 5264 006a 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 581:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****             1 << ((ulInterrupt - 16) & 31);
+ 5265              		.loc 1 581 0
+ 5266 006e 7A68     		ldr	r2, [r7, #4]
+ 5267 0070 A2F11002 		sub	r2, r2, #16
+ 5268 0074 02F01F02 		and	r2, r2, #31
+ 5269 0078 4FF00101 		mov	r1, #1
+ 5270 007c 01FA02F2 		lsl	r2, r1, r2
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(g_pulDisRegs[(ulInterrupt - 16) / 32]) =
+ 5271              		.loc 1 580 0
+ 5272 0080 1A60     		str	r2, [r3, #0]
+ 5273              	.L39:
+ 582:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 583:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 5274              		.loc 1 583 0
+ 5275 0082 07F10C07 		add	r7, r7, #12
+ 5276 0086 BD46     		mov	sp, r7
+ 5277 0088 80BC     		pop	{r7}
+ 5278 008a 7047     		bx	lr
+ 5279              	.L46:
+ 5280              		.align	2
+ 5281              	.L45:
+ 5282 008c 24ED00E0 		.word	-536810204
+ 5283 0090 10E000E0 		.word	-536813552
+ 5284 0094 C8000000 		.word	g_pulDisRegs
+ 5285              		.cfi_endproc
+ 5286              	.LFE10:
+ 5288              		.section	.text.IntPendSet,"ax",%progbits
+ 5289              		.align	2
+ 5290              		.global	IntPendSet
+ 5291              		.thumb
+ 5292              		.thumb_func
+ 5294              	IntPendSet:
+ 5295              	.LFB11:
+ 584:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 585:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 586:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 587:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Pends an interrupt.
+ 588:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 589:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \param ulInterrupt specifies the interrupt to be pended.
+ 590:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 591:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! The specified interrupt is pended in the interrupt controller.  Pending an 
+ 592:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! interrupt causes the interrupt controller to execute the corresponding 
+ 593:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! interrupt handler at the next available time, based on the current 
+ 594:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! interrupt state priorities. For example, if called by a higher priority 
+ 595:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! interrupt handler, the specified interrupt handler is not called until 
+ 596:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! after the current interrupt handler has completed execution.  The interrupt
+ 597:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! must have been enabled for it to be called.
+ 598:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 599:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return None.
+ 600:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 601:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 602:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** void
+ 603:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntPendSet(unsigned long ulInterrupt)
+ 604:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 5296              		.loc 1 604 0
+ 5297              		.cfi_startproc
+ 5298              		@ args = 0, pretend = 0, frame = 8
+ 5299              		@ frame_needed = 1, uses_anonymous_args = 0
+ 5300              		@ link register save eliminated.
+ 5301 0000 80B4     		push	{r7}
+ 5302              	.LCFI30:
+ 5303              		.cfi_def_cfa_offset 4
+ 5304 0002 83B0     		sub	sp, sp, #12
+ 5305              	.LCFI31:
+ 5306              		.cfi_def_cfa_offset 16
+ 5307 0004 00AF     		add	r7, sp, #0
+ 5308              		.cfi_offset 7, -4
+ 5309              	.LCFI32:
+ 5310              		.cfi_def_cfa_register 7
+ 5311 0006 7860     		str	r0, [r7, #4]
+ 605:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 606:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Check the arguments.
+ 607:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 608:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ASSERT(ulInterrupt < NUM_INTERRUPTS);
+ 609:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 610:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 611:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Determine the interrupt to pend.
+ 612:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 613:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     if(ulInterrupt == FAULT_NMI)
+ 5312              		.loc 1 613 0
+ 5313 0008 7B68     		ldr	r3, [r7, #4]
+ 5314 000a 022B     		cmp	r3, #2
+ 5315 000c 06D1     		bne	.L48
+ 614:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 615:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 616:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Pend the NMI interrupt.
+ 617:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 618:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_INT_CTRL) |= NVIC_INT_CTRL_NMI_SET;
+ 5316              		.loc 1 618 0
+ 5317 000e 1A4B     		ldr	r3, .L52
+ 5318 0010 194A     		ldr	r2, .L52
+ 5319 0012 1268     		ldr	r2, [r2, #0]
+ 5320 0014 42F00042 		orr	r2, r2, #-2147483648
+ 5321 0018 1A60     		str	r2, [r3, #0]
+ 5322 001a 28E0     		b	.L47
+ 5323              	.L48:
+ 619:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 620:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     else if(ulInterrupt == FAULT_PENDSV)
+ 5324              		.loc 1 620 0
+ 5325 001c 7B68     		ldr	r3, [r7, #4]
+ 5326 001e 0E2B     		cmp	r3, #14
+ 5327 0020 06D1     		bne	.L50
+ 621:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 622:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 623:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Pend the PendSV interrupt.
+ 624:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 625:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_INT_CTRL) |= NVIC_INT_CTRL_PEND_SV;
+ 5328              		.loc 1 625 0
+ 5329 0022 154B     		ldr	r3, .L52
+ 5330 0024 144A     		ldr	r2, .L52
+ 5331 0026 1268     		ldr	r2, [r2, #0]
+ 5332 0028 42F08052 		orr	r2, r2, #268435456
+ 5333 002c 1A60     		str	r2, [r3, #0]
+ 5334 002e 1EE0     		b	.L47
+ 5335              	.L50:
+ 626:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 627:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     else if(ulInterrupt == FAULT_SYSTICK)
+ 5336              		.loc 1 627 0
+ 5337 0030 7B68     		ldr	r3, [r7, #4]
+ 5338 0032 0F2B     		cmp	r3, #15
+ 5339 0034 06D1     		bne	.L51
+ 628:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 629:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 630:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Pend the SysTick interrupt.
+ 631:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 632:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_INT_CTRL) |= NVIC_INT_CTRL_PENDSTSET;
+ 5340              		.loc 1 632 0
+ 5341 0036 104B     		ldr	r3, .L52
+ 5342 0038 0F4A     		ldr	r2, .L52
+ 5343 003a 1268     		ldr	r2, [r2, #0]
+ 5344 003c 42F08062 		orr	r2, r2, #67108864
+ 5345 0040 1A60     		str	r2, [r3, #0]
+ 5346 0042 14E0     		b	.L47
+ 5347              	.L51:
+ 633:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 634:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     else if(ulInterrupt >= 16)
+ 5348              		.loc 1 634 0
+ 5349 0044 7B68     		ldr	r3, [r7, #4]
+ 5350 0046 0F2B     		cmp	r3, #15
+ 5351 0048 11D9     		bls	.L47
+ 635:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 636:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 637:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Pend the general interrupt.
+ 638:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 639:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(g_pulPendRegs[(ulInterrupt - 16) / 32]) =
+ 5352              		.loc 1 639 0
+ 5353 004a 7B68     		ldr	r3, [r7, #4]
+ 5354 004c A3F11003 		sub	r3, r3, #16
+ 5355 0050 4FEA5312 		lsr	r2, r3, #5
+ 5356 0054 094B     		ldr	r3, .L52+4
+ 5357 0056 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 640:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****             1 << ((ulInterrupt - 16) & 31);
+ 5358              		.loc 1 640 0
+ 5359 005a 7A68     		ldr	r2, [r7, #4]
+ 5360 005c A2F11002 		sub	r2, r2, #16
+ 5361 0060 02F01F02 		and	r2, r2, #31
+ 5362 0064 4FF00101 		mov	r1, #1
+ 5363 0068 01FA02F2 		lsl	r2, r1, r2
+ 639:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(g_pulPendRegs[(ulInterrupt - 16) / 32]) =
+ 5364              		.loc 1 639 0
+ 5365 006c 1A60     		str	r2, [r3, #0]
+ 5366              	.L47:
+ 641:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 642:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 5367              		.loc 1 642 0
+ 5368 006e 07F10C07 		add	r7, r7, #12
+ 5369 0072 BD46     		mov	sp, r7
+ 5370 0074 80BC     		pop	{r7}
+ 5371 0076 7047     		bx	lr
+ 5372              	.L53:
+ 5373              		.align	2
+ 5374              	.L52:
+ 5375 0078 04ED00E0 		.word	-536810236
+ 5376 007c DC000000 		.word	g_pulPendRegs
+ 5377              		.cfi_endproc
+ 5378              	.LFE11:
+ 5380              		.section	.text.IntPendClear,"ax",%progbits
+ 5381              		.align	2
+ 5382              		.global	IntPendClear
+ 5383              		.thumb
+ 5384              		.thumb_func
+ 5386              	IntPendClear:
+ 5387              	.LFB12:
+ 643:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 644:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 645:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 646:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Unpends an interrupt.
+ 647:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 648:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \param ulInterrupt specifies the interrupt to be unpended.
+ 649:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 650:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! The specified interrupt is unpended in the interrupt controller.  Unpending
+ 651:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! an interrupt causes any previously generated interrupts that have not been 
+ 652:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! handled yet (due to higher priority interrupts or the interrupt not having 
+ 653:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! been enabled yet) to be discarded.
+ 654:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 655:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return None.
+ 656:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 657:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 658:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** void
+ 659:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntPendClear(unsigned long ulInterrupt)
+ 660:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 5388              		.loc 1 660 0
+ 5389              		.cfi_startproc
+ 5390              		@ args = 0, pretend = 0, frame = 8
+ 5391              		@ frame_needed = 1, uses_anonymous_args = 0
+ 5392              		@ link register save eliminated.
+ 5393 0000 80B4     		push	{r7}
+ 5394              	.LCFI33:
+ 5395              		.cfi_def_cfa_offset 4
+ 5396 0002 83B0     		sub	sp, sp, #12
+ 5397              	.LCFI34:
+ 5398              		.cfi_def_cfa_offset 16
+ 5399 0004 00AF     		add	r7, sp, #0
+ 5400              		.cfi_offset 7, -4
+ 5401              	.LCFI35:
+ 5402              		.cfi_def_cfa_register 7
+ 5403 0006 7860     		str	r0, [r7, #4]
+ 661:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 662:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Check the arguments.
+ 663:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 664:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     ASSERT(ulInterrupt < NUM_INTERRUPTS);
+ 665:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 666:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 667:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     // Determine the interrupt to unpend.
+ 668:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     //
+ 669:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     if(ulInterrupt == FAULT_PENDSV)
+ 5404              		.loc 1 669 0
+ 5405 0008 7B68     		ldr	r3, [r7, #4]
+ 5406 000a 0E2B     		cmp	r3, #14
+ 5407 000c 06D1     		bne	.L55
+ 670:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 671:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 672:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Unpend the PendSV interrupt.
+ 673:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 674:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_INT_CTRL) |= NVIC_INT_CTRL_UNPEND_SV;
+ 5408              		.loc 1 674 0
+ 5409 000e 154B     		ldr	r3, .L58
+ 5410 0010 144A     		ldr	r2, .L58
+ 5411 0012 1268     		ldr	r2, [r2, #0]
+ 5412 0014 42F00062 		orr	r2, r2, #134217728
+ 5413 0018 1A60     		str	r2, [r3, #0]
+ 5414 001a 1EE0     		b	.L54
+ 5415              	.L55:
+ 675:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 676:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     else if(ulInterrupt == FAULT_SYSTICK)
+ 5416              		.loc 1 676 0
+ 5417 001c 7B68     		ldr	r3, [r7, #4]
+ 5418 001e 0F2B     		cmp	r3, #15
+ 5419 0020 06D1     		bne	.L57
+ 677:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 678:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 679:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Unpend the SysTick interrupt.
+ 680:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 681:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(NVIC_INT_CTRL) |= NVIC_INT_CTRL_PENDSTCLR;
+ 5420              		.loc 1 681 0
+ 5421 0022 104B     		ldr	r3, .L58
+ 5422 0024 0F4A     		ldr	r2, .L58
+ 5423 0026 1268     		ldr	r2, [r2, #0]
+ 5424 0028 42F00072 		orr	r2, r2, #33554432
+ 5425 002c 1A60     		str	r2, [r3, #0]
+ 5426 002e 14E0     		b	.L54
+ 5427              	.L57:
+ 682:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 683:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     else if(ulInterrupt >= 16)
+ 5428              		.loc 1 683 0
+ 5429 0030 7B68     		ldr	r3, [r7, #4]
+ 5430 0032 0F2B     		cmp	r3, #15
+ 5431 0034 11D9     		bls	.L54
+ 684:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     {
+ 685:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 686:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         // Unpend the general interrupt.
+ 687:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         //
+ 688:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(g_pulUnpendRegs[(ulInterrupt - 16) / 32]) =
+ 5432              		.loc 1 688 0
+ 5433 0036 7B68     		ldr	r3, [r7, #4]
+ 5434 0038 A3F11003 		sub	r3, r3, #16
+ 5435 003c 4FEA5312 		lsr	r2, r3, #5
+ 5436 0040 094B     		ldr	r3, .L58+4
+ 5437 0042 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 689:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****             1 << ((ulInterrupt - 16) & 31);
+ 5438              		.loc 1 689 0
+ 5439 0046 7A68     		ldr	r2, [r7, #4]
+ 5440 0048 A2F11002 		sub	r2, r2, #16
+ 5441 004c 02F01F02 		and	r2, r2, #31
+ 5442 0050 4FF00101 		mov	r1, #1
+ 5443 0054 01FA02F2 		lsl	r2, r1, r2
+ 688:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****         HWREG(g_pulUnpendRegs[(ulInterrupt - 16) / 32]) =
+ 5444              		.loc 1 688 0
+ 5445 0058 1A60     		str	r2, [r3, #0]
+ 5446              	.L54:
+ 690:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     }
+ 691:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 5447              		.loc 1 691 0
+ 5448 005a 07F10C07 		add	r7, r7, #12
+ 5449 005e BD46     		mov	sp, r7
+ 5450 0060 80BC     		pop	{r7}
+ 5451 0062 7047     		bx	lr
+ 5452              	.L59:
+ 5453              		.align	2
+ 5454              	.L58:
+ 5455 0064 04ED00E0 		.word	-536810236
+ 5456 0068 F0000000 		.word	g_pulUnpendRegs
+ 5457              		.cfi_endproc
+ 5458              	.LFE12:
+ 5460              		.section	.text.IntPriorityMaskSet,"ax",%progbits
+ 5461              		.align	2
+ 5462              		.global	IntPriorityMaskSet
+ 5463              		.thumb
+ 5464              		.thumb_func
+ 5466              	IntPriorityMaskSet:
+ 5467              	.LFB13:
+ 692:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 693:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 694:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 695:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Sets the priority masking level
+ 696:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 697:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \param ulPriorityMask is the priority level that is masked.
+ 698:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 699:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! This function sets the interrupt priority masking level so that all
+ 700:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! interrupts at the specified or lesser priority level are masked.  Masking
+ 701:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! interrupts can be used to globally disable a set of interrupts with 
+ 702:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! priority below a predetermined threshold.  A value of 0 disables priority
+ 703:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! masking.
+ 704:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 705:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Smaller numbers correspond to higher interrupt priorities.  So for example
+ 706:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! a priority level mask of 4 allows interrupts of priority level 0-3,
+ 707:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! and interrupts with a numerical priority of 4 and greater are blocked.
+ 708:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 709:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! The hardware priority mechanism only looks at the upper N bits of the
+ 710:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! priority level (where N is 3 for the Stellaris family), so any
+ 711:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! prioritization must be performed in those bits.
+ 712:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 713:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return None.
+ 714:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 715:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 716:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** void
+ 717:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntPriorityMaskSet(unsigned long ulPriorityMask)
+ 718:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 5468              		.loc 1 718 0
+ 5469              		.cfi_startproc
+ 5470              		@ args = 0, pretend = 0, frame = 8
+ 5471              		@ frame_needed = 1, uses_anonymous_args = 0
+ 5472 0000 80B5     		push	{r7, lr}
+ 5473              	.LCFI36:
+ 5474              		.cfi_def_cfa_offset 8
+ 5475 0002 82B0     		sub	sp, sp, #8
+ 5476              	.LCFI37:
+ 5477              		.cfi_def_cfa_offset 16
+ 5478 0004 00AF     		add	r7, sp, #0
+ 5479              		.cfi_offset 14, -4
+ 5480              		.cfi_offset 7, -8
+ 5481              	.LCFI38:
+ 5482              		.cfi_def_cfa_register 7
+ 5483 0006 7860     		str	r0, [r7, #4]
+ 719:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     CPUbasepriSet(ulPriorityMask);
+ 5484              		.loc 1 719 0
+ 5485 0008 7868     		ldr	r0, [r7, #4]
+ 5486 000a FFF7FEFF 		bl	CPUbasepriSet
+ 720:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 5487              		.loc 1 720 0
+ 5488 000e 07F10807 		add	r7, r7, #8
+ 5489 0012 BD46     		mov	sp, r7
+ 5490 0014 80BD     		pop	{r7, pc}
+ 5491              		.cfi_endproc
+ 5492              	.LFE13:
+ 5494 0016 00BF     		.section	.text.IntPriorityMaskGet,"ax",%progbits
+ 5495              		.align	2
+ 5496              		.global	IntPriorityMaskGet
+ 5497              		.thumb
+ 5498              		.thumb_func
+ 5500              	IntPriorityMaskGet:
+ 5501              	.LFB14:
+ 721:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** 
+ 722:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 723:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 724:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Gets the priority masking level
+ 725:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 726:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! This function gets the current setting of the interrupt priority masking
+ 727:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! level.  The value returned is the priority level such that all interrupts
+ 728:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! of that and lesser priority are masked.  A value of 0 means that priority
+ 729:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! masking is disabled.
+ 730:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 731:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! Smaller numbers correspond to higher interrupt priorities.  So for example
+ 732:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! a priority level mask of 4 allows interrupts of priority level 0-3,
+ 733:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! and interrupts with a numerical priority of 4 and greater are blocked.
+ 734:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 735:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! The hardware priority mechanism only looks at the upper N bits of the
+ 736:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! priority level (where N is 3 for the Stellaris family), so any
+ 737:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! prioritization must be performed in those bits.
+ 738:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //!
+ 739:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //! \return Returns the value of the interrupt priority level mask.
+ 740:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //
+ 741:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** //*****************************************************************************
+ 742:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** unsigned long
+ 743:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** IntPriorityMaskGet(void)
+ 744:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** {
+ 5502              		.loc 1 744 0
+ 5503              		.cfi_startproc
+ 5504              		@ args = 0, pretend = 0, frame = 0
+ 5505              		@ frame_needed = 1, uses_anonymous_args = 0
+ 5506 0000 80B5     		push	{r7, lr}
+ 5507              	.LCFI39:
+ 5508              		.cfi_def_cfa_offset 8
+ 5509 0002 00AF     		add	r7, sp, #0
+ 5510              		.cfi_offset 14, -4
+ 5511              		.cfi_offset 7, -8
+ 5512              	.LCFI40:
+ 5513              		.cfi_def_cfa_register 7
+ 745:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c ****     return(CPUbasepriGet());
+ 5514              		.loc 1 745 0
+ 5515 0004 FFF7FEFF 		bl	CPUbasepriGet
+ 5516 0008 0346     		mov	r3, r0
+ 746:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/interrupt.c **** }
+ 5517              		.loc 1 746 0
+ 5518 000a 1846     		mov	r0, r3
+ 5519 000c 80BD     		pop	{r7, pc}
+ 5520              		.cfi_endproc
+ 5521              	.LFE14:
+ 5523 000e 00BF     		.text
+ 5524              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 interrupt.c
+     /tmp/ccHkmYbR.s:4539   .rodata:00000000 $d
+     /tmp/ccHkmYbR.s:4542   .rodata:00000000 g_pulPriority
+     /tmp/ccHkmYbR.s:4554   .rodata:00000020 g_pulRegs
+     /tmp/ccHkmYbR.s:4595   .rodata:000000b4 g_pulEnRegs
+     /tmp/ccHkmYbR.s:4604   .rodata:000000c8 g_pulDisRegs
+     /tmp/ccHkmYbR.s:4613   .rodata:000000dc g_pulPendRegs
+     /tmp/ccHkmYbR.s:4622   .rodata:000000f0 g_pulUnpendRegs
+     /tmp/ccHkmYbR.s:4629   .text.IntDefaultHandler:00000000 $t
+     /tmp/ccHkmYbR.s:4633   .text.IntDefaultHandler:00000000 IntDefaultHandler
+     /tmp/ccHkmYbR.s:4654   vtable:00000000 $d
+     /tmp/ccHkmYbR.s:4657   vtable:00000000 g_pfnRAMVectors
+     /tmp/ccHkmYbR.s:4660   .text.IntMasterEnable:00000000 $t
+     /tmp/ccHkmYbR.s:4665   .text.IntMasterEnable:00000000 IntMasterEnable
+     /tmp/ccHkmYbR.s:4690   .text.IntMasterDisable:00000000 $t
+     /tmp/ccHkmYbR.s:4695   .text.IntMasterDisable:00000000 IntMasterDisable
+     /tmp/ccHkmYbR.s:4720   .text.IntRegister:00000000 $t
+     /tmp/ccHkmYbR.s:4725   .text.IntRegister:00000000 IntRegister
+     /tmp/ccHkmYbR.s:4796   .text.IntRegister:00000060 $d
+     /tmp/ccHkmYbR.s:4802   .text.IntUnregister:00000000 $t
+     /tmp/ccHkmYbR.s:4807   .text.IntUnregister:00000000 IntUnregister
+     /tmp/ccHkmYbR.s:4838   .text.IntUnregister:0000001c $d
+     /tmp/ccHkmYbR.s:4844   .text.IntPriorityGroupingSet:00000000 $t
+     /tmp/ccHkmYbR.s:4849   .text.IntPriorityGroupingSet:00000000 IntPriorityGroupingSet
+     /tmp/ccHkmYbR.s:4883   .text.IntPriorityGroupingSet:00000028 $d
+     /tmp/ccHkmYbR.s:4889   .text.IntPriorityGroupingGet:00000000 $t
+     /tmp/ccHkmYbR.s:4894   .text.IntPriorityGroupingGet:00000000 IntPriorityGroupingGet
+     /tmp/ccHkmYbR.s:4954   .text.IntPriorityGroupingGet:00000048 $d
+     /tmp/ccHkmYbR.s:4960   .text.IntPrioritySet:00000000 $t
+     /tmp/ccHkmYbR.s:4965   .text.IntPrioritySet:00000000 IntPrioritySet
+     /tmp/ccHkmYbR.s:5026   .text.IntPrioritySet:0000006c $d
+     /tmp/ccHkmYbR.s:5031   .text.IntPriorityGet:00000000 $t
+     /tmp/ccHkmYbR.s:5036   .text.IntPriorityGet:00000000 IntPriorityGet
+     /tmp/ccHkmYbR.s:5074   .text.IntPriorityGet:00000034 $d
+     /tmp/ccHkmYbR.s:5079   .text.IntEnable:00000000 $t
+     /tmp/ccHkmYbR.s:5084   .text.IntEnable:00000000 IntEnable
+     /tmp/ccHkmYbR.s:5177   .text.IntEnable:0000008c $d
+     /tmp/ccHkmYbR.s:5184   .text.IntDisable:00000000 $t
+     /tmp/ccHkmYbR.s:5189   .text.IntDisable:00000000 IntDisable
+     /tmp/ccHkmYbR.s:5282   .text.IntDisable:0000008c $d
+     /tmp/ccHkmYbR.s:5289   .text.IntPendSet:00000000 $t
+     /tmp/ccHkmYbR.s:5294   .text.IntPendSet:00000000 IntPendSet
+     /tmp/ccHkmYbR.s:5375   .text.IntPendSet:00000078 $d
+     /tmp/ccHkmYbR.s:5381   .text.IntPendClear:00000000 $t
+     /tmp/ccHkmYbR.s:5386   .text.IntPendClear:00000000 IntPendClear
+     /tmp/ccHkmYbR.s:5455   .text.IntPendClear:00000064 $d
+     /tmp/ccHkmYbR.s:5461   .text.IntPriorityMaskSet:00000000 $t
+     /tmp/ccHkmYbR.s:5466   .text.IntPriorityMaskSet:00000000 IntPriorityMaskSet
+     /tmp/ccHkmYbR.s:5495   .text.IntPriorityMaskGet:00000000 $t
+     /tmp/ccHkmYbR.s:5500   .text.IntPriorityMaskGet:00000000 IntPriorityMaskGet
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+CPUcpsie
+CPUcpsid
+CPUbasepriSet
+CPUbasepriGet

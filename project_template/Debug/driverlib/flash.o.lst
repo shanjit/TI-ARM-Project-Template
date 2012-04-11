@@ -1,0 +1,2258 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"flash.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c"
+ 7754              		.align	2
+ 7757              	g_pulFMPPERegs:
+ 7758 0000 34E10F40 		.word	1074782516
+ 7759 0004 04E40F40 		.word	1074783236
+ 7760 0008 08E40F40 		.word	1074783240
+ 7761 000c 0CE40F40 		.word	1074783244
+ 7762              		.align	2
+ 7765              	g_pulFMPRERegs:
+ 7766 0010 30E10F40 		.word	1074782512
+ 7767 0014 04E20F40 		.word	1074782724
+ 7768 0018 08E20F40 		.word	1074782728
+ 7769 001c 0CE20F40 		.word	1074782732
+ 7770              		.section	.text.FlashUsecGet,"ax",%progbits
+ 7771              		.align	2
+ 7772              		.global	FlashUsecGet
+ 7773              		.thumb
+ 7774              		.thumb_func
+ 7776              	FlashUsecGet:
+ 7777              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // flash.c - Driver for programming the on-chip flash.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // Copyright (c) 2005-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \addtogroup flash_api
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! @{
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** #include "inc/hw_flash.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** #include "inc/hw_ints.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** #include "inc/hw_sysctl.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** #include "inc/hw_types.h"
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** #include "driverlib/debug.h"
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** #include "driverlib/flash.h"
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** #include "driverlib/interrupt.h"
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // An array that maps the specified memory bank to the appropriate Flash
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // Memory Protection Program Enable (FMPPE) register.
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** static const unsigned long g_pulFMPPERegs[] =
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     FLASH_FMPPE,
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     FLASH_FMPPE1,
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     FLASH_FMPPE2,
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     FLASH_FMPPE3
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** };
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // An array that maps the specified memory bank to the appropriate Flash
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** // Memory Protection Read Enable (FMPRE) register.
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** static const unsigned long g_pulFMPRERegs[] =
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     FLASH_FMPRE,
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     FLASH_FMPRE1,
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     FLASH_FMPRE2,
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     FLASH_FMPRE3
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** };
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Gets the number of processor clocks per micro-second.
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function returns the number of clocks per micro-second, as presently
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! known by the flash controller. This function is only valid on Sandstorm-
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! and Fury-class devices.
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return Returns the number of processor clocks per micro-second.
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** unsigned long
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashUsecGet(void)
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 7778              		.loc 1 81 0
+ 7779              		.cfi_startproc
+ 7780              		@ args = 0, pretend = 0, frame = 0
+ 7781              		@ frame_needed = 1, uses_anonymous_args = 0
+ 7782              		@ link register save eliminated.
+ 7783 0000 80B4     		push	{r7}
+ 7784              	.LCFI0:
+ 7785              		.cfi_def_cfa_offset 4
+ 7786 0002 00AF     		add	r7, sp, #0
+ 7787              		.cfi_offset 7, -4
+ 7788              	.LCFI1:
+ 7789              		.cfi_def_cfa_register 7
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Return the number of clocks per micro-second.
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     return(HWREG(FLASH_USECRL) + 1);
+ 7790              		.loc 1 85 0
+ 7791 0004 034B     		ldr	r3, .L2
+ 7792 0006 1B68     		ldr	r3, [r3, #0]
+ 7793 0008 03F10103 		add	r3, r3, #1
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 7794              		.loc 1 86 0
+ 7795 000c 1846     		mov	r0, r3
+ 7796 000e BD46     		mov	sp, r7
+ 7797 0010 80BC     		pop	{r7}
+ 7798 0012 7047     		bx	lr
+ 7799              	.L3:
+ 7800              		.align	2
+ 7801              	.L2:
+ 7802 0014 40E10F40 		.word	1074782528
+ 7803              		.cfi_endproc
+ 7804              	.LFE0:
+ 7806              		.section	.text.FlashUsecSet,"ax",%progbits
+ 7807              		.align	2
+ 7808              		.global	FlashUsecSet
+ 7809              		.thumb
+ 7810              		.thumb_func
+ 7812              	FlashUsecSet:
+ 7813              	.LFB1:
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Sets the number of processor clocks per micro-second.
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param ulClocks is the number of processor clocks per micro-second.
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function is used to tell the flash controller the number of processor
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! clocks per micro-second.  This value must be programmed correctly or the
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! flash most likely will not program correctly; it has no affect on reading
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! flash. This function is only valid on Sandstorm- and Fury-class devices.
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return None.
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** void
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashUsecSet(unsigned long ulClocks)
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 7814              		.loc 1 104 0
+ 7815              		.cfi_startproc
+ 7816              		@ args = 0, pretend = 0, frame = 8
+ 7817              		@ frame_needed = 1, uses_anonymous_args = 0
+ 7818              		@ link register save eliminated.
+ 7819 0000 80B4     		push	{r7}
+ 7820              	.LCFI2:
+ 7821              		.cfi_def_cfa_offset 4
+ 7822 0002 83B0     		sub	sp, sp, #12
+ 7823              	.LCFI3:
+ 7824              		.cfi_def_cfa_offset 16
+ 7825 0004 00AF     		add	r7, sp, #0
+ 7826              		.cfi_offset 7, -4
+ 7827              	.LCFI4:
+ 7828              		.cfi_def_cfa_register 7
+ 7829 0006 7860     		str	r0, [r7, #4]
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Set the number of clocks per micro-second.
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_USECRL) = ulClocks - 1;
+ 7830              		.loc 1 108 0
+ 7831 0008 044B     		ldr	r3, .L5
+ 7832 000a 7A68     		ldr	r2, [r7, #4]
+ 7833 000c 02F1FF32 		add	r2, r2, #-1
+ 7834 0010 1A60     		str	r2, [r3, #0]
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 7835              		.loc 1 109 0
+ 7836 0012 07F10C07 		add	r7, r7, #12
+ 7837 0016 BD46     		mov	sp, r7
+ 7838 0018 80BC     		pop	{r7}
+ 7839 001a 7047     		bx	lr
+ 7840              	.L6:
+ 7841              		.align	2
+ 7842              	.L5:
+ 7843 001c 40E10F40 		.word	1074782528
+ 7844              		.cfi_endproc
+ 7845              	.LFE1:
+ 7847              		.section	.text.FlashErase,"ax",%progbits
+ 7848              		.align	2
+ 7849              		.global	FlashErase
+ 7850              		.thumb
+ 7851              		.thumb_func
+ 7853              	FlashErase:
+ 7854              	.LFB2:
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Erases a block of flash.
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param ulAddress is the start address of the flash block to be erased.
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function erases a 1-kB block of the on-chip flash.  After erasing,
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! the block is filled with 0xFF bytes.  Read-only and execute-only blocks
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! cannot be erased.
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function does not return until the block has been erased.
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return Returns 0 on success, or -1 if an invalid block address was
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! specified or the block is write-protected.
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** long
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashErase(unsigned long ulAddress)
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 7855              		.loc 1 129 0
+ 7856              		.cfi_startproc
+ 7857              		@ args = 0, pretend = 0, frame = 8
+ 7858              		@ frame_needed = 1, uses_anonymous_args = 0
+ 7859              		@ link register save eliminated.
+ 7860 0000 80B4     		push	{r7}
+ 7861              	.LCFI5:
+ 7862              		.cfi_def_cfa_offset 4
+ 7863 0002 83B0     		sub	sp, sp, #12
+ 7864              	.LCFI6:
+ 7865              		.cfi_def_cfa_offset 16
+ 7866 0004 00AF     		add	r7, sp, #0
+ 7867              		.cfi_offset 7, -4
+ 7868              	.LCFI7:
+ 7869              		.cfi_def_cfa_register 7
+ 7870 0006 7860     		str	r0, [r7, #4]
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Check the arguments.
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ASSERT(!(ulAddress & (FLASH_ERASE_SIZE - 1)));
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Clear the flash access and error interrupts.
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_FCMISC) = (FLASH_FCMISC_AMISC | FLASH_FCMISC_VOLTMISC |
+ 7871              		.loc 1 138 0
+ 7872 0008 114B     		ldr	r3, .L11
+ 7873 000a 40F60122 		movw	r2, #2561
+ 7874 000e 1A60     		str	r2, [r3, #0]
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                            FLASH_FCMISC_ERMISC);
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Erase the block.
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_FMA) = ulAddress;
+ 7875              		.loc 1 144 0
+ 7876 0010 104B     		ldr	r3, .L11+4
+ 7877 0012 7A68     		ldr	r2, [r7, #4]
+ 7878 0014 1A60     		str	r2, [r3, #0]
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_FMC) = FLASH_FMC_WRKEY | FLASH_FMC_ERASE;
+ 7879              		.loc 1 145 0
+ 7880 0016 104B     		ldr	r3, .L11+8
+ 7881 0018 104A     		ldr	r2, .L11+12
+ 7882 001a 1A60     		str	r2, [r3, #0]
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Wait until the block has been erased.
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     while(HWREG(FLASH_FMC) & FLASH_FMC_ERASE)
+ 7883              		.loc 1 150 0
+ 7884 001c 00BF     		nop
+ 7885              	.L8:
+ 7886              		.loc 1 150 0 is_stmt 0 discriminator 1
+ 7887 001e 0E4B     		ldr	r3, .L11+8
+ 7888 0020 1B68     		ldr	r3, [r3, #0]
+ 7889 0022 03F00203 		and	r3, r3, #2
+ 7890 0026 002B     		cmp	r3, #0
+ 7891 0028 F9D1     		bne	.L8
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Return an error if an access violation or erase error occurred.
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     if(HWREG(FLASH_FCRIS) & (FLASH_FCRIS_ARIS | FLASH_FCRIS_VOLTRIS |
+ 7892              		.loc 1 157 0 is_stmt 1
+ 7893 002a 0D4B     		ldr	r3, .L11+16
+ 7894 002c 1A68     		ldr	r2, [r3, #0]
+ 7895 002e 40F60123 		movw	r3, #2561
+ 7896 0032 02EA0303 		and	r3, r2, r3
+ 7897 0036 002B     		cmp	r3, #0
+ 7898 0038 02D0     		beq	.L9
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                              FLASH_FCRIS_ERRIS))
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         return(-1);
+ 7899              		.loc 1 160 0
+ 7900 003a 4FF0FF33 		mov	r3, #-1
+ 7901 003e 01E0     		b	.L10
+ 7902              	.L9:
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Success.
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     return(0);
+ 7903              		.loc 1 166 0
+ 7904 0040 4FF00003 		mov	r3, #0
+ 7905              	.L10:
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 7906              		.loc 1 167 0
+ 7907 0044 1846     		mov	r0, r3
+ 7908 0046 07F10C07 		add	r7, r7, #12
+ 7909 004a BD46     		mov	sp, r7
+ 7910 004c 80BC     		pop	{r7}
+ 7911 004e 7047     		bx	lr
+ 7912              	.L12:
+ 7913              		.align	2
+ 7914              	.L11:
+ 7915 0050 14D00F40 		.word	1074778132
+ 7916 0054 00D00F40 		.word	1074778112
+ 7917 0058 08D00F40 		.word	1074778120
+ 7918 005c 020042A4 		.word	-1539178494
+ 7919 0060 0CD00F40 		.word	1074778124
+ 7920              		.cfi_endproc
+ 7921              	.LFE2:
+ 7923              		.section	.text.FlashProgram,"ax",%progbits
+ 7924              		.align	2
+ 7925              		.global	FlashProgram
+ 7926              		.thumb
+ 7927              		.thumb_func
+ 7929              	FlashProgram:
+ 7930              	.LFB3:
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Programs flash.
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param pulData is a pointer to the data to be programmed.
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param ulAddress is the starting address in flash to be programmed.  Must
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! be a multiple of four.
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param ulCount is the number of bytes to be programmed.  Must be a multiple
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! of four.
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function programs a sequence of words into the on-chip flash.
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Each word in a page of flash can only be programmed one time between an
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! erase of that page; programming a word multiple times results in an
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! unpredictable value in that word of flash.
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Because the flash is programmed one word at a time, the starting address 
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! and byte count must both be multiples of four.  It is up to the caller to
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! verify the programmed contents, if such verification is required.
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function does not return until the data has been programmed.
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return Returns 0 on success, or -1 if a programming error is encountered.
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** long
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashProgram(unsigned long *pulData, unsigned long ulAddress,
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****              unsigned long ulCount)
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 7931              		.loc 1 196 0
+ 7932              		.cfi_startproc
+ 7933              		@ args = 0, pretend = 0, frame = 16
+ 7934              		@ frame_needed = 1, uses_anonymous_args = 0
+ 7935              		@ link register save eliminated.
+ 7936 0000 80B4     		push	{r7}
+ 7937              	.LCFI8:
+ 7938              		.cfi_def_cfa_offset 4
+ 7939 0002 85B0     		sub	sp, sp, #20
+ 7940              	.LCFI9:
+ 7941              		.cfi_def_cfa_offset 24
+ 7942 0004 00AF     		add	r7, sp, #0
+ 7943              		.cfi_offset 7, -4
+ 7944              	.LCFI10:
+ 7945              		.cfi_def_cfa_register 7
+ 7946 0006 F860     		str	r0, [r7, #12]
+ 7947 0008 B960     		str	r1, [r7, #8]
+ 7948 000a 7A60     		str	r2, [r7, #4]
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Check the arguments.
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ASSERT(!(ulAddress & 3));
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ASSERT(!(ulCount & 3));
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Clear the flash access and error interrupts.
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_FCMISC) = (FLASH_FCMISC_AMISC | FLASH_FCMISC_VOLTMISC |
+ 7949              		.loc 1 206 0
+ 7950 000c 3A4B     		ldr	r3, .L28
+ 7951 000e 42F20162 		movw	r2, #9729
+ 7952 0012 1A60     		str	r2, [r3, #0]
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                            FLASH_FCMISC_INVDMISC | FLASH_FCMISC_PROGMISC);
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // See if this device has a write buffer.
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     if(HWREG(SYSCTL_NVMSTAT) & SYSCTL_NVMSTAT_FWB)
+ 7953              		.loc 1 212 0
+ 7954 0014 394B     		ldr	r3, .L28+4
+ 7955 0016 1B68     		ldr	r3, [r3, #0]
+ 7956 0018 03F00103 		and	r3, r3, #1
+ 7957 001c DBB2     		uxtb	r3, r3
+ 7958 001e 002B     		cmp	r3, #0
+ 7959 0020 53D0     		beq	.L23
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         // Loop over the words to be programmed.
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         while(ulCount)
+ 7960              		.loc 1 217 0
+ 7961 0022 30E0     		b	.L15
+ 7962              	.L21:
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         {
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // Set the address of this block of words.
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             HWREG(FLASH_FMA) = ulAddress & ~(0x7f);
+ 7963              		.loc 1 222 0
+ 7964 0024 364B     		ldr	r3, .L28+8
+ 7965 0026 BA68     		ldr	r2, [r7, #8]
+ 7966 0028 22F07F02 		bic	r2, r2, #127
+ 7967 002c 1A60     		str	r2, [r3, #0]
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // Loop over the words in this 32-word block.
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             while(((ulAddress & 0x7c) || (HWREG(FLASH_FWBVAL) == 0)) &&
+ 7968              		.loc 1 227 0
+ 7969 002e 13E0     		b	.L16
+ 7970              	.L19:
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                   (ulCount != 0))
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             {
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                 //
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                 // Write this word into the write buffer.
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                 //
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                 HWREG(FLASH_FWBN + (ulAddress & 0x7c)) = *pulData++;
+ 7971              		.loc 1 233 0
+ 7972 0030 BB68     		ldr	r3, [r7, #8]
+ 7973 0032 03F07C02 		and	r2, r3, #124
+ 7974 0036 334B     		ldr	r3, .L28+12
+ 7975 0038 D318     		adds	r3, r2, r3
+ 7976 003a FA68     		ldr	r2, [r7, #12]
+ 7977 003c 1268     		ldr	r2, [r2, #0]
+ 7978 003e 1A60     		str	r2, [r3, #0]
+ 7979 0040 FB68     		ldr	r3, [r7, #12]
+ 7980 0042 03F10403 		add	r3, r3, #4
+ 7981 0046 FB60     		str	r3, [r7, #12]
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                 ulAddress += 4;
+ 7982              		.loc 1 234 0
+ 7983 0048 BB68     		ldr	r3, [r7, #8]
+ 7984 004a 03F10403 		add	r3, r3, #4
+ 7985 004e BB60     		str	r3, [r7, #8]
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                 ulCount -= 4;
+ 7986              		.loc 1 235 0
+ 7987 0050 7B68     		ldr	r3, [r7, #4]
+ 7988 0052 A3F10403 		sub	r3, r3, #4
+ 7989 0056 7B60     		str	r3, [r7, #4]
+ 7990              	.L16:
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             while(((ulAddress & 0x7c) || (HWREG(FLASH_FWBVAL) == 0)) &&
+ 7991              		.loc 1 227 0 discriminator 1
+ 7992 0058 BB68     		ldr	r3, [r7, #8]
+ 7993 005a 03F07C03 		and	r3, r3, #124
+ 7994 005e 002B     		cmp	r3, #0
+ 7995 0060 03D1     		bne	.L17
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             while(((ulAddress & 0x7c) || (HWREG(FLASH_FWBVAL) == 0)) &&
+ 7996              		.loc 1 227 0 is_stmt 0 discriminator 3
+ 7997 0062 294B     		ldr	r3, .L28+16
+ 7998 0064 1B68     		ldr	r3, [r3, #0]
+ 7999 0066 002B     		cmp	r3, #0
+ 8000 0068 02D1     		bne	.L18
+ 8001              	.L17:
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             while(((ulAddress & 0x7c) || (HWREG(FLASH_FWBVAL) == 0)) &&
+ 8002              		.loc 1 227 0 discriminator 2
+ 8003 006a 7B68     		ldr	r3, [r7, #4]
+ 8004 006c 002B     		cmp	r3, #0
+ 8005 006e DFD1     		bne	.L19
+ 8006              	.L18:
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             }
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // Program the contents of the write buffer into flash.
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             HWREG(FLASH_FMC2) = FLASH_FMC2_WRKEY | FLASH_FMC2_WRBUF;
+ 8007              		.loc 1 241 0 is_stmt 1
+ 8008 0070 264B     		ldr	r3, .L28+20
+ 8009 0072 274A     		ldr	r2, .L28+24
+ 8010 0074 1A60     		str	r2, [r3, #0]
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // Wait until the write buffer has been programmed.
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             while(HWREG(FLASH_FMC2) & FLASH_FMC2_WRBUF)
+ 8011              		.loc 1 246 0
+ 8012 0076 00BF     		nop
+ 8013              	.L20:
+ 8014              		.loc 1 246 0 is_stmt 0 discriminator 1
+ 8015 0078 244B     		ldr	r3, .L28+20
+ 8016 007a 1B68     		ldr	r3, [r3, #0]
+ 8017 007c 03F00103 		and	r3, r3, #1
+ 8018 0080 DBB2     		uxtb	r3, r3
+ 8019 0082 002B     		cmp	r3, #0
+ 8020 0084 F8D1     		bne	.L20
+ 8021              	.L15:
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         while(ulCount)
+ 8022              		.loc 1 217 0 is_stmt 1 discriminator 1
+ 8023 0086 7B68     		ldr	r3, [r7, #4]
+ 8024 0088 002B     		cmp	r3, #0
+ 8025 008a CBD1     		bne	.L21
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         while(ulCount)
+ 8026              		.loc 1 217 0 is_stmt 0
+ 8027 008c 20E0     		b	.L22
+ 8028              	.L25:
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             {
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             }
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         }
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     else
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         // Loop over the words to be programmed.
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         while(ulCount)
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         {
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // Program the next word.
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             HWREG(FLASH_FMA) = ulAddress;
+ 8029              		.loc 1 261 0 is_stmt 1
+ 8030 008e 1C4B     		ldr	r3, .L28+8
+ 8031 0090 BA68     		ldr	r2, [r7, #8]
+ 8032 0092 1A60     		str	r2, [r3, #0]
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             HWREG(FLASH_FMD) = *pulData;
+ 8033              		.loc 1 262 0
+ 8034 0094 1F4B     		ldr	r3, .L28+28
+ 8035 0096 FA68     		ldr	r2, [r7, #12]
+ 8036 0098 1268     		ldr	r2, [r2, #0]
+ 8037 009a 1A60     		str	r2, [r3, #0]
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             HWREG(FLASH_FMC) = FLASH_FMC_WRKEY | FLASH_FMC_WRITE;
+ 8038              		.loc 1 263 0
+ 8039 009c 1E4B     		ldr	r3, .L28+32
+ 8040 009e 1C4A     		ldr	r2, .L28+24
+ 8041 00a0 1A60     		str	r2, [r3, #0]
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // Wait until the word has been programmed.
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             while(HWREG(FLASH_FMC) & FLASH_FMC_WRITE)
+ 8042              		.loc 1 268 0
+ 8043 00a2 00BF     		nop
+ 8044              	.L24:
+ 8045              		.loc 1 268 0 is_stmt 0 discriminator 1
+ 8046 00a4 1C4B     		ldr	r3, .L28+32
+ 8047 00a6 1B68     		ldr	r3, [r3, #0]
+ 8048 00a8 03F00103 		and	r3, r3, #1
+ 8049 00ac DBB2     		uxtb	r3, r3
+ 8050 00ae 002B     		cmp	r3, #0
+ 8051 00b0 F8D1     		bne	.L24
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             {
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             }
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // Increment to the next word.
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             pulData++;
+ 8052              		.loc 1 275 0 is_stmt 1
+ 8053 00b2 FB68     		ldr	r3, [r7, #12]
+ 8054 00b4 03F10403 		add	r3, r3, #4
+ 8055 00b8 FB60     		str	r3, [r7, #12]
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             ulAddress += 4;
+ 8056              		.loc 1 276 0
+ 8057 00ba BB68     		ldr	r3, [r7, #8]
+ 8058 00bc 03F10403 		add	r3, r3, #4
+ 8059 00c0 BB60     		str	r3, [r7, #8]
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             ulCount -= 4;
+ 8060              		.loc 1 277 0
+ 8061 00c2 7B68     		ldr	r3, [r7, #4]
+ 8062 00c4 A3F10403 		sub	r3, r3, #4
+ 8063 00c8 7B60     		str	r3, [r7, #4]
+ 8064              	.L23:
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         while(ulCount)
+ 8065              		.loc 1 256 0 discriminator 1
+ 8066 00ca 7B68     		ldr	r3, [r7, #4]
+ 8067 00cc 002B     		cmp	r3, #0
+ 8068 00ce DED1     		bne	.L25
+ 8069              	.L22:
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         }
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Return an error if an access violation occurred.
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     if(HWREG(FLASH_FCRIS) & (FLASH_FCRIS_ARIS | FLASH_FCRIS_VOLTRIS |
+ 8070              		.loc 1 284 0
+ 8071 00d0 124B     		ldr	r3, .L28+36
+ 8072 00d2 1A68     		ldr	r2, [r3, #0]
+ 8073 00d4 42F20163 		movw	r3, #9729
+ 8074 00d8 02EA0303 		and	r3, r2, r3
+ 8075 00dc 002B     		cmp	r3, #0
+ 8076 00de 02D0     		beq	.L26
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                              FLASH_FCRIS_INVDRIS | FLASH_FCRIS_PROGRIS))
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         return(-1);
+ 8077              		.loc 1 287 0
+ 8078 00e0 4FF0FF33 		mov	r3, #-1
+ 8079 00e4 01E0     		b	.L27
+ 8080              	.L26:
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Success.
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     return(0);
+ 8081              		.loc 1 293 0
+ 8082 00e6 4FF00003 		mov	r3, #0
+ 8083              	.L27:
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 8084              		.loc 1 294 0
+ 8085 00ea 1846     		mov	r0, r3
+ 8086 00ec 07F11407 		add	r7, r7, #20
+ 8087 00f0 BD46     		mov	sp, r7
+ 8088 00f2 80BC     		pop	{r7}
+ 8089 00f4 7047     		bx	lr
+ 8090              	.L29:
+ 8091 00f6 00BF     		.align	2
+ 8092              	.L28:
+ 8093 00f8 14D00F40 		.word	1074778132
+ 8094 00fc A0E10F40 		.word	1074782624
+ 8095 0100 00D00F40 		.word	1074778112
+ 8096 0104 00D10F40 		.word	1074778368
+ 8097 0108 30D00F40 		.word	1074778160
+ 8098 010c 20D00F40 		.word	1074778144
+ 8099 0110 010042A4 		.word	-1539178495
+ 8100 0114 04D00F40 		.word	1074778116
+ 8101 0118 08D00F40 		.word	1074778120
+ 8102 011c 0CD00F40 		.word	1074778124
+ 8103              		.cfi_endproc
+ 8104              	.LFE3:
+ 8106              		.section	.text.FlashProtectGet,"ax",%progbits
+ 8107              		.align	2
+ 8108              		.global	FlashProtectGet
+ 8109              		.thumb
+ 8110              		.thumb_func
+ 8112              	FlashProtectGet:
+ 8113              	.LFB4:
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Gets the protection setting for a block of flash.
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param ulAddress is the start address of the flash block to be queried.
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function gets the current protection for the specified 2-kB block
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! of flash.  Each block can be read/write, read-only, or execute-only.
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Read/write blocks can be read, executed, erased, and programmed.  Read-only
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! blocks can be read and executed.  Execute-only blocks can only be executed;
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! processor and debugger data reads are not allowed.
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return Returns the protection setting for this block.  See
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! FlashProtectSet() for possible values.
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** tFlashProtection
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashProtectGet(unsigned long ulAddress)
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 8114              		.loc 1 314 0
+ 8115              		.cfi_startproc
+ 8116              		@ args = 0, pretend = 0, frame = 24
+ 8117              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8118              		@ link register save eliminated.
+ 8119 0000 80B4     		push	{r7}
+ 8120              	.LCFI11:
+ 8121              		.cfi_def_cfa_offset 4
+ 8122 0002 87B0     		sub	sp, sp, #28
+ 8123              	.LCFI12:
+ 8124              		.cfi_def_cfa_offset 32
+ 8125 0004 00AF     		add	r7, sp, #0
+ 8126              		.cfi_offset 7, -4
+ 8127              	.LCFI13:
+ 8128              		.cfi_def_cfa_register 7
+ 8129 0006 7860     		str	r0, [r7, #4]
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     unsigned long ulFMPRE, ulFMPPE;
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     unsigned long ulBank;
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Check the argument.
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ASSERT(!(ulAddress & (FLASH_PROTECT_SIZE - 1)));
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Calculate the Flash Bank from Base Address, and mask off the Bank
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // from ulAddress for subsequent reference.
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ulBank = (((ulAddress / FLASH_PROTECT_SIZE) / 32) % 4);
+ 8130              		.loc 1 327 0
+ 8131 0008 7B68     		ldr	r3, [r7, #4]
+ 8132 000a 4FEA1343 		lsr	r3, r3, #16
+ 8133 000e 03F00303 		and	r3, r3, #3
+ 8134 0012 3B61     		str	r3, [r7, #16]
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ulAddress &= ((FLASH_PROTECT_SIZE * 32) - 1);
+ 8135              		.loc 1 328 0
+ 8136 0014 7B68     		ldr	r3, [r7, #4]
+ 8137 0016 4FEA0343 		lsl	r3, r3, #16
+ 8138 001a 4FEA1343 		lsr	r3, r3, #16
+ 8139 001e 7B60     		str	r3, [r7, #4]
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Read the appropriate flash protection registers for the specified
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // flash bank.
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ulFMPRE = HWREG(g_pulFMPRERegs[ulBank]);
+ 8140              		.loc 1 334 0
+ 8141 0020 2C4B     		ldr	r3, .L39
+ 8142 0022 3A69     		ldr	r2, [r7, #16]
+ 8143 0024 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 8144 0028 1B68     		ldr	r3, [r3, #0]
+ 8145 002a 7B61     		str	r3, [r7, #20]
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ulFMPPE = HWREG(g_pulFMPPERegs[ulBank]);
+ 8146              		.loc 1 335 0
+ 8147 002c 2A4B     		ldr	r3, .L39+4
+ 8148 002e 3A69     		ldr	r2, [r7, #16]
+ 8149 0030 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 8150 0034 1B68     		ldr	r3, [r3, #0]
+ 8151 0036 FB60     		str	r3, [r7, #12]
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // For Stellaris Sandstorm-class devices, revision C1 and C2, the upper
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // bits of the FMPPE register are used for JTAG protect options, and are
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // not available for the FLASH protection scheme.  When Querying Block
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Protection, assume these bits are 1.
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     if(CLASS_IS_SANDSTORM && (REVISION_IS_C1 || REVISION_IS_C2))
+ 8152              		.loc 1 343 0
+ 8153 0038 284B     		ldr	r3, .L39+8
+ 8154 003a 1B68     		ldr	r3, [r3, #0]
+ 8155 003c 03F0E043 		and	r3, r3, #1879048192
+ 8156 0040 002B     		cmp	r3, #0
+ 8157 0042 07D0     		beq	.L31
+ 8158              		.loc 1 343 0 is_stmt 0 discriminator 2
+ 8159 0044 254B     		ldr	r3, .L39+8
+ 8160 0046 1A68     		ldr	r2, [r3, #0]
+ 8161 0048 254B     		ldr	r3, .L39+12
+ 8162 004a 02EA0303 		and	r3, r2, r3
+ 8163 004e B3F1805F 		cmp	r3, #268435456
+ 8164 0052 17D1     		bne	.L32
+ 8165              	.L31:
+ 8166              		.loc 1 343 0 discriminator 1
+ 8167 0054 214B     		ldr	r3, .L39+8
+ 8168 0056 1B68     		ldr	r3, [r3, #0]
+ 8169 0058 4FEA0343 		lsl	r3, r3, #16
+ 8170 005c 4FEA1343 		lsr	r3, r3, #16
+ 8171 0060 40F20122 		movw	r2, #513
+ 8172 0064 9342     		cmp	r3, r2
+ 8173 0066 09D0     		beq	.L33
+ 8174 0068 1C4B     		ldr	r3, .L39+8
+ 8175 006a 1B68     		ldr	r3, [r3, #0]
+ 8176 006c 4FEA0343 		lsl	r3, r3, #16
+ 8177 0070 4FEA1343 		lsr	r3, r3, #16
+ 8178 0074 40F20222 		movw	r2, #514
+ 8179 0078 9342     		cmp	r3, r2
+ 8180 007a 03D1     		bne	.L32
+ 8181              	.L33:
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         ulFMPRE |= (FLASH_FMP_BLOCK_31 | FLASH_FMP_BLOCK_30);
+ 8182              		.loc 1 345 0 is_stmt 1
+ 8183 007c 7B69     		ldr	r3, [r7, #20]
+ 8184 007e 43F04043 		orr	r3, r3, #-1073741824
+ 8185 0082 7B61     		str	r3, [r7, #20]
+ 8186              	.L32:
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Check the appropriate protection bits for the block of memory that
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // is specified by the address.
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     switch((((ulFMPRE >> (ulAddress / FLASH_PROTECT_SIZE)) &
+ 8187              		.loc 1 352 0
+ 8188 0084 7B68     		ldr	r3, [r7, #4]
+ 8189 0086 4FEAD323 		lsr	r3, r3, #11
+ 8190 008a 7A69     		ldr	r2, [r7, #20]
+ 8191 008c 22FA03F3 		lsr	r3, r2, r3
+ 8192 0090 03F00103 		and	r3, r3, #1
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****              FLASH_FMP_BLOCK_0) << 1) |
+ 8193              		.loc 1 353 0
+ 8194 0094 4FEA4302 		lsl	r2, r3, #1
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****            ((ulFMPPE >> (ulAddress / FLASH_PROTECT_SIZE)) & FLASH_FMP_BLOCK_0))
+ 8195              		.loc 1 354 0
+ 8196 0098 7B68     		ldr	r3, [r7, #4]
+ 8197 009a 4FEAD323 		lsr	r3, r3, #11
+ 8198 009e F968     		ldr	r1, [r7, #12]
+ 8199 00a0 21FA03F3 		lsr	r3, r1, r3
+ 8200 00a4 03F00103 		and	r3, r3, #1
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****              FLASH_FMP_BLOCK_0) << 1) |
+ 8201              		.loc 1 353 0
+ 8202 00a8 42EA0303 		orr	r3, r2, r3
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     switch((((ulFMPRE >> (ulAddress / FLASH_PROTECT_SIZE)) &
+ 8203              		.loc 1 352 0
+ 8204 00ac 012B     		cmp	r3, #1
+ 8205 00ae 02D9     		bls	.L35
+ 8206 00b0 022B     		cmp	r3, #2
+ 8207 00b2 03D0     		beq	.L36
+ 8208 00b4 05E0     		b	.L38
+ 8209              	.L35:
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         // This block is marked as execute only (that is, it can not be erased
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         // or programmed, and the only reads allowed are via the instruction
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         // fetch interface).
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         case 0:
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         case 1:
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         {
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             return(FlashExecuteOnly);
+ 8210              		.loc 1 364 0
+ 8211 00b6 4FF00203 		mov	r3, #2
+ 8212 00ba 04E0     		b	.L37
+ 8213              	.L36:
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         }
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         // This block is marked as read only (that is, it can not be erased or
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         // programmed).
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         case 2:
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         {
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             return(FlashReadOnly);
+ 8214              		.loc 1 373 0
+ 8215 00bc 4FF00103 		mov	r3, #1
+ 8216 00c0 01E0     		b	.L37
+ 8217              	.L38:
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         }
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         // This block is read/write; it can be read, erased, and programmed.
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         case 3:
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         default:
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         {
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             return(FlashReadWrite);
+ 8218              		.loc 1 382 0
+ 8219 00c2 4FF00003 		mov	r3, #0
+ 8220              	.L37:
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         }
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 8221              		.loc 1 385 0
+ 8222 00c6 1846     		mov	r0, r3
+ 8223 00c8 07F11C07 		add	r7, r7, #28
+ 8224 00cc BD46     		mov	sp, r7
+ 8225 00ce 80BC     		pop	{r7}
+ 8226 00d0 7047     		bx	lr
+ 8227              	.L40:
+ 8228 00d2 00BF     		.align	2
+ 8229              	.L39:
+ 8230 00d4 10000000 		.word	g_pulFMPRERegs
+ 8231 00d8 00000000 		.word	g_pulFMPPERegs
+ 8232 00dc 00E00F40 		.word	1074782208
+ 8233 00e0 0000FF70 		.word	1895759872
+ 8234              		.cfi_endproc
+ 8235              	.LFE4:
+ 8237              		.section	.text.FlashProtectSet,"ax",%progbits
+ 8238              		.align	2
+ 8239              		.global	FlashProtectSet
+ 8240              		.thumb
+ 8241              		.thumb_func
+ 8243              	FlashProtectSet:
+ 8244              	.LFB5:
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Sets the protection setting for a block of flash.
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param ulAddress is the start address of the flash block to be protected.
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param eProtect is the protection to be applied to the block.  Can be one
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! of \b FlashReadWrite, \b FlashReadOnly, or \b FlashExecuteOnly.
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function sets the protection for the specified 2-kB block of
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! flash.  Blocks that are read/write can be made read-only or execute-only.
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Blocks that are read-only can be made execute-only.  Blocks that are
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! execute-only cannot have their protection modified.  Attempts to make the
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! block protection less stringent (that is, read-only to read/write) 
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! result in a failure (and are prevented by the hardware).
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Changes to the flash protection are maintained only until the next reset.
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This protocol allows the application to be executed in the desired flash 
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! protection environment to check for inappropriate flash access (via the 
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! flash interrupt).  To make the flash protection permanent, use the
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! FlashProtectSave() function.
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return Returns 0 on success, or -1 if an invalid address or an invalid
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! protection was specified.
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** long
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashProtectSet(unsigned long ulAddress, tFlashProtection eProtect)
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 8245              		.loc 1 414 0
+ 8246              		.cfi_startproc
+ 8247              		@ args = 0, pretend = 0, frame = 24
+ 8248              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8249              		@ link register save eliminated.
+ 8250 0000 80B4     		push	{r7}
+ 8251              	.LCFI14:
+ 8252              		.cfi_def_cfa_offset 4
+ 8253 0002 87B0     		sub	sp, sp, #28
+ 8254              	.LCFI15:
+ 8255              		.cfi_def_cfa_offset 32
+ 8256 0004 00AF     		add	r7, sp, #0
+ 8257              		.cfi_offset 7, -4
+ 8258              	.LCFI16:
+ 8259              		.cfi_def_cfa_register 7
+ 8260 0006 7860     		str	r0, [r7, #4]
+ 8261 0008 0B46     		mov	r3, r1
+ 8262 000a FB70     		strb	r3, [r7, #3]
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     unsigned long ulProtectRE, ulProtectPE;
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     unsigned long ulBank;
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Check the argument.
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ASSERT(!(ulAddress & (FLASH_PROTECT_SIZE - 1)));
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ASSERT((eProtect == FlashReadWrite) || (eProtect == FlashReadOnly) ||
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****            (eProtect == FlashExecuteOnly));
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Convert the address into a block number.
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ulAddress /= FLASH_PROTECT_SIZE;
+ 8263              		.loc 1 428 0
+ 8264 000c 7B68     		ldr	r3, [r7, #4]
+ 8265 000e 4FEAD323 		lsr	r3, r3, #11
+ 8266 0012 7B60     		str	r3, [r7, #4]
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // ulAddress contains a "raw" block number.  Derive the Flash Bank from
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // the "raw" block number, and convert ulAddress to a "relative"
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // block number.
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ulBank = ((ulAddress / 32) % 4);
+ 8267              		.loc 1 435 0
+ 8268 0014 7B68     		ldr	r3, [r7, #4]
+ 8269 0016 4FEA5313 		lsr	r3, r3, #5
+ 8270 001a 03F00303 		and	r3, r3, #3
+ 8271 001e FB60     		str	r3, [r7, #12]
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ulAddress %= 32;
+ 8272              		.loc 1 436 0
+ 8273 0020 7B68     		ldr	r3, [r7, #4]
+ 8274 0022 03F01F03 		and	r3, r3, #31
+ 8275 0026 7B60     		str	r3, [r7, #4]
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Get the current protection for the specified flash bank.
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ulProtectRE = HWREG(g_pulFMPRERegs[ulBank]);
+ 8276              		.loc 1 441 0
+ 8277 0028 624B     		ldr	r3, .L57
+ 8278 002a FA68     		ldr	r2, [r7, #12]
+ 8279 002c 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 8280 0030 1B68     		ldr	r3, [r3, #0]
+ 8281 0032 7B61     		str	r3, [r7, #20]
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ulProtectPE = HWREG(g_pulFMPPERegs[ulBank]);
+ 8282              		.loc 1 442 0
+ 8283 0034 604B     		ldr	r3, .L57+4
+ 8284 0036 FA68     		ldr	r2, [r7, #12]
+ 8285 0038 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 8286 003c 1B68     		ldr	r3, [r3, #0]
+ 8287 003e 3B61     		str	r3, [r7, #16]
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // For Stellaris Sandstorm-class devices, revision C1 and C2, the upper
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // bits of the FMPPE register are used for JTAG protect options, and are
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // not available for the FLASH protection scheme.  When setting protection,
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // check to see if block 30 or 31 and protection is FlashExecuteOnly.  If
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // so, return an error condition.
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     if(CLASS_IS_SANDSTORM && (REVISION_IS_C1 || REVISION_IS_C2))
+ 8288              		.loc 1 451 0
+ 8289 0040 5E4B     		ldr	r3, .L57+8
+ 8290 0042 1B68     		ldr	r3, [r3, #0]
+ 8291 0044 03F0E043 		and	r3, r3, #1879048192
+ 8292 0048 002B     		cmp	r3, #0
+ 8293 004a 07D0     		beq	.L42
+ 8294              		.loc 1 451 0 is_stmt 0 discriminator 2
+ 8295 004c 5B4B     		ldr	r3, .L57+8
+ 8296 004e 1A68     		ldr	r2, [r3, #0]
+ 8297 0050 5B4B     		ldr	r3, .L57+12
+ 8298 0052 02EA0303 		and	r3, r2, r3
+ 8299 0056 B3F1805F 		cmp	r3, #268435456
+ 8300 005a 1CD1     		bne	.L43
+ 8301              	.L42:
+ 8302              		.loc 1 451 0 discriminator 1
+ 8303 005c 574B     		ldr	r3, .L57+8
+ 8304 005e 1B68     		ldr	r3, [r3, #0]
+ 8305 0060 4FEA0343 		lsl	r3, r3, #16
+ 8306 0064 4FEA1343 		lsr	r3, r3, #16
+ 8307 0068 40F20122 		movw	r2, #513
+ 8308 006c 9342     		cmp	r3, r2
+ 8309 006e 09D0     		beq	.L44
+ 8310 0070 524B     		ldr	r3, .L57+8
+ 8311 0072 1B68     		ldr	r3, [r3, #0]
+ 8312 0074 4FEA0343 		lsl	r3, r3, #16
+ 8313 0078 4FEA1343 		lsr	r3, r3, #16
+ 8314 007c 40F20222 		movw	r2, #514
+ 8315 0080 9342     		cmp	r3, r2
+ 8316 0082 08D1     		bne	.L43
+ 8317              	.L44:
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         if((ulAddress >= 30) && (eProtect == FlashExecuteOnly))
+ 8318              		.loc 1 453 0 is_stmt 1
+ 8319 0084 7B68     		ldr	r3, [r7, #4]
+ 8320 0086 1D2B     		cmp	r3, #29
+ 8321 0088 05D9     		bls	.L43
+ 8322              		.loc 1 453 0 is_stmt 0 discriminator 1
+ 8323 008a FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 8324 008c 022B     		cmp	r3, #2
+ 8325 008e 02D1     		bne	.L43
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         {
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             return(-1);
+ 8326              		.loc 1 455 0 is_stmt 1
+ 8327 0090 4FF0FF33 		mov	r3, #-1
+ 8328 0094 87E0     		b	.L45
+ 8329              	.L43:
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         }
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Set the protection based on the requested proection.
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     switch(eProtect)
+ 8330              		.loc 1 462 0
+ 8331 0096 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 8332 0098 012B     		cmp	r3, #1
+ 8333 009a 18D0     		beq	.L47
+ 8334 009c 022B     		cmp	r3, #2
+ 8335 009e 2DD1     		bne	.L56
+ 8336              	.L48:
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         // Make this block execute only.
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         case FlashExecuteOnly:
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         {
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // Turn off the read and program bits for this block.
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             ulProtectRE &= ~(FLASH_FMP_BLOCK_0 << ulAddress);
+ 8337              		.loc 1 472 0
+ 8338 00a0 7B68     		ldr	r3, [r7, #4]
+ 8339 00a2 4FF00102 		mov	r2, #1
+ 8340 00a6 02FA03F3 		lsl	r3, r2, r3
+ 8341 00aa 6FEA0303 		mvn	r3, r3
+ 8342 00ae 7A69     		ldr	r2, [r7, #20]
+ 8343 00b0 02EA0303 		and	r3, r2, r3
+ 8344 00b4 7B61     		str	r3, [r7, #20]
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             ulProtectPE &= ~(FLASH_FMP_BLOCK_0 << ulAddress);
+ 8345              		.loc 1 473 0
+ 8346 00b6 7B68     		ldr	r3, [r7, #4]
+ 8347 00b8 4FF00102 		mov	r2, #1
+ 8348 00bc 02FA03F3 		lsl	r3, r2, r3
+ 8349 00c0 6FEA0303 		mvn	r3, r3
+ 8350 00c4 3A69     		ldr	r2, [r7, #16]
+ 8351 00c6 02EA0303 		and	r3, r2, r3
+ 8352 00ca 3B61     		str	r3, [r7, #16]
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // We're done handling this protection.
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             break;
+ 8353              		.loc 1 478 0
+ 8354 00cc 2CE0     		b	.L49
+ 8355              	.L47:
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         }
+ 480:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 481:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 482:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         // Make this block read only.
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 484:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         case FlashReadOnly:
+ 485:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         {
+ 486:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 487:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // The block can not be made read only if it is execute only.
+ 488:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 489:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             if(((ulProtectRE >> ulAddress) & FLASH_FMP_BLOCK_0) !=
+ 8356              		.loc 1 489 0
+ 8357 00ce 7B68     		ldr	r3, [r7, #4]
+ 8358 00d0 7A69     		ldr	r2, [r7, #20]
+ 8359 00d2 22FA03F3 		lsr	r3, r2, r3
+ 8360 00d6 03F00103 		and	r3, r3, #1
+ 8361 00da 002B     		cmp	r3, #0
+ 8362 00dc 02D1     		bne	.L50
+ 490:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                FLASH_FMP_BLOCK_0)
+ 491:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             {
+ 492:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                 return(-1);
+ 8363              		.loc 1 492 0
+ 8364 00de 4FF0FF33 		mov	r3, #-1
+ 8365 00e2 60E0     		b	.L45
+ 8366              	.L50:
+ 493:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             }
+ 494:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 495:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 496:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // Make this block read only.
+ 497:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 498:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             ulProtectPE &= ~(FLASH_FMP_BLOCK_0 << ulAddress);
+ 8367              		.loc 1 498 0
+ 8368 00e4 7B68     		ldr	r3, [r7, #4]
+ 8369 00e6 4FF00102 		mov	r2, #1
+ 8370 00ea 02FA03F3 		lsl	r3, r2, r3
+ 8371 00ee 6FEA0303 		mvn	r3, r3
+ 8372 00f2 3A69     		ldr	r2, [r7, #16]
+ 8373 00f4 02EA0303 		and	r3, r2, r3
+ 8374 00f8 3B61     		str	r3, [r7, #16]
+ 499:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 500:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 501:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // We're done handling this protection.
+ 502:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             break;
+ 8375              		.loc 1 503 0
+ 8376 00fa 15E0     		b	.L49
+ 8377              	.L56:
+ 504:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         }
+ 505:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 506:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 507:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         // Make this block read/write.
+ 508:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 509:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         case FlashReadWrite:
+ 510:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         default:
+ 511:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         {
+ 512:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 513:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // The block can not be made read/write if it is not already
+ 514:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // read/write.
+ 515:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 516:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             if((((ulProtectRE >> ulAddress) & FLASH_FMP_BLOCK_0) !=
+ 8378              		.loc 1 516 0
+ 8379 00fc 7B68     		ldr	r3, [r7, #4]
+ 8380 00fe 7A69     		ldr	r2, [r7, #20]
+ 8381 0100 22FA03F3 		lsr	r3, r2, r3
+ 8382 0104 03F00103 		and	r3, r3, #1
+ 8383 0108 002B     		cmp	r3, #0
+ 8384 010a 07D0     		beq	.L51
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                 FLASH_FMP_BLOCK_0) ||
+ 518:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                (((ulProtectPE >> ulAddress) & FLASH_FMP_BLOCK_0) !=
+ 8385              		.loc 1 518 0
+ 8386 010c 7B68     		ldr	r3, [r7, #4]
+ 8387 010e 3A69     		ldr	r2, [r7, #16]
+ 8388 0110 22FA03F3 		lsr	r3, r2, r3
+ 8389 0114 03F00103 		and	r3, r3, #1
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                 FLASH_FMP_BLOCK_0) ||
+ 8390              		.loc 1 517 0
+ 8391 0118 002B     		cmp	r3, #0
+ 8392 011a 02D1     		bne	.L52
+ 8393              	.L51:
+ 519:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                 FLASH_FMP_BLOCK_0))
+ 520:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             {
+ 521:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                 return(-1);
+ 8394              		.loc 1 521 0
+ 8395 011c 4FF0FF33 		mov	r3, #-1
+ 8396 0120 41E0     		b	.L45
+ 8397              	.L52:
+ 522:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             }
+ 523:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 524:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 525:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             // The block is already read/write, so there is nothing to do.
+ 526:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             //
+ 527:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****             return(0);
+ 8398              		.loc 1 527 0
+ 8399 0122 4FF00003 		mov	r3, #0
+ 8400 0126 3EE0     		b	.L45
+ 8401              	.L49:
+ 528:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         }
+ 529:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 530:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 531:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 532:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // For Stellaris Sandstorm-class devices, revision C1 and C2, the upper
+ 533:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // bits of the FMPPE register are used for JTAG options, and are not
+ 534:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // available for the FLASH protection scheme.  When setting block
+ 535:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // protection, ensure that these bits are not altered.
+ 536:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 537:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     if(CLASS_IS_SANDSTORM && (REVISION_IS_C1 || REVISION_IS_C2))
+ 8402              		.loc 1 537 0
+ 8403 0128 244B     		ldr	r3, .L57+8
+ 8404 012a 1B68     		ldr	r3, [r3, #0]
+ 8405 012c 03F0E043 		and	r3, r3, #1879048192
+ 8406 0130 002B     		cmp	r3, #0
+ 8407 0132 07D0     		beq	.L53
+ 8408              		.loc 1 537 0 is_stmt 0 discriminator 2
+ 8409 0134 214B     		ldr	r3, .L57+8
+ 8410 0136 1A68     		ldr	r2, [r3, #0]
+ 8411 0138 214B     		ldr	r3, .L57+12
+ 8412 013a 02EA0303 		and	r3, r2, r3
+ 8413 013e B3F1805F 		cmp	r3, #268435456
+ 8414 0142 22D1     		bne	.L54
+ 8415              	.L53:
+ 8416              		.loc 1 537 0 discriminator 1
+ 8417 0144 1D4B     		ldr	r3, .L57+8
+ 8418 0146 1B68     		ldr	r3, [r3, #0]
+ 8419 0148 4FEA0343 		lsl	r3, r3, #16
+ 8420 014c 4FEA1343 		lsr	r3, r3, #16
+ 8421 0150 40F20122 		movw	r2, #513
+ 8422 0154 9342     		cmp	r3, r2
+ 8423 0156 09D0     		beq	.L55
+ 8424 0158 184B     		ldr	r3, .L57+8
+ 8425 015a 1B68     		ldr	r3, [r3, #0]
+ 8426 015c 4FEA0343 		lsl	r3, r3, #16
+ 8427 0160 4FEA1343 		lsr	r3, r3, #16
+ 8428 0164 40F20222 		movw	r2, #514
+ 8429 0168 9342     		cmp	r3, r2
+ 8430 016a 0ED1     		bne	.L54
+ 8431              	.L55:
+ 538:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 539:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         ulProtectRE &= ~(FLASH_FMP_BLOCK_31 | FLASH_FMP_BLOCK_30);
+ 8432              		.loc 1 539 0 is_stmt 1
+ 8433 016c 7B69     		ldr	r3, [r7, #20]
+ 8434 016e 23F04043 		bic	r3, r3, #-1073741824
+ 8435 0172 7B61     		str	r3, [r7, #20]
+ 540:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         ulProtectRE |= (HWREG(g_pulFMPRERegs[ulBank]) &
+ 8436              		.loc 1 540 0
+ 8437 0174 0F4B     		ldr	r3, .L57
+ 8438 0176 FA68     		ldr	r2, [r7, #12]
+ 8439 0178 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 8440 017c 1B68     		ldr	r3, [r3, #0]
+ 8441 017e 03F04043 		and	r3, r3, #-1073741824
+ 8442 0182 7A69     		ldr	r2, [r7, #20]
+ 8443 0184 42EA0303 		orr	r3, r2, r3
+ 8444 0188 7B61     		str	r3, [r7, #20]
+ 8445              	.L54:
+ 541:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****                         (FLASH_FMP_BLOCK_31 | FLASH_FMP_BLOCK_30));
+ 542:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 543:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 544:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 545:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Set the new protection for the specified flash bank.
+ 546:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 547:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(g_pulFMPRERegs[ulBank]) = ulProtectRE;
+ 8446              		.loc 1 547 0
+ 8447 018a 0A4B     		ldr	r3, .L57
+ 8448 018c FA68     		ldr	r2, [r7, #12]
+ 8449 018e 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 8450 0192 7A69     		ldr	r2, [r7, #20]
+ 8451 0194 1A60     		str	r2, [r3, #0]
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(g_pulFMPPERegs[ulBank]) = ulProtectPE;
+ 8452              		.loc 1 548 0
+ 8453 0196 084B     		ldr	r3, .L57+4
+ 8454 0198 FA68     		ldr	r2, [r7, #12]
+ 8455 019a 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 8456 019e 3A69     		ldr	r2, [r7, #16]
+ 8457 01a0 1A60     		str	r2, [r3, #0]
+ 549:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 550:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 551:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Success.
+ 552:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 553:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     return(0);
+ 8458              		.loc 1 553 0
+ 8459 01a2 4FF00003 		mov	r3, #0
+ 8460              	.L45:
+ 554:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 8461              		.loc 1 554 0
+ 8462 01a6 1846     		mov	r0, r3
+ 8463 01a8 07F11C07 		add	r7, r7, #28
+ 8464 01ac BD46     		mov	sp, r7
+ 8465 01ae 80BC     		pop	{r7}
+ 8466 01b0 7047     		bx	lr
+ 8467              	.L58:
+ 8468 01b2 00BF     		.align	2
+ 8469              	.L57:
+ 8470 01b4 10000000 		.word	g_pulFMPRERegs
+ 8471 01b8 00000000 		.word	g_pulFMPPERegs
+ 8472 01bc 00E00F40 		.word	1074782208
+ 8473 01c0 0000FF70 		.word	1895759872
+ 8474              		.cfi_endproc
+ 8475              	.LFE5:
+ 8477              		.section	.text.FlashProtectSave,"ax",%progbits
+ 8478              		.align	2
+ 8479              		.global	FlashProtectSave
+ 8480              		.thumb
+ 8481              		.thumb_func
+ 8483              	FlashProtectSave:
+ 8484              	.LFB6:
+ 555:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 556:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 557:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 558:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Saves the flash protection settings.
+ 559:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 560:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function makes the currently programmed flash protection settings
+ 561:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! permanent.  On some devices, this operation is non-reversible; a chip reset 
+ 562:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! or power cycle does not change the flash protection.
+ 563:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 564:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function does not return until the protection has been saved.
+ 565:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 566:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return Returns 0 on success, or -1 if a hardware error is encountered.
+ 567:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 568:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 569:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** long
+ 570:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashProtectSave(void)
+ 571:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 8485              		.loc 1 571 0
+ 8486              		.cfi_startproc
+ 8487              		@ args = 0, pretend = 0, frame = 8
+ 8488              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8489              		@ link register save eliminated.
+ 8490 0000 80B4     		push	{r7}
+ 8491              	.LCFI17:
+ 8492              		.cfi_def_cfa_offset 4
+ 8493 0002 83B0     		sub	sp, sp, #12
+ 8494              	.LCFI18:
+ 8495              		.cfi_def_cfa_offset 16
+ 8496 0004 00AF     		add	r7, sp, #0
+ 8497              		.cfi_offset 7, -4
+ 8498              	.LCFI19:
+ 8499              		.cfi_def_cfa_register 7
+ 572:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     unsigned long ulTemp, ulLimit;
+ 573:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 574:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 575:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // If running on a Sandstorm-class device, only trigger a save of the first
+ 576:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // two protection registers (FMPRE and FMPPE).  Otherwise, save the
+ 577:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // entire bank of flash protection registers.
+ 578:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 579:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ulLimit = CLASS_IS_SANDSTORM ? 2 : 8;
+ 8500              		.loc 1 579 0
+ 8501 0006 1A4B     		ldr	r3, .L66
+ 8502 0008 1B68     		ldr	r3, [r3, #0]
+ 8503 000a 03F0E043 		and	r3, r3, #1879048192
+ 8504 000e 002B     		cmp	r3, #0
+ 8505 0010 07D0     		beq	.L60
+ 8506              		.loc 1 579 0 is_stmt 0 discriminator 2
+ 8507 0012 174B     		ldr	r3, .L66
+ 8508 0014 1A68     		ldr	r2, [r3, #0]
+ 8509 0016 174B     		ldr	r3, .L66+4
+ 8510 0018 02EA0303 		and	r3, r2, r3
+ 8511 001c B3F1805F 		cmp	r3, #268435456
+ 8512 0020 02D1     		bne	.L61
+ 8513              	.L60:
+ 8514              		.loc 1 579 0 discriminator 1
+ 8515 0022 4FF00203 		mov	r3, #2
+ 8516 0026 01E0     		b	.L62
+ 8517              	.L61:
+ 8518 0028 4FF00803 		mov	r3, #8
+ 8519              	.L62:
+ 8520              		.loc 1 579 0 discriminator 3
+ 8521 002c 3B60     		str	r3, [r7, #0]
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     for(ulTemp = 0; ulTemp < ulLimit; ulTemp++)
+ 8522              		.loc 1 580 0 is_stmt 1 discriminator 3
+ 8523 002e 4FF00003 		mov	r3, #0
+ 8524 0032 7B60     		str	r3, [r7, #4]
+ 8525 0034 10E0     		b	.L63
+ 8526              	.L65:
+ 581:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 582:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 583:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         // Tell the flash controller to write the flash protection register.
+ 584:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 585:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         HWREG(FLASH_FMA) = ulTemp;
+ 8527              		.loc 1 585 0
+ 8528 0036 104B     		ldr	r3, .L66+8
+ 8529 0038 7A68     		ldr	r2, [r7, #4]
+ 8530 003a 1A60     		str	r2, [r3, #0]
+ 586:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         HWREG(FLASH_FMC) = FLASH_FMC_WRKEY | FLASH_FMC_COMT;
+ 8531              		.loc 1 586 0
+ 8532 003c 0F4B     		ldr	r3, .L66+12
+ 8533 003e 104A     		ldr	r2, .L66+16
+ 8534 0040 1A60     		str	r2, [r3, #0]
+ 587:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 588:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 589:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         // Wait until the write has completed.
+ 590:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         //
+ 591:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         while(HWREG(FLASH_FMC) & FLASH_FMC_COMT)
+ 8535              		.loc 1 591 0
+ 8536 0042 00BF     		nop
+ 8537              	.L64:
+ 8538              		.loc 1 591 0 is_stmt 0 discriminator 1
+ 8539 0044 0D4B     		ldr	r3, .L66+12
+ 8540 0046 1B68     		ldr	r3, [r3, #0]
+ 8541 0048 03F00803 		and	r3, r3, #8
+ 8542 004c 002B     		cmp	r3, #0
+ 8543 004e F9D1     		bne	.L64
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     for(ulTemp = 0; ulTemp < ulLimit; ulTemp++)
+ 8544              		.loc 1 580 0 is_stmt 1
+ 8545 0050 7B68     		ldr	r3, [r7, #4]
+ 8546 0052 03F10103 		add	r3, r3, #1
+ 8547 0056 7B60     		str	r3, [r7, #4]
+ 8548              	.L63:
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     for(ulTemp = 0; ulTemp < ulLimit; ulTemp++)
+ 8549              		.loc 1 580 0 is_stmt 0 discriminator 1
+ 8550 0058 7A68     		ldr	r2, [r7, #4]
+ 8551 005a 3B68     		ldr	r3, [r7, #0]
+ 8552 005c 9A42     		cmp	r2, r3
+ 8553 005e EAD3     		bcc	.L65
+ 592:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         {
+ 593:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         }
+ 594:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 595:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 596:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 597:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Success.
+ 598:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 599:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     return(0);
+ 8554              		.loc 1 599 0 is_stmt 1
+ 8555 0060 4FF00003 		mov	r3, #0
+ 600:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 8556              		.loc 1 600 0
+ 8557 0064 1846     		mov	r0, r3
+ 8558 0066 07F10C07 		add	r7, r7, #12
+ 8559 006a BD46     		mov	sp, r7
+ 8560 006c 80BC     		pop	{r7}
+ 8561 006e 7047     		bx	lr
+ 8562              	.L67:
+ 8563              		.align	2
+ 8564              	.L66:
+ 8565 0070 00E00F40 		.word	1074782208
+ 8566 0074 0000FF70 		.word	1895759872
+ 8567 0078 00D00F40 		.word	1074778112
+ 8568 007c 08D00F40 		.word	1074778120
+ 8569 0080 080042A4 		.word	-1539178488
+ 8570              		.cfi_endproc
+ 8571              	.LFE6:
+ 8573              		.section	.text.FlashUserGet,"ax",%progbits
+ 8574              		.align	2
+ 8575              		.global	FlashUserGet
+ 8576              		.thumb
+ 8577              		.thumb_func
+ 8579              	FlashUserGet:
+ 8580              	.LFB7:
+ 601:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 602:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 603:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 604:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Gets the user registers.
+ 605:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 606:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param pulUser0 is a pointer to the location to store USER Register 0.
+ 607:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param pulUser1 is a pointer to the location to store USER Register 1.
+ 608:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 609:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function reads the contents of user registers (0 and 1), and
+ 610:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! stores them in the specified locations.
+ 611:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 612:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return Returns 0 on success, or -1 if a hardware error is encountered.
+ 613:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 614:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 615:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** long
+ 616:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashUserGet(unsigned long *pulUser0, unsigned long *pulUser1)
+ 617:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 8581              		.loc 1 617 0
+ 8582              		.cfi_startproc
+ 8583              		@ args = 0, pretend = 0, frame = 8
+ 8584              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8585              		@ link register save eliminated.
+ 8586 0000 80B4     		push	{r7}
+ 8587              	.LCFI20:
+ 8588              		.cfi_def_cfa_offset 4
+ 8589 0002 83B0     		sub	sp, sp, #12
+ 8590              	.LCFI21:
+ 8591              		.cfi_def_cfa_offset 16
+ 8592 0004 00AF     		add	r7, sp, #0
+ 8593              		.cfi_offset 7, -4
+ 8594              	.LCFI22:
+ 8595              		.cfi_def_cfa_register 7
+ 8596 0006 7860     		str	r0, [r7, #4]
+ 8597 0008 3960     		str	r1, [r7, #0]
+ 618:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 619:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Verify that the pointers are valid.
+ 620:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 621:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ASSERT(pulUser0 != 0);
+ 622:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     ASSERT(pulUser1 != 0);
+ 623:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 624:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 625:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Verify that hardware supports user registers.
+ 626:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 627:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     if(CLASS_IS_SANDSTORM)
+ 8598              		.loc 1 627 0
+ 8599 000a 104B     		ldr	r3, .L72
+ 8600 000c 1B68     		ldr	r3, [r3, #0]
+ 8601 000e 03F0E043 		and	r3, r3, #1879048192
+ 8602 0012 002B     		cmp	r3, #0
+ 8603 0014 07D0     		beq	.L69
+ 8604              		.loc 1 627 0 is_stmt 0 discriminator 1
+ 8605 0016 0D4B     		ldr	r3, .L72
+ 8606 0018 1A68     		ldr	r2, [r3, #0]
+ 8607 001a 0D4B     		ldr	r3, .L72+4
+ 8608 001c 02EA0303 		and	r3, r2, r3
+ 8609 0020 B3F1805F 		cmp	r3, #268435456
+ 8610 0024 02D1     		bne	.L70
+ 8611              	.L69:
+ 628:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 629:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         return(-1);
+ 8612              		.loc 1 629 0 is_stmt 1
+ 8613 0026 4FF0FF33 		mov	r3, #-1
+ 8614 002a 09E0     		b	.L71
+ 8615              	.L70:
+ 630:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 631:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 632:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 633:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Get and store the current value of the user registers.
+ 634:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 635:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     *pulUser0 = HWREG(FLASH_USERREG0);
+ 8616              		.loc 1 635 0
+ 8617 002c 094B     		ldr	r3, .L72+8
+ 8618 002e 1A68     		ldr	r2, [r3, #0]
+ 8619 0030 7B68     		ldr	r3, [r7, #4]
+ 8620 0032 1A60     		str	r2, [r3, #0]
+ 636:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     *pulUser1 = HWREG(FLASH_USERREG1);
+ 8621              		.loc 1 636 0
+ 8622 0034 084B     		ldr	r3, .L72+12
+ 8623 0036 1A68     		ldr	r2, [r3, #0]
+ 8624 0038 3B68     		ldr	r3, [r7, #0]
+ 8625 003a 1A60     		str	r2, [r3, #0]
+ 637:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 638:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 639:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Success.
+ 640:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 641:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     return(0);
+ 8626              		.loc 1 641 0
+ 8627 003c 4FF00003 		mov	r3, #0
+ 8628              	.L71:
+ 642:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 8629              		.loc 1 642 0
+ 8630 0040 1846     		mov	r0, r3
+ 8631 0042 07F10C07 		add	r7, r7, #12
+ 8632 0046 BD46     		mov	sp, r7
+ 8633 0048 80BC     		pop	{r7}
+ 8634 004a 7047     		bx	lr
+ 8635              	.L73:
+ 8636              		.align	2
+ 8637              	.L72:
+ 8638 004c 00E00F40 		.word	1074782208
+ 8639 0050 0000FF70 		.word	1895759872
+ 8640 0054 E0E10F40 		.word	1074782688
+ 8641 0058 E4E10F40 		.word	1074782692
+ 8642              		.cfi_endproc
+ 8643              	.LFE7:
+ 8645              		.section	.text.FlashUserSet,"ax",%progbits
+ 8646              		.align	2
+ 8647              		.global	FlashUserSet
+ 8648              		.thumb
+ 8649              		.thumb_func
+ 8651              	FlashUserSet:
+ 8652              	.LFB8:
+ 643:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 644:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 645:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 646:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Sets the user registers.
+ 647:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 648:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param ulUser0 is the value to store in USER Register 0.
+ 649:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param ulUser1 is the value to store in USER Register 1.
+ 650:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 651:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function sets the contents of the user registers (0 and 1) to
+ 652:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! the specified values.
+ 653:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 654:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return Returns 0 on success, or -1 if a hardware error is encountered.
+ 655:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 656:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 657:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** long
+ 658:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashUserSet(unsigned long ulUser0, unsigned long ulUser1)
+ 659:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 8653              		.loc 1 659 0
+ 8654              		.cfi_startproc
+ 8655              		@ args = 0, pretend = 0, frame = 8
+ 8656              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8657              		@ link register save eliminated.
+ 8658 0000 80B4     		push	{r7}
+ 8659              	.LCFI23:
+ 8660              		.cfi_def_cfa_offset 4
+ 8661 0002 83B0     		sub	sp, sp, #12
+ 8662              	.LCFI24:
+ 8663              		.cfi_def_cfa_offset 16
+ 8664 0004 00AF     		add	r7, sp, #0
+ 8665              		.cfi_offset 7, -4
+ 8666              	.LCFI25:
+ 8667              		.cfi_def_cfa_register 7
+ 8668 0006 7860     		str	r0, [r7, #4]
+ 8669 0008 3960     		str	r1, [r7, #0]
+ 660:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 661:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Verify that hardware supports user registers.
+ 662:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 663:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     if(CLASS_IS_SANDSTORM)
+ 8670              		.loc 1 663 0
+ 8671 000a 0F4B     		ldr	r3, .L78
+ 8672 000c 1B68     		ldr	r3, [r3, #0]
+ 8673 000e 03F0E043 		and	r3, r3, #1879048192
+ 8674 0012 002B     		cmp	r3, #0
+ 8675 0014 07D0     		beq	.L75
+ 8676              		.loc 1 663 0 is_stmt 0 discriminator 1
+ 8677 0016 0C4B     		ldr	r3, .L78
+ 8678 0018 1A68     		ldr	r2, [r3, #0]
+ 8679 001a 0C4B     		ldr	r3, .L78+4
+ 8680 001c 02EA0303 		and	r3, r2, r3
+ 8681 0020 B3F1805F 		cmp	r3, #268435456
+ 8682 0024 02D1     		bne	.L76
+ 8683              	.L75:
+ 664:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 665:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         return(-1);
+ 8684              		.loc 1 665 0 is_stmt 1
+ 8685 0026 4FF0FF33 		mov	r3, #-1
+ 8686 002a 07E0     		b	.L77
+ 8687              	.L76:
+ 666:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 667:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 668:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 669:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Save the new values into the user registers.
+ 670:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 671:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_USERREG0) = ulUser0;
+ 8688              		.loc 1 671 0
+ 8689 002c 084B     		ldr	r3, .L78+8
+ 8690 002e 7A68     		ldr	r2, [r7, #4]
+ 8691 0030 1A60     		str	r2, [r3, #0]
+ 672:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_USERREG1) = ulUser1;
+ 8692              		.loc 1 672 0
+ 8693 0032 084B     		ldr	r3, .L78+12
+ 8694 0034 3A68     		ldr	r2, [r7, #0]
+ 8695 0036 1A60     		str	r2, [r3, #0]
+ 673:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 674:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 675:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Success.
+ 676:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 677:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     return(0);
+ 8696              		.loc 1 677 0
+ 8697 0038 4FF00003 		mov	r3, #0
+ 8698              	.L77:
+ 678:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 8699              		.loc 1 678 0
+ 8700 003c 1846     		mov	r0, r3
+ 8701 003e 07F10C07 		add	r7, r7, #12
+ 8702 0042 BD46     		mov	sp, r7
+ 8703 0044 80BC     		pop	{r7}
+ 8704 0046 7047     		bx	lr
+ 8705              	.L79:
+ 8706              		.align	2
+ 8707              	.L78:
+ 8708 0048 00E00F40 		.word	1074782208
+ 8709 004c 0000FF70 		.word	1895759872
+ 8710 0050 E0E10F40 		.word	1074782688
+ 8711 0054 E4E10F40 		.word	1074782692
+ 8712              		.cfi_endproc
+ 8713              	.LFE8:
+ 8715              		.section	.text.FlashUserSave,"ax",%progbits
+ 8716              		.align	2
+ 8717              		.global	FlashUserSave
+ 8718              		.thumb
+ 8719              		.thumb_func
+ 8721              	FlashUserSave:
+ 8722              	.LFB9:
+ 679:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 680:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 681:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 682:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Saves the user registers.
+ 683:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 684:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function makes the currently programmed user register settings
+ 685:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! permanent.  On some devices, this operation is non-reversible; a chip reset 
+ 686:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! or power cycle does not change this setting.
+ 687:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 688:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function does not return until the protection has been saved.
+ 689:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 690:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return Returns 0 on success, or -1 if a hardware error is encountered.
+ 691:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 692:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 693:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** long
+ 694:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashUserSave(void)
+ 695:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 8723              		.loc 1 695 0
+ 8724              		.cfi_startproc
+ 8725              		@ args = 0, pretend = 0, frame = 0
+ 8726              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8727              		@ link register save eliminated.
+ 8728 0000 80B4     		push	{r7}
+ 8729              	.LCFI26:
+ 8730              		.cfi_def_cfa_offset 4
+ 8731 0002 00AF     		add	r7, sp, #0
+ 8732              		.cfi_offset 7, -4
+ 8733              	.LCFI27:
+ 8734              		.cfi_def_cfa_register 7
+ 696:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 697:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Verify that hardware supports user registers.
+ 698:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 699:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     if(CLASS_IS_SANDSTORM)
+ 8735              		.loc 1 699 0
+ 8736 0004 184B     		ldr	r3, .L86
+ 8737 0006 1B68     		ldr	r3, [r3, #0]
+ 8738 0008 03F0E043 		and	r3, r3, #1879048192
+ 8739 000c 002B     		cmp	r3, #0
+ 8740 000e 07D0     		beq	.L81
+ 8741              		.loc 1 699 0 is_stmt 0 discriminator 1
+ 8742 0010 154B     		ldr	r3, .L86
+ 8743 0012 1A68     		ldr	r2, [r3, #0]
+ 8744 0014 154B     		ldr	r3, .L86+4
+ 8745 0016 02EA0303 		and	r3, r2, r3
+ 8746 001a B3F1805F 		cmp	r3, #268435456
+ 8747 001e 02D1     		bne	.L82
+ 8748              	.L81:
+ 700:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 701:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         return(-1);
+ 8749              		.loc 1 701 0 is_stmt 1
+ 8750 0020 4FF0FF33 		mov	r3, #-1
+ 8751 0024 1CE0     		b	.L83
+ 8752              	.L82:
+ 702:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 703:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 704:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 705:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Setting the MSB of FMA will trigger a permanent save of a USER
+ 706:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // register.  Bit 0 will indicate User 0 (0) or User 1 (1).
+ 707:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 708:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_FMA) = 0x80000000;
+ 8753              		.loc 1 708 0
+ 8754 0026 124B     		ldr	r3, .L86+8
+ 8755 0028 4FF00042 		mov	r2, #-2147483648
+ 8756 002c 1A60     		str	r2, [r3, #0]
+ 709:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_FMC) = FLASH_FMC_WRKEY | FLASH_FMC_COMT;
+ 8757              		.loc 1 709 0
+ 8758 002e 114B     		ldr	r3, .L86+12
+ 8759 0030 114A     		ldr	r2, .L86+16
+ 8760 0032 1A60     		str	r2, [r3, #0]
+ 710:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 711:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 712:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Wait until the write has completed.
+ 713:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 714:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     while(HWREG(FLASH_FMC) & FLASH_FMC_COMT)
+ 8761              		.loc 1 714 0
+ 8762 0034 00BF     		nop
+ 8763              	.L84:
+ 8764              		.loc 1 714 0 is_stmt 0 discriminator 1
+ 8765 0036 0F4B     		ldr	r3, .L86+12
+ 8766 0038 1B68     		ldr	r3, [r3, #0]
+ 8767 003a 03F00803 		and	r3, r3, #8
+ 8768 003e 002B     		cmp	r3, #0
+ 8769 0040 F9D1     		bne	.L84
+ 715:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 716:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 717:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 718:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 719:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Tell the flash controller to write the USER1 Register.
+ 720:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 721:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_FMA) = 0x80000001;
+ 8770              		.loc 1 721 0 is_stmt 1
+ 8771 0042 0B4B     		ldr	r3, .L86+8
+ 8772 0044 0D4A     		ldr	r2, .L86+20
+ 8773 0046 1A60     		str	r2, [r3, #0]
+ 722:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_FMC) = FLASH_FMC_WRKEY | FLASH_FMC_COMT;
+ 8774              		.loc 1 722 0
+ 8775 0048 0A4B     		ldr	r3, .L86+12
+ 8776 004a 0B4A     		ldr	r2, .L86+16
+ 8777 004c 1A60     		str	r2, [r3, #0]
+ 723:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 724:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 725:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Wait until the write has completed.
+ 726:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 727:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     while(HWREG(FLASH_FMC) & FLASH_FMC_COMT)
+ 8778              		.loc 1 727 0
+ 8779 004e 00BF     		nop
+ 8780              	.L85:
+ 8781              		.loc 1 727 0 is_stmt 0 discriminator 1
+ 8782 0050 084B     		ldr	r3, .L86+12
+ 8783 0052 1B68     		ldr	r3, [r3, #0]
+ 8784 0054 03F00803 		and	r3, r3, #8
+ 8785 0058 002B     		cmp	r3, #0
+ 8786 005a F9D1     		bne	.L85
+ 728:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 729:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 730:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 731:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 732:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Success.
+ 733:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 734:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     return(0);
+ 8787              		.loc 1 734 0 is_stmt 1
+ 8788 005c 4FF00003 		mov	r3, #0
+ 8789              	.L83:
+ 735:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 8790              		.loc 1 735 0
+ 8791 0060 1846     		mov	r0, r3
+ 8792 0062 BD46     		mov	sp, r7
+ 8793 0064 80BC     		pop	{r7}
+ 8794 0066 7047     		bx	lr
+ 8795              	.L87:
+ 8796              		.align	2
+ 8797              	.L86:
+ 8798 0068 00E00F40 		.word	1074782208
+ 8799 006c 0000FF70 		.word	1895759872
+ 8800 0070 00D00F40 		.word	1074778112
+ 8801 0074 08D00F40 		.word	1074778120
+ 8802 0078 080042A4 		.word	-1539178488
+ 8803 007c 01000080 		.word	-2147483647
+ 8804              		.cfi_endproc
+ 8805              	.LFE9:
+ 8807              		.section	.text.FlashIntRegister,"ax",%progbits
+ 8808              		.align	2
+ 8809              		.global	FlashIntRegister
+ 8810              		.thumb
+ 8811              		.thumb_func
+ 8813              	FlashIntRegister:
+ 8814              	.LFB10:
+ 736:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 737:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 738:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 739:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Registers an interrupt handler for the flash interrupt.
+ 740:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 741:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param pfnHandler is a pointer to the function to be called when the flash
+ 742:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! interrupt occurs.
+ 743:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 744:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function sets the handler to be called when the flash interrupt occurs.  
+ 745:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! The flash controller can generate an interrupt when an invalid flash access
+ 746:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! occurs, such as trying to program or erase a read-only block, or trying to
+ 747:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! read from an execute-only block.  It can also generate an interrupt when a
+ 748:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! program or erase operation has completed.  The interrupt is automatically
+ 749:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! enabled when the handler is registered.
+ 750:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 751:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \sa IntRegister() for important information about registering interrupt
+ 752:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! handlers.
+ 753:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 754:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return None.
+ 755:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 756:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 757:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** void
+ 758:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashIntRegister(void (*pfnHandler)(void))
+ 759:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 8815              		.loc 1 759 0
+ 8816              		.cfi_startproc
+ 8817              		@ args = 0, pretend = 0, frame = 8
+ 8818              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8819 0000 80B5     		push	{r7, lr}
+ 8820              	.LCFI28:
+ 8821              		.cfi_def_cfa_offset 8
+ 8822 0002 82B0     		sub	sp, sp, #8
+ 8823              	.LCFI29:
+ 8824              		.cfi_def_cfa_offset 16
+ 8825 0004 00AF     		add	r7, sp, #0
+ 8826              		.cfi_offset 14, -4
+ 8827              		.cfi_offset 7, -8
+ 8828              	.LCFI30:
+ 8829              		.cfi_def_cfa_register 7
+ 8830 0006 7860     		str	r0, [r7, #4]
+ 760:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 761:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Register the interrupt handler, returning an error if an error occurs.
+ 762:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 763:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     IntRegister(INT_FLASH, pfnHandler);
+ 8831              		.loc 1 763 0
+ 8832 0008 4FF02D00 		mov	r0, #45
+ 8833 000c 7968     		ldr	r1, [r7, #4]
+ 8834 000e FFF7FEFF 		bl	IntRegister
+ 764:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 765:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 766:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Enable the flash interrupt.
+ 767:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 768:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     IntEnable(INT_FLASH);
+ 8835              		.loc 1 768 0
+ 8836 0012 4FF02D00 		mov	r0, #45
+ 8837 0016 FFF7FEFF 		bl	IntEnable
+ 769:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 8838              		.loc 1 769 0
+ 8839 001a 07F10807 		add	r7, r7, #8
+ 8840 001e BD46     		mov	sp, r7
+ 8841 0020 80BD     		pop	{r7, pc}
+ 8842              		.cfi_endproc
+ 8843              	.LFE10:
+ 8845 0022 00BF     		.section	.text.FlashIntUnregister,"ax",%progbits
+ 8846              		.align	2
+ 8847              		.global	FlashIntUnregister
+ 8848              		.thumb
+ 8849              		.thumb_func
+ 8851              	FlashIntUnregister:
+ 8852              	.LFB11:
+ 770:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 771:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 772:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 773:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Unregisters the interrupt handler for the flash interrupt.
+ 774:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 775:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function clears the handler to be called when the flash interrupt
+ 776:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! occurs.  This function also masks off the interrupt in the interrupt 
+ 777:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! controller so that the interrupt handler is no longer called.
+ 778:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 779:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \sa IntRegister() for important information about registering interrupt
+ 780:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! handlers.
+ 781:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 782:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return None.
+ 783:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 784:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 785:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** void
+ 786:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashIntUnregister(void)
+ 787:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 8853              		.loc 1 787 0
+ 8854              		.cfi_startproc
+ 8855              		@ args = 0, pretend = 0, frame = 0
+ 8856              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8857 0000 80B5     		push	{r7, lr}
+ 8858              	.LCFI31:
+ 8859              		.cfi_def_cfa_offset 8
+ 8860 0002 00AF     		add	r7, sp, #0
+ 8861              		.cfi_offset 14, -4
+ 8862              		.cfi_offset 7, -8
+ 8863              	.LCFI32:
+ 8864              		.cfi_def_cfa_register 7
+ 788:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 789:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Disable the interrupt.
+ 790:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 791:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     IntDisable(INT_FLASH);
+ 8865              		.loc 1 791 0
+ 8866 0004 4FF02D00 		mov	r0, #45
+ 8867 0008 FFF7FEFF 		bl	IntDisable
+ 792:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 793:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 794:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Unregister the interrupt handler.
+ 795:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 796:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     IntUnregister(INT_FLASH);
+ 8868              		.loc 1 796 0
+ 8869 000c 4FF02D00 		mov	r0, #45
+ 8870 0010 FFF7FEFF 		bl	IntUnregister
+ 797:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 8871              		.loc 1 797 0
+ 8872 0014 80BD     		pop	{r7, pc}
+ 8873              		.cfi_endproc
+ 8874              	.LFE11:
+ 8876 0016 00BF     		.section	.text.FlashIntEnable,"ax",%progbits
+ 8877              		.align	2
+ 8878              		.global	FlashIntEnable
+ 8879              		.thumb
+ 8880              		.thumb_func
+ 8882              	FlashIntEnable:
+ 8883              	.LFB12:
+ 798:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 799:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 800:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 801:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Enables individual flash controller interrupt sources.
+ 802:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 803:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be enabled.
+ 804:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Can be any of the \b FLASH_INT_PROGRAM or \b FLASH_INT_ACCESS values.
+ 805:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 806:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function enables the indicated flash controller interrupt sources. 
+ 807:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Only the sources that are enabled can be reflected to the processor 
+ 808:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! interrupt; disabled sources have no effect on the processor.
+ 809:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 810:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return None.
+ 811:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 812:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 813:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** void
+ 814:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashIntEnable(unsigned long ulIntFlags)
+ 815:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 8884              		.loc 1 815 0
+ 8885              		.cfi_startproc
+ 8886              		@ args = 0, pretend = 0, frame = 8
+ 8887              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8888              		@ link register save eliminated.
+ 8889 0000 80B4     		push	{r7}
+ 8890              	.LCFI33:
+ 8891              		.cfi_def_cfa_offset 4
+ 8892 0002 83B0     		sub	sp, sp, #12
+ 8893              	.LCFI34:
+ 8894              		.cfi_def_cfa_offset 16
+ 8895 0004 00AF     		add	r7, sp, #0
+ 8896              		.cfi_offset 7, -4
+ 8897              	.LCFI35:
+ 8898              		.cfi_def_cfa_register 7
+ 8899 0006 7860     		str	r0, [r7, #4]
+ 816:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 817:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Enable the specified interrupts.
+ 818:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 819:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_FCIM) |= ulIntFlags;
+ 8900              		.loc 1 819 0
+ 8901 0008 054B     		ldr	r3, .L91
+ 8902 000a 054A     		ldr	r2, .L91
+ 8903 000c 1168     		ldr	r1, [r2, #0]
+ 8904 000e 7A68     		ldr	r2, [r7, #4]
+ 8905 0010 41EA0202 		orr	r2, r1, r2
+ 8906 0014 1A60     		str	r2, [r3, #0]
+ 820:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 8907              		.loc 1 820 0
+ 8908 0016 07F10C07 		add	r7, r7, #12
+ 8909 001a BD46     		mov	sp, r7
+ 8910 001c 80BC     		pop	{r7}
+ 8911 001e 7047     		bx	lr
+ 8912              	.L92:
+ 8913              		.align	2
+ 8914              	.L91:
+ 8915 0020 10D00F40 		.word	1074778128
+ 8916              		.cfi_endproc
+ 8917              	.LFE12:
+ 8919              		.section	.text.FlashIntDisable,"ax",%progbits
+ 8920              		.align	2
+ 8921              		.global	FlashIntDisable
+ 8922              		.thumb
+ 8923              		.thumb_func
+ 8925              	FlashIntDisable:
+ 8926              	.LFB13:
+ 821:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 822:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 823:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 824:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Disables individual flash controller interrupt sources.
+ 825:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 826:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be disabled.
+ 827:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Can be any of the \b FLASH_INT_PROGRAM or \b FLASH_INT_ACCESS values.
+ 828:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 829:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function disables the indicated flash controller interrupt sources.
+ 830:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Only the sources that are enabled can be reflected to the processor 
+ 831:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! interrupt; disabled sources have no effect on the processor.
+ 832:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 833:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return None.
+ 834:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 835:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 836:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** void
+ 837:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashIntDisable(unsigned long ulIntFlags)
+ 838:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 8927              		.loc 1 838 0
+ 8928              		.cfi_startproc
+ 8929              		@ args = 0, pretend = 0, frame = 8
+ 8930              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8931              		@ link register save eliminated.
+ 8932 0000 80B4     		push	{r7}
+ 8933              	.LCFI36:
+ 8934              		.cfi_def_cfa_offset 4
+ 8935 0002 83B0     		sub	sp, sp, #12
+ 8936              	.LCFI37:
+ 8937              		.cfi_def_cfa_offset 16
+ 8938 0004 00AF     		add	r7, sp, #0
+ 8939              		.cfi_offset 7, -4
+ 8940              	.LCFI38:
+ 8941              		.cfi_def_cfa_register 7
+ 8942 0006 7860     		str	r0, [r7, #4]
+ 839:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 840:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Disable the specified interrupts.
+ 841:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 842:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_FCIM) &= ~(ulIntFlags);
+ 8943              		.loc 1 842 0
+ 8944 0008 064B     		ldr	r3, .L94
+ 8945 000a 064A     		ldr	r2, .L94
+ 8946 000c 1168     		ldr	r1, [r2, #0]
+ 8947 000e 7A68     		ldr	r2, [r7, #4]
+ 8948 0010 6FEA0202 		mvn	r2, r2
+ 8949 0014 01EA0202 		and	r2, r1, r2
+ 8950 0018 1A60     		str	r2, [r3, #0]
+ 843:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 8951              		.loc 1 843 0
+ 8952 001a 07F10C07 		add	r7, r7, #12
+ 8953 001e BD46     		mov	sp, r7
+ 8954 0020 80BC     		pop	{r7}
+ 8955 0022 7047     		bx	lr
+ 8956              	.L95:
+ 8957              		.align	2
+ 8958              	.L94:
+ 8959 0024 10D00F40 		.word	1074778128
+ 8960              		.cfi_endproc
+ 8961              	.LFE13:
+ 8963              		.section	.text.FlashIntStatus,"ax",%progbits
+ 8964              		.align	2
+ 8965              		.global	FlashIntStatus
+ 8966              		.thumb
+ 8967              		.thumb_func
+ 8969              	FlashIntStatus:
+ 8970              	.LFB14:
+ 844:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 845:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 846:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 847:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Gets the current interrupt status.
+ 848:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 849:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param bMasked is false if the raw interrupt status is required and true if
+ 850:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! the masked interrupt status is required.
+ 851:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 852:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! This function returns the interrupt status for the flash controller.  
+ 853:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Either the raw interrupt status or the status of interrupts that are 
+ 854:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! allowed to reflect to the processor can be returned.
+ 855:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 856:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return The current interrupt status, enumerated as a bit field of
+ 857:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \b FLASH_INT_PROGRAM and \b FLASH_INT_ACCESS.
+ 858:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 859:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 860:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** unsigned long
+ 861:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashIntStatus(tBoolean bMasked)
+ 862:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 8971              		.loc 1 862 0
+ 8972              		.cfi_startproc
+ 8973              		@ args = 0, pretend = 0, frame = 8
+ 8974              		@ frame_needed = 1, uses_anonymous_args = 0
+ 8975              		@ link register save eliminated.
+ 8976 0000 80B4     		push	{r7}
+ 8977              	.LCFI39:
+ 8978              		.cfi_def_cfa_offset 4
+ 8979 0002 83B0     		sub	sp, sp, #12
+ 8980              	.LCFI40:
+ 8981              		.cfi_def_cfa_offset 16
+ 8982 0004 00AF     		add	r7, sp, #0
+ 8983              		.cfi_offset 7, -4
+ 8984              	.LCFI41:
+ 8985              		.cfi_def_cfa_register 7
+ 8986 0006 0346     		mov	r3, r0
+ 8987 0008 FB71     		strb	r3, [r7, #7]
+ 863:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 864:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Return either the interrupt status or the raw interrupt status as
+ 865:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // requested.
+ 866:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 867:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     if(bMasked)
+ 8988              		.loc 1 867 0
+ 8989 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 8990 000c 002B     		cmp	r3, #0
+ 8991 000e 02D0     		beq	.L97
+ 868:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 869:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         return(HWREG(FLASH_FCMISC));
+ 8992              		.loc 1 869 0
+ 8993 0010 054B     		ldr	r3, .L99
+ 8994 0012 1B68     		ldr	r3, [r3, #0]
+ 8995 0014 01E0     		b	.L98
+ 8996              	.L97:
+ 870:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 871:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     else
+ 872:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     {
+ 873:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****         return(HWREG(FLASH_FCRIS));
+ 8997              		.loc 1 873 0
+ 8998 0016 054B     		ldr	r3, .L99+4
+ 8999 0018 1B68     		ldr	r3, [r3, #0]
+ 9000              	.L98:
+ 874:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     }
+ 875:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 9001              		.loc 1 875 0
+ 9002 001a 1846     		mov	r0, r3
+ 9003 001c 07F10C07 		add	r7, r7, #12
+ 9004 0020 BD46     		mov	sp, r7
+ 9005 0022 80BC     		pop	{r7}
+ 9006 0024 7047     		bx	lr
+ 9007              	.L100:
+ 9008 0026 00BF     		.align	2
+ 9009              	.L99:
+ 9010 0028 14D00F40 		.word	1074778132
+ 9011 002c 0CD00F40 		.word	1074778124
+ 9012              		.cfi_endproc
+ 9013              	.LFE14:
+ 9015              		.section	.text.FlashIntClear,"ax",%progbits
+ 9016              		.align	2
+ 9017              		.global	FlashIntClear
+ 9018              		.thumb
+ 9019              		.thumb_func
+ 9021              	FlashIntClear:
+ 9022              	.LFB15:
+ 876:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** 
+ 877:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 878:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 879:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Clears flash controller interrupt sources.
+ 880:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 881:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \param ulIntFlags is the bit mask of the interrupt sources to be cleared.
+ 882:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Can be any of the \b FLASH_INT_PROGRAM or \b FLASH_INT_AMISC values.
+ 883:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 884:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! The specified flash controller interrupt sources are cleared, so that they
+ 885:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! no longer assert.  This function must be called in the interrupt handler 
+ 886:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! to keep the interrupt from being triggered again immediately upon exit.
+ 887:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 888:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \note Because there is a write buffer in the Cortex-M processor, it may
+ 889:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! take several clock cycles before the interrupt source is actually cleared.
+ 890:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! Therefore, it is recommended that the interrupt source be cleared early in
+ 891:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! the interrupt handler (as opposed to the very last action) to avoid
+ 892:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! returning from the interrupt handler before the interrupt source is
+ 893:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! actually cleared.  Failure to do so may result in the interrupt handler
+ 894:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! being immediately reentered (because the interrupt controller still sees
+ 895:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! the interrupt source asserted).
+ 896:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //!
+ 897:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //! \return None.
+ 898:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //
+ 899:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** //*****************************************************************************
+ 900:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** void
+ 901:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** FlashIntClear(unsigned long ulIntFlags)
+ 902:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** {
+ 9023              		.loc 1 902 0
+ 9024              		.cfi_startproc
+ 9025              		@ args = 0, pretend = 0, frame = 8
+ 9026              		@ frame_needed = 1, uses_anonymous_args = 0
+ 9027              		@ link register save eliminated.
+ 9028 0000 80B4     		push	{r7}
+ 9029              	.LCFI42:
+ 9030              		.cfi_def_cfa_offset 4
+ 9031 0002 83B0     		sub	sp, sp, #12
+ 9032              	.LCFI43:
+ 9033              		.cfi_def_cfa_offset 16
+ 9034 0004 00AF     		add	r7, sp, #0
+ 9035              		.cfi_offset 7, -4
+ 9036              	.LCFI44:
+ 9037              		.cfi_def_cfa_register 7
+ 9038 0006 7860     		str	r0, [r7, #4]
+ 903:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 904:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     // Clear the flash interrupt.
+ 905:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     //
+ 906:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c ****     HWREG(FLASH_FCMISC) = ulIntFlags;
+ 9039              		.loc 1 906 0
+ 9040 0008 034B     		ldr	r3, .L102
+ 9041 000a 7A68     		ldr	r2, [r7, #4]
+ 9042 000c 1A60     		str	r2, [r3, #0]
+ 907:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/flash.c **** }
+ 9043              		.loc 1 907 0
+ 9044 000e 07F10C07 		add	r7, r7, #12
+ 9045 0012 BD46     		mov	sp, r7
+ 9046 0014 80BC     		pop	{r7}
+ 9047 0016 7047     		bx	lr
+ 9048              	.L103:
+ 9049              		.align	2
+ 9050              	.L102:
+ 9051 0018 14D00F40 		.word	1074778132
+ 9052              		.cfi_endproc
+ 9053              	.LFE15:
+ 9055              		.text
+ 9056              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 flash.c
+     /tmp/ccaKnzX8.s:7754   .rodata:00000000 $d
+     /tmp/ccaKnzX8.s:7757   .rodata:00000000 g_pulFMPPERegs
+     /tmp/ccaKnzX8.s:7765   .rodata:00000010 g_pulFMPRERegs
+     /tmp/ccaKnzX8.s:7771   .text.FlashUsecGet:00000000 $t
+     /tmp/ccaKnzX8.s:7776   .text.FlashUsecGet:00000000 FlashUsecGet
+     /tmp/ccaKnzX8.s:7802   .text.FlashUsecGet:00000014 $d
+     /tmp/ccaKnzX8.s:7807   .text.FlashUsecSet:00000000 $t
+     /tmp/ccaKnzX8.s:7812   .text.FlashUsecSet:00000000 FlashUsecSet
+     /tmp/ccaKnzX8.s:7843   .text.FlashUsecSet:0000001c $d
+     /tmp/ccaKnzX8.s:7848   .text.FlashErase:00000000 $t
+     /tmp/ccaKnzX8.s:7853   .text.FlashErase:00000000 FlashErase
+     /tmp/ccaKnzX8.s:7915   .text.FlashErase:00000050 $d
+     /tmp/ccaKnzX8.s:7924   .text.FlashProgram:00000000 $t
+     /tmp/ccaKnzX8.s:7929   .text.FlashProgram:00000000 FlashProgram
+     /tmp/ccaKnzX8.s:8093   .text.FlashProgram:000000f8 $d
+     /tmp/ccaKnzX8.s:8107   .text.FlashProtectGet:00000000 $t
+     /tmp/ccaKnzX8.s:8112   .text.FlashProtectGet:00000000 FlashProtectGet
+     /tmp/ccaKnzX8.s:8230   .text.FlashProtectGet:000000d4 $d
+     /tmp/ccaKnzX8.s:8238   .text.FlashProtectSet:00000000 $t
+     /tmp/ccaKnzX8.s:8243   .text.FlashProtectSet:00000000 FlashProtectSet
+     /tmp/ccaKnzX8.s:8470   .text.FlashProtectSet:000001b4 $d
+     /tmp/ccaKnzX8.s:8478   .text.FlashProtectSave:00000000 $t
+     /tmp/ccaKnzX8.s:8483   .text.FlashProtectSave:00000000 FlashProtectSave
+     /tmp/ccaKnzX8.s:8565   .text.FlashProtectSave:00000070 $d
+     /tmp/ccaKnzX8.s:8574   .text.FlashUserGet:00000000 $t
+     /tmp/ccaKnzX8.s:8579   .text.FlashUserGet:00000000 FlashUserGet
+     /tmp/ccaKnzX8.s:8638   .text.FlashUserGet:0000004c $d
+     /tmp/ccaKnzX8.s:8646   .text.FlashUserSet:00000000 $t
+     /tmp/ccaKnzX8.s:8651   .text.FlashUserSet:00000000 FlashUserSet
+     /tmp/ccaKnzX8.s:8708   .text.FlashUserSet:00000048 $d
+     /tmp/ccaKnzX8.s:8716   .text.FlashUserSave:00000000 $t
+     /tmp/ccaKnzX8.s:8721   .text.FlashUserSave:00000000 FlashUserSave
+     /tmp/ccaKnzX8.s:8798   .text.FlashUserSave:00000068 $d
+     /tmp/ccaKnzX8.s:8808   .text.FlashIntRegister:00000000 $t
+     /tmp/ccaKnzX8.s:8813   .text.FlashIntRegister:00000000 FlashIntRegister
+     /tmp/ccaKnzX8.s:8846   .text.FlashIntUnregister:00000000 $t
+     /tmp/ccaKnzX8.s:8851   .text.FlashIntUnregister:00000000 FlashIntUnregister
+     /tmp/ccaKnzX8.s:8877   .text.FlashIntEnable:00000000 $t
+     /tmp/ccaKnzX8.s:8882   .text.FlashIntEnable:00000000 FlashIntEnable
+     /tmp/ccaKnzX8.s:8915   .text.FlashIntEnable:00000020 $d
+     /tmp/ccaKnzX8.s:8920   .text.FlashIntDisable:00000000 $t
+     /tmp/ccaKnzX8.s:8925   .text.FlashIntDisable:00000000 FlashIntDisable
+     /tmp/ccaKnzX8.s:8959   .text.FlashIntDisable:00000024 $d
+     /tmp/ccaKnzX8.s:8964   .text.FlashIntStatus:00000000 $t
+     /tmp/ccaKnzX8.s:8969   .text.FlashIntStatus:00000000 FlashIntStatus
+     /tmp/ccaKnzX8.s:9010   .text.FlashIntStatus:00000028 $d
+     /tmp/ccaKnzX8.s:9016   .text.FlashIntClear:00000000 $t
+     /tmp/ccaKnzX8.s:9021   .text.FlashIntClear:00000000 FlashIntClear
+     /tmp/ccaKnzX8.s:9051   .text.FlashIntClear:00000018 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister

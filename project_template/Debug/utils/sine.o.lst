@@ -1,0 +1,347 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"sine.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c"
+ 1002              		.align	2
+ 1005              	g_pusFixedSineTable:
+ 1006 0000 0000     		.short	0
+ 1007 0002 2403     		.short	804
+ 1008 0004 4806     		.short	1608
+ 1009 0006 6C09     		.short	2412
+ 1010 0008 8F0C     		.short	3215
+ 1011 000a B20F     		.short	4018
+ 1012 000c D512     		.short	4821
+ 1013 000e F615     		.short	5622
+ 1014 0010 1719     		.short	6423
+ 1015 0012 371C     		.short	7223
+ 1016 0014 561F     		.short	8022
+ 1017 0016 7322     		.short	8819
+ 1018 0018 9025     		.short	9616
+ 1019 001a AA28     		.short	10410
+ 1020 001c C42B     		.short	11204
+ 1021 001e DB2E     		.short	11995
+ 1022 0020 F131     		.short	12785
+ 1023 0022 0535     		.short	13573
+ 1024 0024 1738     		.short	14359
+ 1025 0026 263B     		.short	15142
+ 1026 0028 333E     		.short	15923
+ 1027 002a 3E41     		.short	16702
+ 1028 002c 4744     		.short	17479
+ 1029 002e 4D47     		.short	18253
+ 1030 0030 504A     		.short	19024
+ 1031 0032 504D     		.short	19792
+ 1032 0034 4D50     		.short	20557
+ 1033 0036 4753     		.short	21319
+ 1034 0038 3E56     		.short	22078
+ 1035 003a 3159     		.short	22833
+ 1036 003c 225C     		.short	23586
+ 1037 003e 0E5F     		.short	24334
+ 1038 0040 F761     		.short	25079
+ 1039 0042 DC64     		.short	25820
+ 1040 0044 BD67     		.short	26557
+ 1041 0046 9B6A     		.short	27291
+ 1042 0048 746D     		.short	28020
+ 1043 004a 4970     		.short	28745
+ 1044 004c 1973     		.short	29465
+ 1045 004e E575     		.short	30181
+ 1046 0050 AD78     		.short	30893
+ 1047 0052 707B     		.short	31600
+ 1048 0054 2E7E     		.short	32302
+ 1049 0056 E780     		.short	-32537
+ 1050 0058 9C83     		.short	-31844
+ 1051 005a 4B86     		.short	-31157
+ 1052 005c F588     		.short	-30475
+ 1053 005e 9A8B     		.short	-29798
+ 1054 0060 398E     		.short	-29127
+ 1055 0062 D390     		.short	-28461
+ 1056 0064 6893     		.short	-27800
+ 1057 0066 F695     		.short	-27146
+ 1058 0068 7F98     		.short	-26497
+ 1059 006a 029B     		.short	-25854
+ 1060 006c 7F9D     		.short	-25217
+ 1061 006e F69F     		.short	-24586
+ 1062 0070 67A2     		.short	-23961
+ 1063 0072 D2A4     		.short	-23342
+ 1064 0074 36A7     		.short	-22730
+ 1065 0076 94A9     		.short	-22124
+ 1066 0078 EBAB     		.short	-21525
+ 1067 007a 3BAE     		.short	-20933
+ 1068 007c 85B0     		.short	-20347
+ 1069 007e C8B2     		.short	-19768
+ 1070 0080 04B5     		.short	-19196
+ 1071 0082 3AB7     		.short	-18630
+ 1072 0084 68B9     		.short	-18072
+ 1073 0086 8FBB     		.short	-17521
+ 1074 0088 AEBD     		.short	-16978
+ 1075 008a C7BF     		.short	-16441
+ 1076 008c D8C1     		.short	-15912
+ 1077 008e E2C3     		.short	-15390
+ 1078 0090 E4C5     		.short	-14876
+ 1079 0092 DEC7     		.short	-14370
+ 1080 0094 D1C9     		.short	-13871
+ 1081 0096 BBCB     		.short	-13381
+ 1082 0098 9FCD     		.short	-12897
+ 1083 009a 7ACF     		.short	-12422
+ 1084 009c 4DD1     		.short	-11955
+ 1085 009e 18D3     		.short	-11496
+ 1086 00a0 DBD4     		.short	-11045
+ 1087 00a2 95D6     		.short	-10603
+ 1088 00a4 48D8     		.short	-10168
+ 1089 00a6 F2D9     		.short	-9742
+ 1090 00a8 94DB     		.short	-9324
+ 1091 00aa 2DDD     		.short	-8915
+ 1092 00ac BEDE     		.short	-8514
+ 1093 00ae 46E0     		.short	-8122
+ 1094 00b0 C5E1     		.short	-7739
+ 1095 00b2 3CE3     		.short	-7364
+ 1096 00b4 AAE4     		.short	-6998
+ 1097 00b6 0FE6     		.short	-6641
+ 1098 00b8 6BE7     		.short	-6293
+ 1099 00ba BFE8     		.short	-5953
+ 1100 00bc 09EA     		.short	-5623
+ 1101 00be 4BEB     		.short	-5301
+ 1102 00c0 83EC     		.short	-4989
+ 1103 00c2 B2ED     		.short	-4686
+ 1104 00c4 D8EE     		.short	-4392
+ 1105 00c6 F5EF     		.short	-4107
+ 1106 00c8 09F1     		.short	-3831
+ 1107 00ca 13F2     		.short	-3565
+ 1108 00cc 14F3     		.short	-3308
+ 1109 00ce 0BF4     		.short	-3061
+ 1110 00d0 FAF4     		.short	-2822
+ 1111 00d2 DEF5     		.short	-2594
+ 1112 00d4 BAF6     		.short	-2374
+ 1113 00d6 8BF7     		.short	-2165
+ 1114 00d8 53F8     		.short	-1965
+ 1115 00da 12F9     		.short	-1774
+ 1116 00dc C7F9     		.short	-1593
+ 1117 00de 73FA     		.short	-1421
+ 1118 00e0 14FB     		.short	-1260
+ 1119 00e2 ACFB     		.short	-1108
+ 1120 00e4 3BFC     		.short	-965
+ 1121 00e6 BFFC     		.short	-833
+ 1122 00e8 3AFD     		.short	-710
+ 1123 00ea ABFD     		.short	-597
+ 1124 00ec 13FE     		.short	-493
+ 1125 00ee 70FE     		.short	-400
+ 1126 00f0 C4FE     		.short	-316
+ 1127 00f2 0EFF     		.short	-242
+ 1128 00f4 4EFF     		.short	-178
+ 1129 00f6 84FF     		.short	-124
+ 1130 00f8 B1FF     		.short	-79
+ 1131 00fa D3FF     		.short	-45
+ 1132 00fc ECFF     		.short	-20
+ 1133 00fe FBFF     		.short	-5
+ 1134 0100 FFFF     		.short	-1
+ 1135 0102 0000     		.section	.text.sine,"ax",%progbits
+ 1136              		.align	2
+ 1137              		.global	sine
+ 1138              		.thumb
+ 1139              		.thumb_func
+ 1141              	sine:
+ 1142              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // sine.c - Fixed point sine trigonometric function.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // Copyright (c) 2006-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // This is part of revision 8264 of the Stellaris Firmware Development Package.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** #include "utils/sine.h"
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** 
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //*****************************************************************************
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //! \addtogroup sine_api
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //! @{
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //*****************************************************************************
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** 
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //*****************************************************************************
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // A table of the value of the sine function for the first ninety degrees with
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // 129 entries (that is, [0] = 0 degrees, [128] = 90 degrees).  Each entry is
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** // in 0.16 fixed point notation.
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //*****************************************************************************
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** static const unsigned short g_pusFixedSineTable[] =
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** {
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0x0000, 0x0324, 0x0648, 0x096C, 0x0C8F, 0x0FB2, 0x12D5, 0x15F6, 0x1917,
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0x1C37, 0x1F56, 0x2273, 0x2590, 0x28AA, 0x2BC4, 0x2EDB, 0x31F1, 0x3505,
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0x3817, 0x3B26, 0x3E33, 0x413E, 0x4447, 0x474D, 0x4A50, 0x4D50, 0x504D,
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0x5347, 0x563E, 0x5931, 0x5C22, 0x5F0E, 0x61F7, 0x64DC, 0x67BD, 0x6A9B,
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0x6D74, 0x7049, 0x7319, 0x75E5, 0x78AD, 0x7B70, 0x7E2E, 0x80E7, 0x839C,
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0x864B, 0x88F5, 0x8B9A, 0x8E39, 0x90D3, 0x9368, 0x95F6, 0x987F, 0x9B02,
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0x9D7F, 0x9FF6, 0xA267, 0xA4D2, 0xA736, 0xA994, 0xABEB, 0xAE3B, 0xB085,
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0xB2C8, 0xB504, 0xB73A, 0xB968, 0xBB8F, 0xBDAE, 0xBFC7, 0xC1D8, 0xC3E2,
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0xC5E4, 0xC7DE, 0xC9D1, 0xCBBB, 0xCD9F, 0xCF7A, 0xD14D, 0xD318, 0xD4DB,
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0xD695, 0xD848, 0xD9F2, 0xDB94, 0xDD2D, 0xDEBE, 0xE046, 0xE1C5, 0xE33C,
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0xE4AA, 0xE60F, 0xE76B, 0xE8BF, 0xEA09, 0xEB4B, 0xEC83, 0xEDB2, 0xEED8,
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0xEFF5, 0xF109, 0xF213, 0xF314, 0xF40B, 0xF4FA, 0xF5DE, 0xF6BA, 0xF78B,
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0xF853, 0xF912, 0xF9C7, 0xFA73, 0xFB14, 0xFBAC, 0xFC3B, 0xFCBF, 0xFD3A,
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0xFDAB, 0xFE13, 0xFE70, 0xFEC4, 0xFF0E, 0xFF4E, 0xFF84, 0xFFB1, 0xFFD3,
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     0xFFEC, 0xFFFB, 0xFFFF
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** };
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** 
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //*****************************************************************************
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //! Computes an approximation of the sine of the input angle.
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //!
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //! \param ulAngle is an angle expressed as a 0.32 fixed-point value that is
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //! the percentage of the way around a circle.
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //!
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //! This function computes the sine for the given input angle.  The angle is
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //! specified in 0.32 fixed point format, and is therefore always between 0 and
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //! 360 degrees, inclusive of 0 and exclusive of 360.
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //!
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //! \return Returns the sine of the angle, in 16.16 fixed point format.
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** //*****************************************************************************
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** long
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** sine(unsigned long ulAngle)
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** {
+ 1143              		.loc 1 76 0
+ 1144              		.cfi_startproc
+ 1145              		@ args = 0, pretend = 0, frame = 16
+ 1146              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1147              		@ link register save eliminated.
+ 1148 0000 80B4     		push	{r7}
+ 1149              	.LCFI0:
+ 1150              		.cfi_def_cfa_offset 4
+ 1151 0002 85B0     		sub	sp, sp, #20
+ 1152              	.LCFI1:
+ 1153              		.cfi_def_cfa_offset 24
+ 1154 0004 00AF     		add	r7, sp, #0
+ 1155              		.cfi_offset 7, -4
+ 1156              	.LCFI2:
+ 1157              		.cfi_def_cfa_register 7
+ 1158 0006 7860     		str	r0, [r7, #4]
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     unsigned long ulIdx;
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** 
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     //
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     // Add 0.5 to the angle.  Since only the upper 9 bits are used to compute
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     // the sine value, adding one to the tenth bit is 0.5 from the point of
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     // view of the sine table.
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     //
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     ulAngle += 0x00400000;
+ 1159              		.loc 1 84 0
+ 1160 0008 7B68     		ldr	r3, [r7, #4]
+ 1161 000a 03F58003 		add	r3, r3, #4194304
+ 1162 000e 7B60     		str	r3, [r7, #4]
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** 
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     //
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     // Get the index into the sine table from bits 30:23.
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     //
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     ulIdx = (ulAngle >> 23) & 255;
+ 1163              		.loc 1 89 0
+ 1164 0010 7B68     		ldr	r3, [r7, #4]
+ 1165 0012 4FEAD353 		lsr	r3, r3, #23
+ 1166 0016 03F0FF03 		and	r3, r3, #255
+ 1167 001a FB60     		str	r3, [r7, #12]
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** 
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     //
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     // If bit 30 is set, the angle is between 90 and 180 or 270 and 360.  In
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     // these cases, the sine value is decreasing from one instead of increasing
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     // from zero.  The indexing into the table needs to be reversed.
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     //
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     if(ulAngle & 0x40000000)
+ 1168              		.loc 1 96 0
+ 1169 001c 7B68     		ldr	r3, [r7, #4]
+ 1170 001e 03F08043 		and	r3, r3, #1073741824
+ 1171 0022 002B     		cmp	r3, #0
+ 1172 0024 03D0     		beq	.L2
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     {
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****         ulIdx = 256 - ulIdx;
+ 1173              		.loc 1 98 0
+ 1174 0026 FB68     		ldr	r3, [r7, #12]
+ 1175 0028 C3F58073 		rsb	r3, r3, #256
+ 1176 002c FB60     		str	r3, [r7, #12]
+ 1177              	.L2:
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     }
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** 
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     //
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     // Get the value of the sine.
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     //
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     ulIdx = g_pusFixedSineTable[ulIdx];
+ 1178              		.loc 1 104 0
+ 1179 002e 094B     		ldr	r3, .L5
+ 1180 0030 FA68     		ldr	r2, [r7, #12]
+ 1181 0032 33F81230 		ldrh	r3, [r3, r2, lsl #1]
+ 1182 0036 FB60     		str	r3, [r7, #12]
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** 
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     //
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     // If bit 31 is set, the angle is between 180 and 360.  In this case, the
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     // sine value is negative; otherwise it is positive.
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     //
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     if(ulAngle & 0x80000000)
+ 1183              		.loc 1 110 0
+ 1184 0038 7B68     		ldr	r3, [r7, #4]
+ 1185 003a 002B     		cmp	r3, #0
+ 1186 003c 03DA     		bge	.L3
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     {
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****         return(0 - ulIdx);
+ 1187              		.loc 1 112 0
+ 1188 003e FB68     		ldr	r3, [r7, #12]
+ 1189 0040 C3F10003 		rsb	r3, r3, #0
+ 1190 0044 00E0     		b	.L4
+ 1191              	.L3:
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     }
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     else
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     {
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****         return(ulIdx);
+ 1192              		.loc 1 116 0
+ 1193 0046 FB68     		ldr	r3, [r7, #12]
+ 1194              	.L4:
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c ****     }
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/utils/sine.c **** }
+ 1195              		.loc 1 118 0
+ 1196 0048 1846     		mov	r0, r3
+ 1197 004a 07F11407 		add	r7, r7, #20
+ 1198 004e BD46     		mov	sp, r7
+ 1199 0050 80BC     		pop	{r7}
+ 1200 0052 7047     		bx	lr
+ 1201              	.L6:
+ 1202              		.align	2
+ 1203              	.L5:
+ 1204 0054 00000000 		.word	g_pusFixedSineTable
+ 1205              		.cfi_endproc
+ 1206              	.LFE0:
+ 1208              		.text
+ 1209              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 sine.c
+     /tmp/cciq7Fn0.s:1002   .rodata:00000000 $d
+     /tmp/cciq7Fn0.s:1005   .rodata:00000000 g_pusFixedSineTable
+     /tmp/cciq7Fn0.s:1136   .text.sine:00000000 $t
+     /tmp/cciq7Fn0.s:1141   .text.sine:00000000 sine
+     /tmp/cciq7Fn0.s:1204   .text.sine:00000054 $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,1375 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"qei.c"
+  23              	.Ltext0:
+  24              		.file 1 "/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c"
+ 2168              		.align	2
+ 2169              		.global	QEIEnable
+ 2170              		.thumb
+ 2171              		.thumb_func
+ 2173              	QEIEnable:
+ 2174              	.LFB0:
+   1:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+   2:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+   3:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // qei.c - Driver for the Quadrature Encoder with Index.
+   4:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+   5:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // Copyright (c) 2005-2011 Texas Instruments Incorporated.  All rights reserved.
+   6:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // Software License Agreement
+   7:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // 
+   8:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // Texas Instruments (TI) is supplying this software for use solely and
+   9:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // exclusively on TI's microcontroller products. The software is owned by
+  10:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // TI and/or its suppliers, and is protected under applicable copyright
+  11:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // laws. You may not combine this software with "viral" open-source
+  12:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // software in order to form a larger program.
+  13:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // 
+  14:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+  15:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+  16:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  17:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+  18:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+  19:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // DAMAGES, FOR ANY REASON WHATSOEVER.
+  20:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // 
+  21:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** // This is part of revision 8264 of the Stellaris Peripheral Driver Library.
+  22:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+  23:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+  24:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+  25:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+  26:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+  27:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \addtogroup qei_api
+  28:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! @{
+  29:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+  30:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+  31:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+  32:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** #include "inc/hw_ints.h"
+  33:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** #include "inc/hw_memmap.h"
+  34:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** #include "inc/hw_qei.h"
+  35:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** #include "inc/hw_types.h"
+  36:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** #include "driverlib/debug.h"
+  37:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** #include "driverlib/interrupt.h"
+  38:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** #include "driverlib/qei.h"
+  39:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+  40:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+  41:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+  42:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Enables the quadrature encoder.
+  43:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+  44:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+  45:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+  46:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function enables operation of the quadrature encoder module.  The 
+  47:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! module must be configured before it is enabled.
+  48:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+  49:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \sa QEIConfigure()
+  50:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+  51:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return None.
+  52:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+  53:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+  54:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** void
+  55:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIEnable(unsigned long ulBase)
+  56:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2175              		.loc 1 56 0
+ 2176              		.cfi_startproc
+ 2177              		@ args = 0, pretend = 0, frame = 8
+ 2178              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2179              		@ link register save eliminated.
+ 2180 0000 80B4     		push	{r7}
+ 2181              	.LCFI0:
+ 2182              		.cfi_def_cfa_offset 4
+ 2183 0002 83B0     		sub	sp, sp, #12
+ 2184              	.LCFI1:
+ 2185              		.cfi_def_cfa_offset 16
+ 2186 0004 00AF     		add	r7, sp, #0
+ 2187              		.cfi_offset 7, -4
+ 2188              	.LCFI2:
+ 2189              		.cfi_def_cfa_register 7
+ 2190 0006 7860     		str	r0, [r7, #4]
+  57:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+  58:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+  59:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+  60:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+  61:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+  62:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+  63:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Enable the QEI module.
+  64:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+  65:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_CTL) |= QEI_CTL_ENABLE;
+ 2191              		.loc 1 65 0
+ 2192 0008 7B68     		ldr	r3, [r7, #4]
+ 2193 000a 7A68     		ldr	r2, [r7, #4]
+ 2194 000c 1268     		ldr	r2, [r2, #0]
+ 2195 000e 42F00102 		orr	r2, r2, #1
+ 2196 0012 1A60     		str	r2, [r3, #0]
+  66:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2197              		.loc 1 66 0
+ 2198 0014 07F10C07 		add	r7, r7, #12
+ 2199 0018 BD46     		mov	sp, r7
+ 2200 001a 80BC     		pop	{r7}
+ 2201 001c 7047     		bx	lr
+ 2202              		.cfi_endproc
+ 2203              	.LFE0:
+ 2205 001e 00BF     		.section	.text.QEIDisable,"ax",%progbits
+ 2206              		.align	2
+ 2207              		.global	QEIDisable
+ 2208              		.thumb
+ 2209              		.thumb_func
+ 2211              	QEIDisable:
+ 2212              	.LFB1:
+  67:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+  68:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+  69:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+  70:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Disables the quadrature encoder.
+  71:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+  72:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+  73:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+  74:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function disables operation of the quadrature encoder module.
+  75:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+  76:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return None.
+  77:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+  78:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+  79:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** void
+  80:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIDisable(unsigned long ulBase)
+  81:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2213              		.loc 1 81 0
+ 2214              		.cfi_startproc
+ 2215              		@ args = 0, pretend = 0, frame = 8
+ 2216              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2217              		@ link register save eliminated.
+ 2218 0000 80B4     		push	{r7}
+ 2219              	.LCFI3:
+ 2220              		.cfi_def_cfa_offset 4
+ 2221 0002 83B0     		sub	sp, sp, #12
+ 2222              	.LCFI4:
+ 2223              		.cfi_def_cfa_offset 16
+ 2224 0004 00AF     		add	r7, sp, #0
+ 2225              		.cfi_offset 7, -4
+ 2226              	.LCFI5:
+ 2227              		.cfi_def_cfa_register 7
+ 2228 0006 7860     		str	r0, [r7, #4]
+  82:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+  83:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+  84:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+  85:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+  86:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+  87:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+  88:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Disable the QEI module.
+  89:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+  90:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_CTL) &= ~(QEI_CTL_ENABLE);
+ 2229              		.loc 1 90 0
+ 2230 0008 7B68     		ldr	r3, [r7, #4]
+ 2231 000a 7A68     		ldr	r2, [r7, #4]
+ 2232 000c 1268     		ldr	r2, [r2, #0]
+ 2233 000e 22F00102 		bic	r2, r2, #1
+ 2234 0012 1A60     		str	r2, [r3, #0]
+  91:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2235              		.loc 1 91 0
+ 2236 0014 07F10C07 		add	r7, r7, #12
+ 2237 0018 BD46     		mov	sp, r7
+ 2238 001a 80BC     		pop	{r7}
+ 2239 001c 7047     		bx	lr
+ 2240              		.cfi_endproc
+ 2241              	.LFE1:
+ 2243 001e 00BF     		.section	.text.QEIConfigure,"ax",%progbits
+ 2244              		.align	2
+ 2245              		.global	QEIConfigure
+ 2246              		.thumb
+ 2247              		.thumb_func
+ 2249              	QEIConfigure:
+ 2250              	.LFB2:
+  92:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+  93:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+  94:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+  95:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Configures the quadrature encoder.
+  96:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+  97:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+  98:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulConfig is the configuration for the quadrature encoder.  See below
+  99:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! for a description of this parameter.
+ 100:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulMaxPosition specifies the maximum position value.
+ 101:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 102:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function configures the operation of the quadrature encoder.  The
+ 103:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \e ulConfig parameter provides the configuration of the encoder and is the
+ 104:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! logical OR of several values:
+ 105:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 106:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! - \b QEI_CONFIG_CAPTURE_A or \b QEI_CONFIG_CAPTURE_A_B specify if edges
+ 107:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!   on channel A or on both channels A and B should be counted by the
+ 108:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!   position integrator and velocity accumulator.
+ 109:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! - \b QEI_CONFIG_NO_RESET or \b QEI_CONFIG_RESET_IDX specify if the
+ 110:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!   position integrator should be reset when the index pulse is detected.
+ 111:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! - \b QEI_CONFIG_QUADRATURE or \b QEI_CONFIG_CLOCK_DIR specify if
+ 112:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!   quadrature signals are being provided on ChA and ChB, or if a direction
+ 113:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!   signal and a clock are being provided instead.
+ 114:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! - \b QEI_CONFIG_NO_SWAP or \b QEI_CONFIG_SWAP to specify if the signals
+ 115:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!   provided on ChA and ChB should be swapped before being processed.
+ 116:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 117:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \e ulMaxPosition is the maximum value of the position integrator and is
+ 118:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! the value used to reset the position capture when in index reset mode and
+ 119:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! moving in the reverse (negative) direction.
+ 120:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 121:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return None.
+ 122:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 123:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 124:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** void
+ 125:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIConfigure(unsigned long ulBase, unsigned long ulConfig,
+ 126:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****              unsigned long ulMaxPosition)
+ 127:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2251              		.loc 1 127 0
+ 2252              		.cfi_startproc
+ 2253              		@ args = 0, pretend = 0, frame = 16
+ 2254              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2255              		@ link register save eliminated.
+ 2256 0000 80B4     		push	{r7}
+ 2257              	.LCFI6:
+ 2258              		.cfi_def_cfa_offset 4
+ 2259 0002 85B0     		sub	sp, sp, #20
+ 2260              	.LCFI7:
+ 2261              		.cfi_def_cfa_offset 24
+ 2262 0004 00AF     		add	r7, sp, #0
+ 2263              		.cfi_offset 7, -4
+ 2264              	.LCFI8:
+ 2265              		.cfi_def_cfa_register 7
+ 2266 0006 F860     		str	r0, [r7, #12]
+ 2267 0008 B960     		str	r1, [r7, #8]
+ 2268 000a 7A60     		str	r2, [r7, #4]
+ 128:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 129:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 130:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 131:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 132:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 133:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 134:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Write the new configuration to the hardware.
+ 135:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_CTL) = ((HWREG(ulBase + QEI_O_CTL) &
+ 2269              		.loc 1 136 0
+ 2270 000c FB68     		ldr	r3, [r7, #12]
+ 2271 000e FA68     		ldr	r2, [r7, #12]
+ 2272 0010 1268     		ldr	r2, [r2, #0]
+ 2273 0012 22F01E01 		bic	r1, r2, #30
+ 137:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****                                   ~(QEI_CTL_CAPMODE | QEI_CTL_RESMODE |
+ 138:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****                                     QEI_CTL_SIGMODE | QEI_CTL_SWAP)) |
+ 2274              		.loc 1 138 0
+ 2275 0016 BA68     		ldr	r2, [r7, #8]
+ 2276 0018 41EA0202 		orr	r2, r1, r2
+ 136:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_CTL) = ((HWREG(ulBase + QEI_O_CTL) &
+ 2277              		.loc 1 136 0
+ 2278 001c 1A60     		str	r2, [r3, #0]
+ 139:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****                                  ulConfig);
+ 140:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 141:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 142:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Set the maximum position.
+ 143:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 144:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_MAXPOS) = ulMaxPosition;
+ 2279              		.loc 1 144 0
+ 2280 001e FB68     		ldr	r3, [r7, #12]
+ 2281 0020 03F10C03 		add	r3, r3, #12
+ 2282 0024 7A68     		ldr	r2, [r7, #4]
+ 2283 0026 1A60     		str	r2, [r3, #0]
+ 145:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2284              		.loc 1 145 0
+ 2285 0028 07F11407 		add	r7, r7, #20
+ 2286 002c BD46     		mov	sp, r7
+ 2287 002e 80BC     		pop	{r7}
+ 2288 0030 7047     		bx	lr
+ 2289              		.cfi_endproc
+ 2290              	.LFE2:
+ 2292 0032 00BF     		.section	.text.QEIPositionGet,"ax",%progbits
+ 2293              		.align	2
+ 2294              		.global	QEIPositionGet
+ 2295              		.thumb
+ 2296              		.thumb_func
+ 2298              	QEIPositionGet:
+ 2299              	.LFB3:
+ 146:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 147:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 148:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 149:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Gets the current encoder position.
+ 150:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 151:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 152:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 153:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function returns the current position of the encoder.  Depending upon 
+ 154:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! the configuration of the encoder, and the incident of an index pulse, this
+ 155:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! value may or may not contain the expected data (that is, if in reset on
+ 156:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! index mode, if an index pulse has not been encountered, the position
+ 157:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! counter is not yet aligned with the index pulse).
+ 158:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 159:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return The current position of the encoder.
+ 160:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 161:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 162:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** unsigned long
+ 163:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIPositionGet(unsigned long ulBase)
+ 164:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2300              		.loc 1 164 0
+ 2301              		.cfi_startproc
+ 2302              		@ args = 0, pretend = 0, frame = 8
+ 2303              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2304              		@ link register save eliminated.
+ 2305 0000 80B4     		push	{r7}
+ 2306              	.LCFI9:
+ 2307              		.cfi_def_cfa_offset 4
+ 2308 0002 83B0     		sub	sp, sp, #12
+ 2309              	.LCFI10:
+ 2310              		.cfi_def_cfa_offset 16
+ 2311 0004 00AF     		add	r7, sp, #0
+ 2312              		.cfi_offset 7, -4
+ 2313              	.LCFI11:
+ 2314              		.cfi_def_cfa_register 7
+ 2315 0006 7860     		str	r0, [r7, #4]
+ 165:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 166:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 167:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 168:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 169:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 170:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 171:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Return the current position counter.
+ 172:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 173:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     return(HWREG(ulBase + QEI_O_POS));
+ 2316              		.loc 1 173 0
+ 2317 0008 7B68     		ldr	r3, [r7, #4]
+ 2318 000a 03F10803 		add	r3, r3, #8
+ 2319 000e 1B68     		ldr	r3, [r3, #0]
+ 174:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2320              		.loc 1 174 0
+ 2321 0010 1846     		mov	r0, r3
+ 2322 0012 07F10C07 		add	r7, r7, #12
+ 2323 0016 BD46     		mov	sp, r7
+ 2324 0018 80BC     		pop	{r7}
+ 2325 001a 7047     		bx	lr
+ 2326              		.cfi_endproc
+ 2327              	.LFE3:
+ 2329              		.section	.text.QEIPositionSet,"ax",%progbits
+ 2330              		.align	2
+ 2331              		.global	QEIPositionSet
+ 2332              		.thumb
+ 2333              		.thumb_func
+ 2335              	QEIPositionSet:
+ 2336              	.LFB4:
+ 175:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 176:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 177:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 178:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Sets the current encoder position.
+ 179:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 180:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 181:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulPosition is the new position for the encoder.
+ 182:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 183:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function sets the current position of the encoder; the encoder 
+ 184:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! position is then measured relative to this value.
+ 185:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 186:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return None.
+ 187:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 188:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 189:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** void
+ 190:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIPositionSet(unsigned long ulBase, unsigned long ulPosition)
+ 191:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2337              		.loc 1 191 0
+ 2338              		.cfi_startproc
+ 2339              		@ args = 0, pretend = 0, frame = 8
+ 2340              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2341              		@ link register save eliminated.
+ 2342 0000 80B4     		push	{r7}
+ 2343              	.LCFI12:
+ 2344              		.cfi_def_cfa_offset 4
+ 2345 0002 83B0     		sub	sp, sp, #12
+ 2346              	.LCFI13:
+ 2347              		.cfi_def_cfa_offset 16
+ 2348 0004 00AF     		add	r7, sp, #0
+ 2349              		.cfi_offset 7, -4
+ 2350              	.LCFI14:
+ 2351              		.cfi_def_cfa_register 7
+ 2352 0006 7860     		str	r0, [r7, #4]
+ 2353 0008 3960     		str	r1, [r7, #0]
+ 192:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 193:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 194:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 195:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 196:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 197:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 198:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Set the position counter.
+ 199:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 200:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_POS) = ulPosition;
+ 2354              		.loc 1 200 0
+ 2355 000a 7B68     		ldr	r3, [r7, #4]
+ 2356 000c 03F10803 		add	r3, r3, #8
+ 2357 0010 3A68     		ldr	r2, [r7, #0]
+ 2358 0012 1A60     		str	r2, [r3, #0]
+ 201:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2359              		.loc 1 201 0
+ 2360 0014 07F10C07 		add	r7, r7, #12
+ 2361 0018 BD46     		mov	sp, r7
+ 2362 001a 80BC     		pop	{r7}
+ 2363 001c 7047     		bx	lr
+ 2364              		.cfi_endproc
+ 2365              	.LFE4:
+ 2367 001e 00BF     		.section	.text.QEIDirectionGet,"ax",%progbits
+ 2368              		.align	2
+ 2369              		.global	QEIDirectionGet
+ 2370              		.thumb
+ 2371              		.thumb_func
+ 2373              	QEIDirectionGet:
+ 2374              	.LFB5:
+ 202:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 203:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 204:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 205:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Gets the current direction of rotation.
+ 206:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 207:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 208:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 209:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function returns the current direction of rotation.  In this case, 
+ 210:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! current means the most recently detected direction of the encoder; it may
+ 211:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! not be presently moving but this is the direction it last moved before it 
+ 212:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! stopped.
+ 213:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 214:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return Returns 1 if moving in the forward direction or -1 if moving in the
+ 215:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! reverse direction.
+ 216:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 217:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 218:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** long
+ 219:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIDirectionGet(unsigned long ulBase)
+ 220:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2375              		.loc 1 220 0
+ 2376              		.cfi_startproc
+ 2377              		@ args = 0, pretend = 0, frame = 8
+ 2378              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2379              		@ link register save eliminated.
+ 2380 0000 80B4     		push	{r7}
+ 2381              	.LCFI15:
+ 2382              		.cfi_def_cfa_offset 4
+ 2383 0002 83B0     		sub	sp, sp, #12
+ 2384              	.LCFI16:
+ 2385              		.cfi_def_cfa_offset 16
+ 2386 0004 00AF     		add	r7, sp, #0
+ 2387              		.cfi_offset 7, -4
+ 2388              	.LCFI17:
+ 2389              		.cfi_def_cfa_register 7
+ 2390 0006 7860     		str	r0, [r7, #4]
+ 221:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 222:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 223:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 224:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 225:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 226:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 227:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Return the direction of rotation.
+ 228:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 229:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     return((HWREG(ulBase + QEI_O_STAT) & QEI_STAT_DIRECTION) ? -1 : 1);
+ 2391              		.loc 1 229 0
+ 2392 0008 7B68     		ldr	r3, [r7, #4]
+ 2393 000a 03F10403 		add	r3, r3, #4
+ 2394 000e 1B68     		ldr	r3, [r3, #0]
+ 2395 0010 03F00203 		and	r3, r3, #2
+ 2396 0014 002B     		cmp	r3, #0
+ 2397 0016 02D0     		beq	.L7
+ 2398              		.loc 1 229 0 is_stmt 0 discriminator 1
+ 2399 0018 4FF0FF33 		mov	r3, #-1
+ 2400 001c 01E0     		b	.L8
+ 2401              	.L7:
+ 2402              		.loc 1 229 0 discriminator 2
+ 2403 001e 4FF00103 		mov	r3, #1
+ 2404              	.L8:
+ 230:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2405              		.loc 1 230 0 is_stmt 1 discriminator 3
+ 2406 0022 1846     		mov	r0, r3
+ 2407 0024 07F10C07 		add	r7, r7, #12
+ 2408 0028 BD46     		mov	sp, r7
+ 2409 002a 80BC     		pop	{r7}
+ 2410 002c 7047     		bx	lr
+ 2411              		.cfi_endproc
+ 2412              	.LFE5:
+ 2414 002e 00BF     		.section	.text.QEIErrorGet,"ax",%progbits
+ 2415              		.align	2
+ 2416              		.global	QEIErrorGet
+ 2417              		.thumb
+ 2418              		.thumb_func
+ 2420              	QEIErrorGet:
+ 2421              	.LFB6:
+ 231:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 232:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 233:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 234:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Gets the encoder error indicator.
+ 235:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 236:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 237:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 238:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function returns the error indicator for the quadrature encoder.  It 
+ 239:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! is an error for both of the signals of the quadrature input to change at 
+ 240:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! the same time.
+ 241:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 242:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return Returns \b true if an error has occurred and \b false otherwise.
+ 243:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 244:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 245:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** tBoolean
+ 246:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIErrorGet(unsigned long ulBase)
+ 247:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2422              		.loc 1 247 0
+ 2423              		.cfi_startproc
+ 2424              		@ args = 0, pretend = 0, frame = 8
+ 2425              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2426              		@ link register save eliminated.
+ 2427 0000 80B4     		push	{r7}
+ 2428              	.LCFI18:
+ 2429              		.cfi_def_cfa_offset 4
+ 2430 0002 83B0     		sub	sp, sp, #12
+ 2431              	.LCFI19:
+ 2432              		.cfi_def_cfa_offset 16
+ 2433 0004 00AF     		add	r7, sp, #0
+ 2434              		.cfi_offset 7, -4
+ 2435              	.LCFI20:
+ 2436              		.cfi_def_cfa_register 7
+ 2437 0006 7860     		str	r0, [r7, #4]
+ 248:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 249:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 250:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 251:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 252:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 253:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 254:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Return the error indicator.
+ 255:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 256:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     return((HWREG(ulBase + QEI_O_STAT) & QEI_STAT_ERROR) ? true : false);
+ 2438              		.loc 1 256 0
+ 2439 0008 7B68     		ldr	r3, [r7, #4]
+ 2440 000a 03F10403 		add	r3, r3, #4
+ 2441 000e 1B68     		ldr	r3, [r3, #0]
+ 2442 0010 DBB2     		uxtb	r3, r3
+ 2443 0012 03F00103 		and	r3, r3, #1
+ 2444 0016 DBB2     		uxtb	r3, r3
+ 257:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2445              		.loc 1 257 0
+ 2446 0018 1846     		mov	r0, r3
+ 2447 001a 07F10C07 		add	r7, r7, #12
+ 2448 001e BD46     		mov	sp, r7
+ 2449 0020 80BC     		pop	{r7}
+ 2450 0022 7047     		bx	lr
+ 2451              		.cfi_endproc
+ 2452              	.LFE6:
+ 2454              		.section	.text.QEIVelocityEnable,"ax",%progbits
+ 2455              		.align	2
+ 2456              		.global	QEIVelocityEnable
+ 2457              		.thumb
+ 2458              		.thumb_func
+ 2460              	QEIVelocityEnable:
+ 2461              	.LFB7:
+ 258:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 259:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 260:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 261:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Enables the velocity capture.
+ 262:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 263:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 264:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 265:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function enables operation of the velocity capture in the quadrature
+ 266:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! encoder module.  The module must be configured before velocity capture is 
+ 267:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! enabled.
+ 268:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 269:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \sa QEIVelocityConfigure() and QEIEnable()
+ 270:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 271:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return None.
+ 272:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 273:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 274:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** void
+ 275:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIVelocityEnable(unsigned long ulBase)
+ 276:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2462              		.loc 1 276 0
+ 2463              		.cfi_startproc
+ 2464              		@ args = 0, pretend = 0, frame = 8
+ 2465              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2466              		@ link register save eliminated.
+ 2467 0000 80B4     		push	{r7}
+ 2468              	.LCFI21:
+ 2469              		.cfi_def_cfa_offset 4
+ 2470 0002 83B0     		sub	sp, sp, #12
+ 2471              	.LCFI22:
+ 2472              		.cfi_def_cfa_offset 16
+ 2473 0004 00AF     		add	r7, sp, #0
+ 2474              		.cfi_offset 7, -4
+ 2475              	.LCFI23:
+ 2476              		.cfi_def_cfa_register 7
+ 2477 0006 7860     		str	r0, [r7, #4]
+ 277:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 278:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 279:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 280:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 281:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 282:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 283:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Enable the velocity capture.
+ 284:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 285:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_CTL) |= QEI_CTL_VELEN;
+ 2478              		.loc 1 285 0
+ 2479 0008 7B68     		ldr	r3, [r7, #4]
+ 2480 000a 7A68     		ldr	r2, [r7, #4]
+ 2481 000c 1268     		ldr	r2, [r2, #0]
+ 2482 000e 42F02002 		orr	r2, r2, #32
+ 2483 0012 1A60     		str	r2, [r3, #0]
+ 286:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2484              		.loc 1 286 0
+ 2485 0014 07F10C07 		add	r7, r7, #12
+ 2486 0018 BD46     		mov	sp, r7
+ 2487 001a 80BC     		pop	{r7}
+ 2488 001c 7047     		bx	lr
+ 2489              		.cfi_endproc
+ 2490              	.LFE7:
+ 2492 001e 00BF     		.section	.text.QEIVelocityDisable,"ax",%progbits
+ 2493              		.align	2
+ 2494              		.global	QEIVelocityDisable
+ 2495              		.thumb
+ 2496              		.thumb_func
+ 2498              	QEIVelocityDisable:
+ 2499              	.LFB8:
+ 287:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 288:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 289:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 290:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Disables the velocity capture.
+ 291:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 292:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 293:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 294:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function disables operation of the velocity capture in the quadrature
+ 295:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! encoder module.
+ 296:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 297:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return None.
+ 298:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 299:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 300:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** void
+ 301:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIVelocityDisable(unsigned long ulBase)
+ 302:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2500              		.loc 1 302 0
+ 2501              		.cfi_startproc
+ 2502              		@ args = 0, pretend = 0, frame = 8
+ 2503              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2504              		@ link register save eliminated.
+ 2505 0000 80B4     		push	{r7}
+ 2506              	.LCFI24:
+ 2507              		.cfi_def_cfa_offset 4
+ 2508 0002 83B0     		sub	sp, sp, #12
+ 2509              	.LCFI25:
+ 2510              		.cfi_def_cfa_offset 16
+ 2511 0004 00AF     		add	r7, sp, #0
+ 2512              		.cfi_offset 7, -4
+ 2513              	.LCFI26:
+ 2514              		.cfi_def_cfa_register 7
+ 2515 0006 7860     		str	r0, [r7, #4]
+ 303:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 304:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 305:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 306:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 307:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 308:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 309:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Disable the velocity capture.
+ 310:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 311:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_CTL) &= ~(QEI_CTL_VELEN);
+ 2516              		.loc 1 311 0
+ 2517 0008 7B68     		ldr	r3, [r7, #4]
+ 2518 000a 7A68     		ldr	r2, [r7, #4]
+ 2519 000c 1268     		ldr	r2, [r2, #0]
+ 2520 000e 22F02002 		bic	r2, r2, #32
+ 2521 0012 1A60     		str	r2, [r3, #0]
+ 312:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2522              		.loc 1 312 0
+ 2523 0014 07F10C07 		add	r7, r7, #12
+ 2524 0018 BD46     		mov	sp, r7
+ 2525 001a 80BC     		pop	{r7}
+ 2526 001c 7047     		bx	lr
+ 2527              		.cfi_endproc
+ 2528              	.LFE8:
+ 2530 001e 00BF     		.section	.text.QEIVelocityConfigure,"ax",%progbits
+ 2531              		.align	2
+ 2532              		.global	QEIVelocityConfigure
+ 2533              		.thumb
+ 2534              		.thumb_func
+ 2536              	QEIVelocityConfigure:
+ 2537              	.LFB9:
+ 313:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 314:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 315:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 316:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Configures the velocity capture.
+ 317:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 318:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 319:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulPreDiv specifies the predivider applied to the input quadrature
+ 320:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! signal before it is counted; can be one of \b QEI_VELDIV_1,
+ 321:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \b QEI_VELDIV_2, \b QEI_VELDIV_4, \b QEI_VELDIV_8, \b QEI_VELDIV_16,
+ 322:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \b QEI_VELDIV_32, \b QEI_VELDIV_64, or \b QEI_VELDIV_128.
+ 323:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulPeriod specifies the number of clock ticks over which to measure
+ 324:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! the velocity; must be non-zero.
+ 325:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 326:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function configures the operation of the velocity capture portion of 
+ 327:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! the quadrature encoder.  The position increment signal is predivided as
+ 328:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! specified by \e ulPreDiv before being accumulated by the velocity capture.
+ 329:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! The divided signal is accumulated over \e ulPeriod system clock before
+ 330:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! being saved and resetting the accumulator.
+ 331:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 332:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return None.
+ 333:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 334:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 335:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** void
+ 336:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIVelocityConfigure(unsigned long ulBase, unsigned long ulPreDiv,
+ 337:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****                      unsigned long ulPeriod)
+ 338:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2538              		.loc 1 338 0
+ 2539              		.cfi_startproc
+ 2540              		@ args = 0, pretend = 0, frame = 16
+ 2541              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2542              		@ link register save eliminated.
+ 2543 0000 80B4     		push	{r7}
+ 2544              	.LCFI27:
+ 2545              		.cfi_def_cfa_offset 4
+ 2546 0002 85B0     		sub	sp, sp, #20
+ 2547              	.LCFI28:
+ 2548              		.cfi_def_cfa_offset 24
+ 2549 0004 00AF     		add	r7, sp, #0
+ 2550              		.cfi_offset 7, -4
+ 2551              	.LCFI29:
+ 2552              		.cfi_def_cfa_register 7
+ 2553 0006 F860     		str	r0, [r7, #12]
+ 2554 0008 B960     		str	r1, [r7, #8]
+ 2555 000a 7A60     		str	r2, [r7, #4]
+ 339:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 340:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 341:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 342:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 343:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT(!(ulPreDiv & ~(QEI_CTL_VELDIV_M)));
+ 344:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT(ulPeriod != 0);
+ 345:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 346:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 347:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Set the velocity predivider.
+ 348:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_CTL) = ((HWREG(ulBase + QEI_O_CTL) &
+ 2556              		.loc 1 349 0
+ 2557 000c FB68     		ldr	r3, [r7, #12]
+ 2558 000e FA68     		ldr	r2, [r7, #12]
+ 2559 0010 1268     		ldr	r2, [r2, #0]
+ 2560 0012 22F4E071 		bic	r1, r2, #448
+ 350:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****                                   ~(QEI_CTL_VELDIV_M)) | ulPreDiv);
+ 2561              		.loc 1 350 0
+ 2562 0016 BA68     		ldr	r2, [r7, #8]
+ 2563 0018 41EA0202 		orr	r2, r1, r2
+ 349:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_CTL) = ((HWREG(ulBase + QEI_O_CTL) &
+ 2564              		.loc 1 349 0
+ 2565 001c 1A60     		str	r2, [r3, #0]
+ 351:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 352:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 353:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Set the timer period.
+ 354:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 355:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_LOAD) = ulPeriod - 1;
+ 2566              		.loc 1 355 0
+ 2567 001e FB68     		ldr	r3, [r7, #12]
+ 2568 0020 03F11003 		add	r3, r3, #16
+ 2569 0024 7A68     		ldr	r2, [r7, #4]
+ 2570 0026 02F1FF32 		add	r2, r2, #-1
+ 2571 002a 1A60     		str	r2, [r3, #0]
+ 356:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2572              		.loc 1 356 0
+ 2573 002c 07F11407 		add	r7, r7, #20
+ 2574 0030 BD46     		mov	sp, r7
+ 2575 0032 80BC     		pop	{r7}
+ 2576 0034 7047     		bx	lr
+ 2577              		.cfi_endproc
+ 2578              	.LFE9:
+ 2580 0036 00BF     		.section	.text.QEIVelocityGet,"ax",%progbits
+ 2581              		.align	2
+ 2582              		.global	QEIVelocityGet
+ 2583              		.thumb
+ 2584              		.thumb_func
+ 2586              	QEIVelocityGet:
+ 2587              	.LFB10:
+ 357:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 358:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 359:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 360:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Gets the current encoder speed.
+ 361:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 362:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 363:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 364:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function returns the current speed of the encoder.  The value returned
+ 365:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! is the number of pulses detected in the specified time period; this number 
+ 366:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! can be multiplied by the number of time periods per second and divided by 
+ 367:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! the number of pulses per revolution to obtain the number of revolutions per
+ 368:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! second.
+ 369:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 370:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return Returns the number of pulses captured in the given time period.
+ 371:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 372:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 373:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** unsigned long
+ 374:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIVelocityGet(unsigned long ulBase)
+ 375:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2588              		.loc 1 375 0
+ 2589              		.cfi_startproc
+ 2590              		@ args = 0, pretend = 0, frame = 8
+ 2591              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2592              		@ link register save eliminated.
+ 2593 0000 80B4     		push	{r7}
+ 2594              	.LCFI30:
+ 2595              		.cfi_def_cfa_offset 4
+ 2596 0002 83B0     		sub	sp, sp, #12
+ 2597              	.LCFI31:
+ 2598              		.cfi_def_cfa_offset 16
+ 2599 0004 00AF     		add	r7, sp, #0
+ 2600              		.cfi_offset 7, -4
+ 2601              	.LCFI32:
+ 2602              		.cfi_def_cfa_register 7
+ 2603 0006 7860     		str	r0, [r7, #4]
+ 376:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 377:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 378:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 379:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 380:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 381:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 382:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Return the speed capture value.
+ 383:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 384:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     return(HWREG(ulBase + QEI_O_SPEED));
+ 2604              		.loc 1 384 0
+ 2605 0008 7B68     		ldr	r3, [r7, #4]
+ 2606 000a 03F11C03 		add	r3, r3, #28
+ 2607 000e 1B68     		ldr	r3, [r3, #0]
+ 385:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2608              		.loc 1 385 0
+ 2609 0010 1846     		mov	r0, r3
+ 2610 0012 07F10C07 		add	r7, r7, #12
+ 2611 0016 BD46     		mov	sp, r7
+ 2612 0018 80BC     		pop	{r7}
+ 2613 001a 7047     		bx	lr
+ 2614              		.cfi_endproc
+ 2615              	.LFE10:
+ 2617              		.section	.text.QEIIntRegister,"ax",%progbits
+ 2618              		.align	2
+ 2619              		.global	QEIIntRegister
+ 2620              		.thumb
+ 2621              		.thumb_func
+ 2623              	QEIIntRegister:
+ 2624              	.LFB11:
+ 386:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 387:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 388:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 389:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Registers an interrupt handler for the quadrature encoder interrupt.
+ 390:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 391:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 392:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param pfnHandler is a pointer to the function to be called when the
+ 393:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! quadrature encoder interrupt occurs.
+ 394:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 395:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function registers the handler to be called when a quadrature encoder 
+ 396:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! interrupt occurs.  This function enables the global interrupt in the 
+ 397:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! interrupt controller; specific quadrature encoder interrupts must be 
+ 398:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! enabled via QEIIntEnable(). It is the interrupt handler's responsibility to 
+ 399:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! clear the interrupt source via QEIIntClear().
+ 400:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 401:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \sa IntRegister() for important information about registering interrupt
+ 402:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! handlers.
+ 403:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 404:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return None.
+ 405:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 406:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 407:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** void
+ 408:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIIntRegister(unsigned long ulBase, void (*pfnHandler)(void))
+ 409:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2625              		.loc 1 409 0
+ 2626              		.cfi_startproc
+ 2627              		@ args = 0, pretend = 0, frame = 16
+ 2628              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2629 0000 80B5     		push	{r7, lr}
+ 2630              	.LCFI33:
+ 2631              		.cfi_def_cfa_offset 8
+ 2632 0002 84B0     		sub	sp, sp, #16
+ 2633              	.LCFI34:
+ 2634              		.cfi_def_cfa_offset 24
+ 2635 0004 00AF     		add	r7, sp, #0
+ 2636              		.cfi_offset 14, -4
+ 2637              		.cfi_offset 7, -8
+ 2638              	.LCFI35:
+ 2639              		.cfi_def_cfa_register 7
+ 2640 0006 7860     		str	r0, [r7, #4]
+ 2641 0008 3960     		str	r1, [r7, #0]
+ 410:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     unsigned long ulInt;
+ 411:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 412:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 413:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 414:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 415:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 416:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 417:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 418:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Determine the interrupt number based on the QEI module.
+ 419:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 420:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ulInt = (ulBase == QEI0_BASE) ? INT_QEI0 : INT_QEI1;
+ 2642              		.loc 1 420 0
+ 2643 000a 7A68     		ldr	r2, [r7, #4]
+ 2644 000c 094B     		ldr	r3, .L17
+ 2645 000e 9A42     		cmp	r2, r3
+ 2646 0010 02D1     		bne	.L15
+ 2647              		.loc 1 420 0 is_stmt 0 discriminator 1
+ 2648 0012 4FF01D03 		mov	r3, #29
+ 2649 0016 01E0     		b	.L16
+ 2650              	.L15:
+ 2651              		.loc 1 420 0 discriminator 2
+ 2652 0018 4FF03603 		mov	r3, #54
+ 2653              	.L16:
+ 2654              		.loc 1 420 0 discriminator 3
+ 2655 001c FB60     		str	r3, [r7, #12]
+ 421:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 422:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 423:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Register the interrupt handler, returning an error if an error occurs.
+ 424:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 425:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     IntRegister(ulInt, pfnHandler);
+ 2656              		.loc 1 425 0 is_stmt 1 discriminator 3
+ 2657 001e F868     		ldr	r0, [r7, #12]
+ 2658 0020 3968     		ldr	r1, [r7, #0]
+ 2659 0022 FFF7FEFF 		bl	IntRegister
+ 426:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 427:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 428:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Enable the quadrature encoder interrupt.
+ 429:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 430:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     IntEnable(ulInt);
+ 2660              		.loc 1 430 0 discriminator 3
+ 2661 0026 F868     		ldr	r0, [r7, #12]
+ 2662 0028 FFF7FEFF 		bl	IntEnable
+ 431:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2663              		.loc 1 431 0 discriminator 3
+ 2664 002c 07F11007 		add	r7, r7, #16
+ 2665 0030 BD46     		mov	sp, r7
+ 2666 0032 80BD     		pop	{r7, pc}
+ 2667              	.L18:
+ 2668              		.align	2
+ 2669              	.L17:
+ 2670 0034 00C00240 		.word	1073922048
+ 2671              		.cfi_endproc
+ 2672              	.LFE11:
+ 2674              		.section	.text.QEIIntUnregister,"ax",%progbits
+ 2675              		.align	2
+ 2676              		.global	QEIIntUnregister
+ 2677              		.thumb
+ 2678              		.thumb_func
+ 2680              	QEIIntUnregister:
+ 2681              	.LFB12:
+ 432:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 433:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 434:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 435:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Unregisters an interrupt handler for the quadrature encoder interrupt.
+ 436:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 437:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 438:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 439:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function unregisters the handler to be called when a quadrature 
+ 440:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! encoder interrupt occurs.  This function also masks off the interrupt in
+ 441:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! the interrupt controller so that the interrupt handler no longer is called.
+ 442:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 443:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \sa IntRegister() for important information about registering interrupt
+ 444:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! handlers.
+ 445:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 446:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return None.
+ 447:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 448:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 449:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** void
+ 450:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIIntUnregister(unsigned long ulBase)
+ 451:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2682              		.loc 1 451 0
+ 2683              		.cfi_startproc
+ 2684              		@ args = 0, pretend = 0, frame = 16
+ 2685              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2686 0000 80B5     		push	{r7, lr}
+ 2687              	.LCFI36:
+ 2688              		.cfi_def_cfa_offset 8
+ 2689 0002 84B0     		sub	sp, sp, #16
+ 2690              	.LCFI37:
+ 2691              		.cfi_def_cfa_offset 24
+ 2692 0004 00AF     		add	r7, sp, #0
+ 2693              		.cfi_offset 14, -4
+ 2694              		.cfi_offset 7, -8
+ 2695              	.LCFI38:
+ 2696              		.cfi_def_cfa_register 7
+ 2697 0006 7860     		str	r0, [r7, #4]
+ 452:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     unsigned long ulInt;
+ 453:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 454:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 455:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 456:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 457:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 458:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 459:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 460:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Determine the interrupt number based on the QEI module.
+ 461:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 462:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ulInt = (ulBase == QEI0_BASE) ? INT_QEI0 : INT_QEI1;
+ 2698              		.loc 1 462 0
+ 2699 0008 7A68     		ldr	r2, [r7, #4]
+ 2700 000a 094B     		ldr	r3, .L22
+ 2701 000c 9A42     		cmp	r2, r3
+ 2702 000e 02D1     		bne	.L20
+ 2703              		.loc 1 462 0 is_stmt 0 discriminator 1
+ 2704 0010 4FF01D03 		mov	r3, #29
+ 2705 0014 01E0     		b	.L21
+ 2706              	.L20:
+ 2707              		.loc 1 462 0 discriminator 2
+ 2708 0016 4FF03603 		mov	r3, #54
+ 2709              	.L21:
+ 2710              		.loc 1 462 0 discriminator 3
+ 2711 001a FB60     		str	r3, [r7, #12]
+ 463:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 464:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 465:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Disable the interrupt.
+ 466:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 467:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     IntDisable(ulInt);
+ 2712              		.loc 1 467 0 is_stmt 1 discriminator 3
+ 2713 001c F868     		ldr	r0, [r7, #12]
+ 2714 001e FFF7FEFF 		bl	IntDisable
+ 468:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 469:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 470:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Unregister the interrupt handler.
+ 471:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 472:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     IntUnregister(ulInt);
+ 2715              		.loc 1 472 0 discriminator 3
+ 2716 0022 F868     		ldr	r0, [r7, #12]
+ 2717 0024 FFF7FEFF 		bl	IntUnregister
+ 473:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2718              		.loc 1 473 0 discriminator 3
+ 2719 0028 07F11007 		add	r7, r7, #16
+ 2720 002c BD46     		mov	sp, r7
+ 2721 002e 80BD     		pop	{r7, pc}
+ 2722              	.L23:
+ 2723              		.align	2
+ 2724              	.L22:
+ 2725 0030 00C00240 		.word	1073922048
+ 2726              		.cfi_endproc
+ 2727              	.LFE12:
+ 2729              		.section	.text.QEIIntEnable,"ax",%progbits
+ 2730              		.align	2
+ 2731              		.global	QEIIntEnable
+ 2732              		.thumb
+ 2733              		.thumb_func
+ 2735              	QEIIntEnable:
+ 2736              	.LFB13:
+ 474:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 475:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 476:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 477:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Enables individual quadrature encoder interrupt sources.
+ 478:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 479:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 480:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be enabled.
+ 481:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Can be any of the \b QEI_INTERROR, \b QEI_INTDIR, \b QEI_INTTIMER, or
+ 482:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \b QEI_INTINDEX values.
+ 483:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 484:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function enables the indicated quadrature encoder interrupt sources.  
+ 485:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Only the sources that are enabled can be reflected to the processor 
+ 486:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! interrupt; disabled sources have no effect on the processor.
+ 487:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 488:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return None.
+ 489:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 490:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 491:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** void
+ 492:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIIntEnable(unsigned long ulBase, unsigned long ulIntFlags)
+ 493:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2737              		.loc 1 493 0
+ 2738              		.cfi_startproc
+ 2739              		@ args = 0, pretend = 0, frame = 8
+ 2740              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2741              		@ link register save eliminated.
+ 2742 0000 80B4     		push	{r7}
+ 2743              	.LCFI39:
+ 2744              		.cfi_def_cfa_offset 4
+ 2745 0002 83B0     		sub	sp, sp, #12
+ 2746              	.LCFI40:
+ 2747              		.cfi_def_cfa_offset 16
+ 2748 0004 00AF     		add	r7, sp, #0
+ 2749              		.cfi_offset 7, -4
+ 2750              	.LCFI41:
+ 2751              		.cfi_def_cfa_register 7
+ 2752 0006 7860     		str	r0, [r7, #4]
+ 2753 0008 3960     		str	r1, [r7, #0]
+ 494:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 495:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 496:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 497:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 498:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 499:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 500:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Enable the specified interrupts.
+ 501:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 502:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_INTEN) |= ulIntFlags;
+ 2754              		.loc 1 502 0
+ 2755 000a 7B68     		ldr	r3, [r7, #4]
+ 2756 000c 03F12003 		add	r3, r3, #32
+ 2757 0010 7A68     		ldr	r2, [r7, #4]
+ 2758 0012 02F12002 		add	r2, r2, #32
+ 2759 0016 1168     		ldr	r1, [r2, #0]
+ 2760 0018 3A68     		ldr	r2, [r7, #0]
+ 2761 001a 41EA0202 		orr	r2, r1, r2
+ 2762 001e 1A60     		str	r2, [r3, #0]
+ 503:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2763              		.loc 1 503 0
+ 2764 0020 07F10C07 		add	r7, r7, #12
+ 2765 0024 BD46     		mov	sp, r7
+ 2766 0026 80BC     		pop	{r7}
+ 2767 0028 7047     		bx	lr
+ 2768              		.cfi_endproc
+ 2769              	.LFE13:
+ 2771 002a 00BF     		.section	.text.QEIIntDisable,"ax",%progbits
+ 2772              		.align	2
+ 2773              		.global	QEIIntDisable
+ 2774              		.thumb
+ 2775              		.thumb_func
+ 2777              	QEIIntDisable:
+ 2778              	.LFB14:
+ 504:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 505:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 506:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 507:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Disables individual quadrature encoder interrupt sources.
+ 508:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 509:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 510:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be disabled.
+ 511:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This parameter can be any of the \b QEI_INTERROR, \b QEI_INTDIR, 
+ 512:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \b QEI_INTTIMER, or \b QEI_INTINDEX values.
+ 513:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 514:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function disables the indicated quadrature encoder interrupt sources.  
+ 515:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Only the sources that are enabled can be reflected to the processor 
+ 516:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! interrupt; disabled sources have no effect on the processor.
+ 517:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 518:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return None.
+ 519:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 520:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 521:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** void
+ 522:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIIntDisable(unsigned long ulBase, unsigned long ulIntFlags)
+ 523:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2779              		.loc 1 523 0
+ 2780              		.cfi_startproc
+ 2781              		@ args = 0, pretend = 0, frame = 8
+ 2782              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2783              		@ link register save eliminated.
+ 2784 0000 80B4     		push	{r7}
+ 2785              	.LCFI42:
+ 2786              		.cfi_def_cfa_offset 4
+ 2787 0002 83B0     		sub	sp, sp, #12
+ 2788              	.LCFI43:
+ 2789              		.cfi_def_cfa_offset 16
+ 2790 0004 00AF     		add	r7, sp, #0
+ 2791              		.cfi_offset 7, -4
+ 2792              	.LCFI44:
+ 2793              		.cfi_def_cfa_register 7
+ 2794 0006 7860     		str	r0, [r7, #4]
+ 2795 0008 3960     		str	r1, [r7, #0]
+ 524:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 525:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 526:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 527:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 528:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 529:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 530:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Disable the specified interrupts.
+ 531:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 532:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_INTEN) &= ~(ulIntFlags);
+ 2796              		.loc 1 532 0
+ 2797 000a 7B68     		ldr	r3, [r7, #4]
+ 2798 000c 03F12003 		add	r3, r3, #32
+ 2799 0010 7A68     		ldr	r2, [r7, #4]
+ 2800 0012 02F12002 		add	r2, r2, #32
+ 2801 0016 1168     		ldr	r1, [r2, #0]
+ 2802 0018 3A68     		ldr	r2, [r7, #0]
+ 2803 001a 6FEA0202 		mvn	r2, r2
+ 2804 001e 01EA0202 		and	r2, r1, r2
+ 2805 0022 1A60     		str	r2, [r3, #0]
+ 533:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2806              		.loc 1 533 0
+ 2807 0024 07F10C07 		add	r7, r7, #12
+ 2808 0028 BD46     		mov	sp, r7
+ 2809 002a 80BC     		pop	{r7}
+ 2810 002c 7047     		bx	lr
+ 2811              		.cfi_endproc
+ 2812              	.LFE14:
+ 2814 002e 00BF     		.section	.text.QEIIntStatus,"ax",%progbits
+ 2815              		.align	2
+ 2816              		.global	QEIIntStatus
+ 2817              		.thumb
+ 2818              		.thumb_func
+ 2820              	QEIIntStatus:
+ 2821              	.LFB15:
+ 534:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 535:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 536:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 537:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Gets the current interrupt status.
+ 538:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 539:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 540:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param bMasked is false if the raw interrupt status is required and true if
+ 541:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! the masked interrupt status is required.
+ 542:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 543:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This function returns the interrupt status for the quadrature encoder 
+ 544:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! module. Either the raw interrupt status or the status of interrupts that 
+ 545:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! are allowed to reflect to the processor can be returned.
+ 546:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 547:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return Returns the current interrupt status, enumerated as a bit field of
+ 548:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \b QEI_INTERROR, \b QEI_INTDIR, \b QEI_INTTIMER, and \b QEI_INTINDEX.
+ 549:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 550:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 551:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** unsigned long
+ 552:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIIntStatus(unsigned long ulBase, tBoolean bMasked)
+ 553:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2822              		.loc 1 553 0
+ 2823              		.cfi_startproc
+ 2824              		@ args = 0, pretend = 0, frame = 8
+ 2825              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2826              		@ link register save eliminated.
+ 2827 0000 80B4     		push	{r7}
+ 2828              	.LCFI45:
+ 2829              		.cfi_def_cfa_offset 4
+ 2830 0002 83B0     		sub	sp, sp, #12
+ 2831              	.LCFI46:
+ 2832              		.cfi_def_cfa_offset 16
+ 2833 0004 00AF     		add	r7, sp, #0
+ 2834              		.cfi_offset 7, -4
+ 2835              	.LCFI47:
+ 2836              		.cfi_def_cfa_register 7
+ 2837 0006 7860     		str	r0, [r7, #4]
+ 2838 0008 0B46     		mov	r3, r1
+ 2839 000a FB70     		strb	r3, [r7, #3]
+ 554:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 555:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 556:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 557:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 558:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 559:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 560:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Return either the interrupt status or the raw interrupt status as
+ 561:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // requested.
+ 562:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 563:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     if(bMasked)
+ 2840              		.loc 1 563 0
+ 2841 000c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 2842 000e 002B     		cmp	r3, #0
+ 2843 0010 04D0     		beq	.L27
+ 564:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     {
+ 565:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****         return(HWREG(ulBase + QEI_O_ISC));
+ 2844              		.loc 1 565 0
+ 2845 0012 7B68     		ldr	r3, [r7, #4]
+ 2846 0014 03F12803 		add	r3, r3, #40
+ 2847 0018 1B68     		ldr	r3, [r3, #0]
+ 2848 001a 03E0     		b	.L28
+ 2849              	.L27:
+ 566:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     }
+ 567:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     else
+ 568:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     {
+ 569:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****         return(HWREG(ulBase + QEI_O_RIS));
+ 2850              		.loc 1 569 0
+ 2851 001c 7B68     		ldr	r3, [r7, #4]
+ 2852 001e 03F12403 		add	r3, r3, #36
+ 2853 0022 1B68     		ldr	r3, [r3, #0]
+ 2854              	.L28:
+ 570:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     }
+ 571:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2855              		.loc 1 571 0
+ 2856 0024 1846     		mov	r0, r3
+ 2857 0026 07F10C07 		add	r7, r7, #12
+ 2858 002a BD46     		mov	sp, r7
+ 2859 002c 80BC     		pop	{r7}
+ 2860 002e 7047     		bx	lr
+ 2861              		.cfi_endproc
+ 2862              	.LFE15:
+ 2864              		.section	.text.QEIIntClear,"ax",%progbits
+ 2865              		.align	2
+ 2866              		.global	QEIIntClear
+ 2867              		.thumb
+ 2868              		.thumb_func
+ 2870              	QEIIntClear:
+ 2871              	.LFB16:
+ 572:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 573:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 574:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 575:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Clears quadrature encoder interrupt sources.
+ 576:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 577:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulBase is the base address of the quadrature encoder module.
+ 578:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \param ulIntFlags is a bit mask of the interrupt sources to be cleared.
+ 579:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! This parameter can be any of the \b QEI_INTERROR, \b QEI_INTDIR, 
+ 580:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \b QEI_INTTIMER, or \b QEI_INTINDEX values.
+ 581:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 582:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! The specified quadrature encoder interrupt sources are cleared, so that
+ 583:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! they no longer assert.  This function must be called in the interrupt 
+ 584:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! handler to keep the interrupt from being triggered again immediately upon 
+ 585:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! exit.
+ 586:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 587:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \note Because there is a write buffer in the Cortex-M processor, it may
+ 588:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! take several clock cycles before the interrupt source is actually cleared.
+ 589:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! Therefore, it is recommended that the interrupt source be cleared early in
+ 590:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! the interrupt handler (as opposed to the very last action) to avoid
+ 591:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! returning from the interrupt handler before the interrupt source is
+ 592:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! actually cleared.  Failure to do so may result in the interrupt handler
+ 593:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! being immediately reentered (because the interrupt controller still sees
+ 594:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! the interrupt source asserted).
+ 595:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //!
+ 596:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //! \return None.
+ 597:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //
+ 598:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** //*****************************************************************************
+ 599:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** void
+ 600:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** QEIIntClear(unsigned long ulBase, unsigned long ulIntFlags)
+ 601:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** {
+ 2872              		.loc 1 601 0
+ 2873              		.cfi_startproc
+ 2874              		@ args = 0, pretend = 0, frame = 8
+ 2875              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2876              		@ link register save eliminated.
+ 2877 0000 80B4     		push	{r7}
+ 2878              	.LCFI48:
+ 2879              		.cfi_def_cfa_offset 4
+ 2880 0002 83B0     		sub	sp, sp, #12
+ 2881              	.LCFI49:
+ 2882              		.cfi_def_cfa_offset 16
+ 2883 0004 00AF     		add	r7, sp, #0
+ 2884              		.cfi_offset 7, -4
+ 2885              	.LCFI50:
+ 2886              		.cfi_def_cfa_register 7
+ 2887 0006 7860     		str	r0, [r7, #4]
+ 2888 0008 3960     		str	r1, [r7, #0]
+ 602:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 603:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Check the arguments.
+ 604:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 605:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     ASSERT((ulBase == QEI0_BASE) || (ulBase == QEI1_BASE));
+ 606:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** 
+ 607:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 608:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     // Clear the requested interrupt sources.
+ 609:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     //
+ 610:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c ****     HWREG(ulBase + QEI_O_ISC) = ulIntFlags;
+ 2889              		.loc 1 610 0
+ 2890 000a 7B68     		ldr	r3, [r7, #4]
+ 2891 000c 03F12803 		add	r3, r3, #40
+ 2892 0010 3A68     		ldr	r2, [r7, #0]
+ 2893 0012 1A60     		str	r2, [r3, #0]
+ 611:/home/cuil/workspace/arm/lm3s811/TI_Stellaris/driverlib/qei.c **** }
+ 2894              		.loc 1 611 0
+ 2895 0014 07F10C07 		add	r7, r7, #12
+ 2896 0018 BD46     		mov	sp, r7
+ 2897 001a 80BC     		pop	{r7}
+ 2898 001c 7047     		bx	lr
+ 2899              		.cfi_endproc
+ 2900              	.LFE16:
+ 2902 001e 00BF     		.text
+ 2903              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 qei.c
+     /tmp/ccyAl5tG.s:2168   .text.QEIEnable:00000000 $t
+     /tmp/ccyAl5tG.s:2173   .text.QEIEnable:00000000 QEIEnable
+     /tmp/ccyAl5tG.s:2206   .text.QEIDisable:00000000 $t
+     /tmp/ccyAl5tG.s:2211   .text.QEIDisable:00000000 QEIDisable
+     /tmp/ccyAl5tG.s:2244   .text.QEIConfigure:00000000 $t
+     /tmp/ccyAl5tG.s:2249   .text.QEIConfigure:00000000 QEIConfigure
+     /tmp/ccyAl5tG.s:2293   .text.QEIPositionGet:00000000 $t
+     /tmp/ccyAl5tG.s:2298   .text.QEIPositionGet:00000000 QEIPositionGet
+     /tmp/ccyAl5tG.s:2330   .text.QEIPositionSet:00000000 $t
+     /tmp/ccyAl5tG.s:2335   .text.QEIPositionSet:00000000 QEIPositionSet
+     /tmp/ccyAl5tG.s:2368   .text.QEIDirectionGet:00000000 $t
+     /tmp/ccyAl5tG.s:2373   .text.QEIDirectionGet:00000000 QEIDirectionGet
+     /tmp/ccyAl5tG.s:2415   .text.QEIErrorGet:00000000 $t
+     /tmp/ccyAl5tG.s:2420   .text.QEIErrorGet:00000000 QEIErrorGet
+     /tmp/ccyAl5tG.s:2455   .text.QEIVelocityEnable:00000000 $t
+     /tmp/ccyAl5tG.s:2460   .text.QEIVelocityEnable:00000000 QEIVelocityEnable
+     /tmp/ccyAl5tG.s:2493   .text.QEIVelocityDisable:00000000 $t
+     /tmp/ccyAl5tG.s:2498   .text.QEIVelocityDisable:00000000 QEIVelocityDisable
+     /tmp/ccyAl5tG.s:2531   .text.QEIVelocityConfigure:00000000 $t
+     /tmp/ccyAl5tG.s:2536   .text.QEIVelocityConfigure:00000000 QEIVelocityConfigure
+     /tmp/ccyAl5tG.s:2581   .text.QEIVelocityGet:00000000 $t
+     /tmp/ccyAl5tG.s:2586   .text.QEIVelocityGet:00000000 QEIVelocityGet
+     /tmp/ccyAl5tG.s:2618   .text.QEIIntRegister:00000000 $t
+     /tmp/ccyAl5tG.s:2623   .text.QEIIntRegister:00000000 QEIIntRegister
+     /tmp/ccyAl5tG.s:2670   .text.QEIIntRegister:00000034 $d
+     /tmp/ccyAl5tG.s:2675   .text.QEIIntUnregister:00000000 $t
+     /tmp/ccyAl5tG.s:2680   .text.QEIIntUnregister:00000000 QEIIntUnregister
+     /tmp/ccyAl5tG.s:2725   .text.QEIIntUnregister:00000030 $d
+     /tmp/ccyAl5tG.s:2730   .text.QEIIntEnable:00000000 $t
+     /tmp/ccyAl5tG.s:2735   .text.QEIIntEnable:00000000 QEIIntEnable
+     /tmp/ccyAl5tG.s:2772   .text.QEIIntDisable:00000000 $t
+     /tmp/ccyAl5tG.s:2777   .text.QEIIntDisable:00000000 QEIIntDisable
+     /tmp/ccyAl5tG.s:2815   .text.QEIIntStatus:00000000 $t
+     /tmp/ccyAl5tG.s:2820   .text.QEIIntStatus:00000000 QEIIntStatus
+     /tmp/ccyAl5tG.s:2865   .text.QEIIntClear:00000000 $t
+     /tmp/ccyAl5tG.s:2870   .text.QEIIntClear:00000000 QEIIntClear
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister
